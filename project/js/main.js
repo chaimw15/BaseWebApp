@@ -68,7 +68,7 @@ function getPosts() {
 }
 
 function getWeather(cityName) {
-  var url = "http://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&units=metric&APPID=" + apiKey;
+  var url = "https://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&units=metric&APPID=" + apiKey;
 
   $.ajax(url, {
     success: function (data) {
