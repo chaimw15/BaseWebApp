@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css?family=Poppins:400,700" rel="stylesheet">
 
 <!-- this app's own css -->
-<link rel="stylesheet" type="text/css" href="css/main.css"/>
+<link rel="stylesheet" type="text/css" href="css/main.css" />
 
 
 
@@ -22,6 +22,33 @@
 
 <!-- then bootstrap -->
 <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<script>
+    var apiKey = "<%= process.env.API_KEY %>";
+</script>
+
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/8.2.3/firebase-app.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+<script src="https://www.gstatic.com/firebasejs/8.2.3/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.2.3/firebase-database.js"></script>
+
+<script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+        apiKey: "<%= process.env.FIREBASE_API_KEY %>",
+        authDomain: "peak-college.firebaseapp.com",
+        databaseURL: "https://peak-college-default-rtdb.firebaseio.com",
+        projectId: "peak-college",
+        storageBucket: "peak-college.appspot.com",
+        messagingSenderId: "619539747172",
+        appId: "1:619539747172:web:6715729d16085dd3ba2a71"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+</script>
 
 <!-- then our app's own js file -->
 <script src="js/main.js"></script>

@@ -12,11 +12,15 @@
     <h1>About Me</h1>
   </div>
 
-  <p>Click on the button for a surprise.</p>
+  <form onSubmit="handleMessageFormSubmit()" action="#">
+    Title<br>
+    <input id="post-title"><br>
+    Body<br>
+    <textarea id="post-body" placeholder="Ex. Eat Beets"></textarea><br>
+    <button>Submit</button>
+  </form>
 
-  <button onClick="showPicture()" class="btn btn-dark">Click me</button>
-
-  <div id="image"></div>
+  <div id="post-listing"></div>
   
 </body>
 

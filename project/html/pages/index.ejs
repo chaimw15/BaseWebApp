@@ -9,14 +9,23 @@
   <div class="page-header">
     <% include ../helpers/navbar %>
   
+    <button onClick="handleSignIn()">Login</button>
+  
     <h1>Home</h1>
   </div>
 
-  <p>Click on the button for a surprise.</p>
+  <input class="search" type="text" placeholder="enter city name">
+  <button onClick="searchWeather()">Search</button>
 
-  <button onClick="showPicture()" class="btn btn-dark">Click me</button>
+  <div class="error-message"></div>
 
-  <div id="image"></div>
+  <div class="city">
+
+  </div>
+  
+  <div class="temp">
+
+  </div>
   
 </body>
 
