@@ -66,9 +66,9 @@ function getStudents() {
   return firebase.database().ref("students").once('value').then((snapshot) => {
     var students = snapshot.val();
 
-    for(var studentKey in students){
+    for (var studentKey in students) {
       var student = students[studentKey];
-      $("#student-list").append(`<div><button onClick="openStudentTab('`+studentKey+`')">`+student.lastName+", "+student.firstName+"</button></div>");
+      $("#student-list").append(`<div><button onClick="openStudentTab('` + studentKey + `')">` + student.lastName + ", " + student.firstName + "</button></div>");
     }
   });
 }
@@ -111,7 +111,7 @@ function openStudentTab(thisStudent) {
   return firebase.database().ref("students").once('value').then((snapshot) => {
     var students = snapshot.val();
     console.log("hi");
-    for(var studentKey in students){
+    for (var studentKey in students) {
       console.log(studentKey);
       if (thisStudent.localeCompare(studentKey) == 0) {
         console.log("we're in");
@@ -132,7 +132,7 @@ function closeStudentTab() {
   document.getElementById("studentTab").style.width = "0";
 }
 
-function editStudent(){
+function editStudent() {
 
 }
 
@@ -149,22 +149,37 @@ function submitEdit() {
     email: email,
     enrolDate: enrolDate
   };
-  
+
   var updates = {};
   updates['/students/' + currentStudentKey] = studentData;
   return firebase.database().ref().update(updates);
 }
 
-function sendEmail(){
-  Email.send({
-    Host : "smtp.gmail.com",
-    Username : "chaimw15@gmail.com",
-    Password : "dammit911",
-    To : 'chaimw@hotmail.ca',
-    From : "chaimw15@gmail.com",
-    Subject : "First Email",
-    Body : "Sent to your bitch ass"
-    }).then(
-      message => alert(message)
-    );
+function sendEmail() {
+  const mailjet = require('node-mailjet').connect('6f9416b727cffc0d89dec6b4a24b83ab', 'bce7eb357dbe5795e238a0f098f13c4e');
+  const request = mailjet.post("send", { 'version': 'v3.1' }).request({
+      "Messages": [
+        {
+          "From": {
+            "Email": "chaimw@hotmail.ca",
+            "Name": "Chaim"
+          },
+          "To": [
+            {
+              "Email": "chaimw@hotmail.ca",
+              "Name": "Chaim"
+            }
+          ],
+          "Subject": "Greetings from Mailjet.",
+          "TextPart": "My first Mailjet email",
+          "HTMLPart": "<h3>Dear passenger 1, welcome to <a href='https://www.mailjet.com/'>Mailjet</a>!</h3><br />May the delivery force be with you!",
+          "CustomID": "AppGettingStartedTest"
+        }
+      ]
+    });
+  request.then((result) => {
+      console.log(result.body)
+    }).catch((err) => {
+      console.log(err.statusCode)
+    });
 }
