@@ -9,19 +9,24 @@
   <div class="page-header">
     <% include ../helpers/navbar %>
   
-    <h1>About Me</h1>
+    <h1>Home</h1>
   </div>
 
-  <form onSubmit="handleMessageFormSubmit()" action="#">
-    Title<br>
-    <input id="post-title"><br>
-    Body<br>
-    <textarea id="post-body" placeholder="Ex. Eat Beets"></textarea><br>
-    <button>Submit</button>
-  </form>
+  <button onClick="sendEmail()">Send Email</button>
 
-  <div id="post-listing"></div>
+  <input class="search" type="text" placeholder="enter city name">
+  <button onClick="searchWeather()">Search</button>
+
+  <div class="error-message"></div>
+
+  <div class="city">
+
+  </div>
+  
+  <div class="temp">
+
+  </div>
   
 </body>
 
-</html
+</html>

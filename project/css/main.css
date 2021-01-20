@@ -9,7 +9,6 @@ body {
 h1 {
   font-family: 'Poppins', sans-serif;
   font-weight: 700;
-  margin-top: 40px;
   font-size: 48px;
 }
 
@@ -23,8 +22,8 @@ button {
 
 .page-header {
   background-color: #00bda5;
-  padding-top: 40px;
-  padding-bottom: 80px;
+  padding-top: 10px;
+  padding-bottom: 20px;
   color: #ffffff;
 }
 
@@ -32,3 +31,58 @@ button {
   height: 200px;
   margin-top: 60px;
 }
+
+.column {
+  float: left;
+  width: 50%;
+}
+
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+#login-button{
+  margin-top:0px;
+  border-radius: 10px;
+  border: solid black 1px;
+  vertical-align: middle;
+}
+
+/* start of side panel css */
+.sidepanel  {
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  height: auto;
+  top: 20px;
+  right: 0;
+  background-color: #aaa;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-bottom: 20px;
+  padding-top: 60px;
+}
+
+.sidepanel p {
+  padding: 8px;
+  text-decoration: none;
+  font-size: 18px;
+  color: #111;
+  display: block;
+  transition: 0.3s;
+  margin-top:5px;
+}
+
+.sidepanel button {
+  margin-top: 0px;
+}
+
+.sidepanel .closebtn {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+}
+/* end of side panel css */

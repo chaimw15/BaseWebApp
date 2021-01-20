@@ -10,11 +10,11 @@ app.set('views', __dirname + '/html');
 app.set('view engine', 'ejs');
 
 app.get('/', function(request, response) {
-  response.render('pages/index');
+  response.render('pages/home');
 });
 
-app.get('/about', function(request, response) {
-  response.render('pages/about');
+app.get('/students', function(request, response) {
+  response.render('pages/students');
 });
 
 app.get('/projects', function(request, response) {

@@ -1,6 +1,8 @@
 $(document).ready(function () {
-  getPosts();
+  getStudents();
 })
+
+var currentStudentKey = null;
 
 function handleSignIn() {
   var provider = new firebase.auth.GoogleAuthProvider();
@@ -28,23 +30,28 @@ function handleSignIn() {
     });
 }
 
-function handleMessageFormSubmit() {
-  var postTitle = $("#post-title").val();
-  var postBody = $("#post-body").val();
+function handleAddStudentSubmit() {
+  var firstName = $("#first-name").val();
+  var lastName = $("#last-name").val();
+  var email = $("#email").val();
+  var enrolDate = $("#enrol-date").val();
 
-  addMessage(postTitle, postBody);
+  addStudent(firstName, lastName, email, enrolDate);
 }
 
-function addMessage(postTitle, postBody) {
-  var postData = {
-    title: postTitle,
-    body: postBody
+function addStudent(firstName, lastName, email, enrolDate) {
+  var studentData = {
+    firstName: firstName,
+    lastName: lastName,
+    email: email,
+    enrolDate: enrolDate,
+    paid: true
   };
 
-  var database = firebase.database().ref("posts");
+  var database = firebase.database().ref("students");
 
-  var newPostRef = database.push();
-  newPostRef.set(postData, (error) => {
+  var newStudentRef = database.push();
+  newStudentRef.set(studentData, (error) => {
     if (error) {
       // The write failed...
     } else {
@@ -55,14 +62,13 @@ function addMessage(postTitle, postBody) {
 
 }
 
-function getPosts() {
-  return firebase.database().ref("posts").once('value').then((snapshot) => {
-    var posts = snapshot.val();
-    console.log(posts);
+function getStudents() {
+  return firebase.database().ref("students").once('value').then((snapshot) => {
+    var students = snapshot.val();
 
-    for(var postKey in posts){
-      var post = posts[postKey];
-      $("#post-listing").append("<div>"+post.title+" - "+post.body+"</div>");
+    for(var studentKey in students){
+      var student = students[studentKey];
+      $("#student-list").append(`<div><button onClick="openStudentTab('`+studentKey+`')">`+student.lastName+", "+student.firstName+"</button></div>");
     }
   });
 }
@@ -98,4 +104,67 @@ function showPicture() {
 
   // jQuery can do a lot of crazy stuff, so make sure to Google around to find out more
 
+}
+
+function openStudentTab(thisStudent) {
+  console.log(thisStudent);
+  return firebase.database().ref("students").once('value').then((snapshot) => {
+    var students = snapshot.val();
+    console.log("hi");
+    for(var studentKey in students){
+      console.log(studentKey);
+      if (thisStudent.localeCompare(studentKey) == 0) {
+        console.log("we're in");
+        var student = students[studentKey];
+        currentStudentKey = studentKey;
+        $("#student-name").text(student.firstName + " " + student.lastName);
+        $("#student-email").text("Email: " + student.email);
+        $("#student-enrolDate").text("Enrol Date: " + student.enrolDate);
+        $("#student-paid").text("Paid: " + student.paid);
+        document.getElementById("studentTab").style.width = "250px";
+        break;
+      }
+    }
+  });
+}
+
+function closeStudentTab() {
+  document.getElementById("studentTab").style.width = "0";
+}
+
+function editStudent(){
+
+}
+
+function submitEdit() {
+  var name = $("#student-name").val();
+  var email = $("#student-email").val();
+  var enrolDate = $("#student-enrolDate").val();
+
+  var split_names = name.split(" ");
+
+  var studentData = {
+    firstName: split_names[0],
+    lastName: split_names[1],
+    email: email,
+    enrolDate: enrolDate
+  };
+  
+  var updates = {};
+  updates['/students/' + currentStudentKey] = studentData;
+  return firebase.database().ref().update(updates);
+}
+
+function sendEmail(){
+  Email.send({
+    Host : "smtp.gmail.com",
+    Username : "chaimw15@gmail.com",
+    Password : "dammit911",
+    To : 'chaimw@hotmail.ca',
+    From : "chaimw15@gmail.com",
+    Subject : "First Email",
+    Body : "Sent to your bitch ass"
+    }).then(
+      message => alert(message)
+    );
 }
