@@ -156,30 +156,5 @@ function submitEdit() {
 }
 
 function sendEmail() {
-  const mailjet = require('node-mailjet').connect('6f9416b727cffc0d89dec6b4a24b83ab', 'bce7eb357dbe5795e238a0f098f13c4e');
-  const request = mailjet.post("send", { 'version': 'v3.1' }).request({
-      "Messages": [
-        {
-          "From": {
-            "Email": "chaimw@hotmail.ca",
-            "Name": "Chaim"
-          },
-          "To": [
-            {
-              "Email": "chaimw@hotmail.ca",
-              "Name": "Chaim"
-            }
-          ],
-          "Subject": "Greetings from Mailjet.",
-          "TextPart": "My first Mailjet email",
-          "HTMLPart": "<h3>Dear passenger 1, welcome to <a href='https://www.mailjet.com/'>Mailjet</a>!</h3><br />May the delivery force be with you!",
-          "CustomID": "AppGettingStartedTest"
-        }
-      ]
-    });
-  request.then((result) => {
-      console.log(result.body)
-    }).catch((err) => {
-      console.log(err.statusCode)
-    });
+  
 }
