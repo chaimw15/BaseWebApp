@@ -1,14 +1,23 @@
-<ul class="nav">
-    <li class="nav-item">
-        <a class="nav-link" href="/">Home</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="/students">Students</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="/projects">Projects</a>
-    </li>
-    <li>
-        <button id="login-button" onClick="handleSignIn()">Login</button>
-    </li>
-</ul>
+<div class="grid">
+    <div class="grid-item grid-item-left">
+        <img id="site-logo" src="/images/PEAK-Logo-Black-Green.png" >
+    </div>
+    <div class="grid-item grid-item-middle">
+        <ul class="nav">
+            <li class="nav-item">
+                <a class="nav-link" href="/">HOME</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/students">STUDENTS</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/projects">PROJECTS</a>
+            </li>
+        </ul>
+    </div>
+    <div class="grid-item grid-item-right">
+        <div id="login-container">
+            <button id="login-button" onClick="handleSignIn()">LOGIN</button>
+        </div>
+    </div>
+</div>

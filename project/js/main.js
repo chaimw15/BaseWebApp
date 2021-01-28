@@ -35,16 +35,19 @@ function handleAddStudentSubmit() {
   var lastName = $("#last-name").val();
   var email = $("#email").val();
   var enrolDate = $("#enrol-date").val();
+  var nextPayment = getNextPayDate(enrolDate, enrolDate);
 
-  addStudent(firstName, lastName, email, enrolDate);
+  addStudent(firstName, lastName, email, enrolDate, nextPayment);
 }
 
-function addStudent(firstName, lastName, email, enrolDate) {
+function addStudent(firstName, lastName, email, enrolDate, nextPayment) {
+
   var studentData = {
     firstName: firstName,
     lastName: lastName,
     email: email,
     enrolDate: enrolDate,
+    nextPayment: nextPayment,
     paid: true
   };
 
@@ -63,65 +66,36 @@ function addStudent(firstName, lastName, email, enrolDate) {
 }
 
 function getStudents() {
+  var selectedStudent = $(".selected").attr('id');
+
+  $('#student-list .student-button-wrapper').remove();
+  $('#student-list .line-break').remove();
+
   return firebase.database().ref("students").once('value').then((snapshot) => {
     var students = snapshot.val();
 
     for (var studentKey in students) {
       var student = students[studentKey];
-      $("#student-list").append(`<div><button onClick="openStudentTab('` + studentKey + `')">` + student.lastName + ", " + student.firstName + "</button></div>");
+      $("#student-list").append(`<div><a class='studentButton' id='`+ studentKey +`' onClick="openStudentTab('` + studentKey + `')">` + student.firstName + " " + student.lastName + "</a></div>");
     }
+    $("#" + selectedStudent).addClass("selected");
   });
-}
-
-function getWeather(cityName) {
-  var url = "https://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&units=metric&APPID=" + apiKey;
-
-  $.ajax(url, {
-    success: function (data) {
-      console.log(data);
-      $(".city").text(data.name);
-      $(".temp").text(data.main.temp);
-      $(".error-message").text("");
-    }, error: function (error) {
-      $(".error-message").text("Sorry, we couldn't find that city.");
-      $(".city").text("");
-      $(".temp").text("");
-    }
-  });
-}
-
-function searchWeather() {
-  var searchQuery = $(".search").val();
-
-  getWeather(searchQuery);
-}
-
-function showPicture() {
-  // use jQuery ($ is shorthand) to find the div on the page and then change the html
-  // 'rounded-circle' is a bootstrap thing! Check out more here: http://getbootstrap.com/css/
-  $("#image").append('<img class="rounded-circle" src="images/high-five.gif"/>');
-  $("p").html("High five! You're building your first web app!");
-
-  // jQuery can do a lot of crazy stuff, so make sure to Google around to find out more
-
 }
 
 function openStudentTab(thisStudent) {
-  console.log(thisStudent);
-  return firebase.database().ref("students").once('value').then((snapshot) => {
+  firebase.database().ref("students").once('value').then((snapshot) => {
     var students = snapshot.val();
-    console.log("hi");
     for (var studentKey in students) {
-      console.log(studentKey);
       if (thisStudent.localeCompare(studentKey) == 0) {
-        console.log("we're in");
         var student = students[studentKey];
         currentStudentKey = studentKey;
         $("#student-name").text(student.firstName + " " + student.lastName);
-        $("#student-email").text("Email: " + student.email);
-        $("#student-enrolDate").text("Enrol Date: " + student.enrolDate);
-        $("#student-paid").text("Paid: " + student.paid);
-        document.getElementById("studentTab").style.width = "250px";
+        $("#student-email").text(student.email);
+        $("#student-enrolDate").val(student.enrolDate);
+        $("#student-nextPayment").val(student.nextPayment);
+        $("#student-paid").text(student.paid);
+        $(".cd-panel").addClass("cd-panel--is-visible");
+        $("#" + studentKey).addClass("selected");
         break;
       }
     }
@@ -129,17 +103,33 @@ function openStudentTab(thisStudent) {
 }
 
 function closeStudentTab() {
-  document.getElementById("studentTab").style.width = "0";
+  $(".cd-panel").removeClass("cd-panel--is-visible");
+  $(".selected").removeClass("selected");
 }
 
 function editStudent() {
-
+  $("#edit-student").css("visibility", "hidden");
+  $("#cancel-edit").css("visibility", "visible");
+  $("#save-edit").css("visibility", "visible");
+  $("#student-name").prop("contenteditable", true);
+  $("#student-email").prop("contenteditable", true);
+  $("#student-enrolDate").attr("readonly", false);
+  $("#student-nextPayment").attr("readonly", false);
 }
 
-function submitEdit() {
-  var name = $("#student-name").val();
-  var email = $("#student-email").val();
+function saveEdit() {
+  var name = $("#student-name").text();
+  var email = $("#student-email").text();
   var enrolDate = $("#student-enrolDate").val();
+  var nextPayment = $("#student-nextPayment").val();
+
+  $("#edit-student").css("visibility", "visible");
+  $("#cancel-edit").css("visibility", "hidden");
+  $("#save-edit").css("visibility", "hidden");
+  $("#student-name").prop("contenteditable", false);
+  $("#student-email").prop("contenteditable", false);
+  $("#student-enrolDate").attr("readonly", true);
+  $("#student-nextPayment").attr("readonly", true);
 
   var split_names = name.split(" ");
 
@@ -147,14 +137,77 @@ function submitEdit() {
     firstName: split_names[0],
     lastName: split_names[1],
     email: email,
-    enrolDate: enrolDate
+    enrolDate: enrolDate,
+    nextPayment: nextPayment
   };
 
-  var updates = {};
-  updates['/students/' + currentStudentKey] = studentData;
-  return firebase.database().ref().update(updates);
+  console.log(split_names[1]);
+
+  firebase.database().ref("/students/" + currentStudentKey).update(studentData);
+
+  getStudents();
 }
 
-function sendEmail() {
-  
+function cancelEdit() {
+  firebase.database().ref("/students/" + currentStudentKey).once('value').then((snapshot) => {
+    var student = snapshot.val();
+
+    $("#student-name").text(student.firstName + " " + student.lastName);
+    $("#student-email").text(student.email);
+    $("#student-enrolDate").val(student.enrolDate);
+    $("#student-nextPayment").val(student.nextPayment);
+    $("#student-paid").text(student.paid);
+
+  });
+
+  $("#edit-student").css("visibility", "visible");
+  $("#cancel-edit").css("visibility", "hidden");
+  $("#save-edit").css("visibility", "hidden");
+  $("#student-name").prop("contenteditable", false);
+  $("#student-email").prop("contenteditable", false);
+  $("#student-enrolDate").attr("readonly", true);
+  $("#student-nextPayment").attr("readonly", true);
+}
+
+function getNextPayDate(lastPayDate, enrolDate) {
+  var lastPayArray = lastPayDate.split("-");
+  var enrolArray = enrolDate.split("-");
+  var year = parseInt(lastPayArray[0]);
+  var month = parseInt(lastPayArray[1]);
+  var day = parseInt(enrolArray[2]);
+
+  var month = month + 1;
+
+  if (month > 12) {
+    month = 1;
+    year = year + 1;
+  }
+
+  if (day == 31) {
+    if (month == 4 || month == 6 || month == 9 || month == 11) {
+      day = 30;
+    }
+  }
+
+  if (day > 28 && month == 2) {
+    if (isLeapYear(year)) {
+      day = 29;
+    } else {
+      day = 28;
+    }
+  }
+
+  if (month < 10) {
+    month = "0" + month;
+  }
+
+  if (day < 10) {
+    day = "0" + day;
+  }
+
+  return year + "-" + month + "-" + day;
+}
+
+function isLeapYear(year) {
+  return ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0);
 }

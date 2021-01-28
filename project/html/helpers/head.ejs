@@ -9,6 +9,7 @@
 
 <!-- Google font CSS -->
 <link href="https://fonts.googleapis.com/css?family=Poppins:400,700" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Inter" rel="stylesheet" >
 
 <!-- this app's own css -->
 <link rel="stylesheet" type="text/css" href="css/main.css" />
@@ -50,7 +51,11 @@
         appId: "1:619539747172:web:6715729d16085dd3ba2a71"
     };
     // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    } else {
+        firebase.app(); // if already initialized, use that one
+    }
 </script>
 
 <!-- then our app's own js file -->

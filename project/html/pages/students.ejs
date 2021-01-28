@@ -7,43 +7,51 @@
 <body>
   <!-- the classes 'page-header' and 'btn btn-dark' create bootstrap components.  -->
   <!-- Check out more components here: http://getbootstrap.com/components/ -->
+  <main>
   <div class="page-header">
     <% include ../helpers/navbar %>
-
-    <h1>Students</h1>
   </div>
-<br><br>
+  <br><br>
   <div class="row">
-    <div class="column">
-      <h3>Add New Student</h3><br>
-      <form onSubmit="handleAddStudentSubmit()" action="#">
-        First Name<br>
-        <input id="first-name" placeholder="John"><br>
-        Last Name<br>
+    <div class="column column-left">
+      <h2 id="add-new-student">Add New Student</h2>
+      <form id="add-student-form" onSubmit="handleAddStudentSubmit()" action="#">
+        <p>First Name</p>
+        <input id="first-name" placeholder="John">
+        <p>Last Name</p>
         <input id="last-name" placeholder="Doe"></input><br>
-        Email<br>
+        <p>Email</p>
         <input id="email" placeholder="john@doe.com"></input><br>
-        Enrol Date<br>
+        <p>Enrol Date</p>
         <input id="enrol-date" type="date"></input><br>
-        <button>Submit</button>
+        <button id="add-student-submit">Submit</button>
       </form>
     </div>
-    <div class="column">
-      <h3>Student List</h3><br>
+    <div class="column column-right">
+      <h1>Student List</h1>
       <div id="student-list"></div>
     </div>
   </div>
+</main>
 
-  <div id="studentTab" class="sidepanel">
-    <a href="javascript:void(0)" class="closebtn" onclick="closeStudentTab()">×</a>
-    <h4 id="student-name"></h4>
-    <p id="student-email"></p>
-    <p id="student-enrolDate"></p>
-    <p id="student-paid"></p>
-    <button id="edit-student" onClick="editStudent()">Edit</button>
-  </div>
+  <div class="cd-panel cd-panel--from-left js-cd-panel-main">
+    <header class="cd-panel__header">
+      <h3 id="student-name"></h3>
+      <a onclick="closeStudentTab()" class="cd-panel__close js-cd-close">Close</a>
+    </header>
 
-
+    <div class="cd-panel__container">
+      <div class="cd-panel__content">
+        <p>Email: <span id="student-email"></span></p>
+        <input type="date" id="student-enrolDate" readonly="true"></input><br>
+        <input type="date" id="student-nextPayment" readonly="true"></input>
+        <p>Paid: <span id="student-paid"></span></p>
+        <button id="edit-student" onClick="editStudent()">Edit</button>
+        <button id="cancel-edit" onClick="cancelEdit()" style="visibility: hidden">Cancel</button>
+        <button id="save-edit" onClick="saveEdit()" style="visibility: hidden">Save</button>
+      </div> <!-- cd-panel__content -->
+    </div> <!-- cd-panel__container -->
+  </div> <!-- cd-panel -->
 
 </body>
 
