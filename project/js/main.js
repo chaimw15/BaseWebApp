@@ -1,6 +1,6 @@
 $(document).ready(function () {
   getStudents();
-})
+});
 
 var currentStudentKey = null;
 
@@ -47,8 +47,7 @@ function addStudent(firstName, lastName, email, enrolDate, nextPayment) {
     lastName: lastName,
     email: email,
     enrolDate: enrolDate,
-    nextPayment: nextPayment,
-    paid: true
+    nextPayment: nextPayment
   };
 
   var database = firebase.database().ref("students");
@@ -68,7 +67,7 @@ function addStudent(firstName, lastName, email, enrolDate, nextPayment) {
 function getStudents() {
   var selectedStudent = $(".selected").attr('id');
 
-  $('#student-list .student-button-wrapper').remove();
+  $('#student-list .studentButton').remove();
   $('#student-list .line-break').remove();
 
   return firebase.database().ref("students").once('value').then((snapshot) => {
@@ -76,7 +75,7 @@ function getStudents() {
 
     for (var studentKey in students) {
       var student = students[studentKey];
-      $("#student-list").append(`<div><a class='studentButton' id='`+ studentKey +`' onClick="openStudentTab('` + studentKey + `')">` + student.firstName + " " + student.lastName + "</a></div>");
+      $("#student-list").append(`<div><a class='studentButton' id='` + studentKey + `' onClick="openStudentTab('` + studentKey + `')">` + student.firstName + " " + student.lastName + "</a></div>");
     }
     $("#" + selectedStudent).addClass("selected");
   });
@@ -90,10 +89,9 @@ function openStudentTab(thisStudent) {
         var student = students[studentKey];
         currentStudentKey = studentKey;
         $("#student-name").text(student.firstName + " " + student.lastName);
-        $("#student-email").text(student.email);
+        $("#student-email").val(student.email);
         $("#student-enrolDate").val(student.enrolDate);
         $("#student-nextPayment").val(student.nextPayment);
-        $("#student-paid").text(student.paid);
         $(".cd-panel").addClass("cd-panel--is-visible");
         $("#" + studentKey).addClass("selected");
         break;
@@ -112,14 +110,14 @@ function editStudent() {
   $("#cancel-edit").css("visibility", "visible");
   $("#save-edit").css("visibility", "visible");
   $("#student-name").prop("contenteditable", true);
-  $("#student-email").prop("contenteditable", true);
-  $("#student-enrolDate").attr("readonly", false);
-  $("#student-nextPayment").attr("readonly", false);
+  $("#student-email").attr("disabled", false);
+  $("#student-enrolDate").attr("disabled", false);
+  $("#student-nextPayment").attr("disabled", false);
 }
 
 function saveEdit() {
   var name = $("#student-name").text();
-  var email = $("#student-email").text();
+  var email = $("#student-email").val();
   var enrolDate = $("#student-enrolDate").val();
   var nextPayment = $("#student-nextPayment").val();
 
@@ -127,9 +125,9 @@ function saveEdit() {
   $("#cancel-edit").css("visibility", "hidden");
   $("#save-edit").css("visibility", "hidden");
   $("#student-name").prop("contenteditable", false);
-  $("#student-email").prop("contenteditable", false);
-  $("#student-enrolDate").attr("readonly", true);
-  $("#student-nextPayment").attr("readonly", true);
+  $("#student-email").attr("disabled", true);
+  $("#student-enrolDate").attr("disabled", true);
+  $("#student-nextPayment").attr("disabled", true);
 
   var split_names = name.split(" ");
 
@@ -141,8 +139,6 @@ function saveEdit() {
     nextPayment: nextPayment
   };
 
-  console.log(split_names[1]);
-
   firebase.database().ref("/students/" + currentStudentKey).update(studentData);
 
   getStudents();
@@ -153,10 +149,9 @@ function cancelEdit() {
     var student = snapshot.val();
 
     $("#student-name").text(student.firstName + " " + student.lastName);
-    $("#student-email").text(student.email);
+    $("#student-email").val(student.email);
     $("#student-enrolDate").val(student.enrolDate);
     $("#student-nextPayment").val(student.nextPayment);
-    $("#student-paid").text(student.paid);
 
   });
 
@@ -164,9 +159,9 @@ function cancelEdit() {
   $("#cancel-edit").css("visibility", "hidden");
   $("#save-edit").css("visibility", "hidden");
   $("#student-name").prop("contenteditable", false);
-  $("#student-email").prop("contenteditable", false);
-  $("#student-enrolDate").attr("readonly", true);
-  $("#student-nextPayment").attr("readonly", true);
+  $("#student-email").attr("disabled", true);
+  $("#student-enrolDate").attr("disabled", true);
+  $("#student-nextPayment").attr("disabled", true);
 }
 
 function getNextPayDate(lastPayDate, enrolDate) {
@@ -210,4 +205,52 @@ function getNextPayDate(lastPayDate, enrolDate) {
 
 function isLeapYear(year) {
   return ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0);
+}
+
+function madePayment() {
+  firebase.database().ref("/students/" + currentStudentKey).once('value').then((snapshot) => {
+    var student = snapshot.val();
+
+    var nextPayment = getNextPayDate(student.nextPayment, student.enrolDate);
+    console.log(nextPayment);
+    $("#student-nextPayment").val(nextPayment);
+
+  var studentData = {
+    nextPayment: nextPayment
+  };
+
+  firebase.database().ref("/students/" + currentStudentKey).update(studentData);
+});
+}
+
+$("#search-student").submit(function (e) {
+  e.preventDefault();
+});
+
+$(document).ready(function () {
+  $(".search-field").on("input", function () {
+    console.log("searching...");
+    // Declare variables
+    var input, filter, a, i;
+    input = $(this).val();
+    console.log(input);
+    filter = input.toUpperCase();
+    $list = $(".studentButton");
+
+    // Loop through all list items, and hide those who don't match the search query
+    for (i = 0; i < $list.length; i++) {
+      a = $list.eq(i).html();
+      if (a.toUpperCase().indexOf(filter) > -1) {
+        console.log("found one!")
+        $list.eq(i).show();
+      } else {
+        console.log("nope")
+        $list.eq(i).hide();
+      }
+    }
+  });
+});
+
+function manualEmail() {
+  window.location.href = "mailto:" + $("#student-email").val();
 }

@@ -8,47 +8,83 @@
   <!-- the classes 'page-header' and 'btn btn-dark' create bootstrap components.  -->
   <!-- Check out more components here: http://getbootstrap.com/components/ -->
   <main>
-  <div class="page-header">
-    <% include ../helpers/navbar %>
-  </div>
-  <br><br>
-  <div class="row">
-    <div class="column column-left">
-      <h2 id="add-new-student">Add New Student</h2>
-      <form id="add-student-form" onSubmit="handleAddStudentSubmit()" action="#">
-        <p>First Name</p>
-        <input id="first-name" placeholder="John">
-        <p>Last Name</p>
-        <input id="last-name" placeholder="Doe"></input><br>
-        <p>Email</p>
-        <input id="email" placeholder="john@doe.com"></input><br>
-        <p>Enrol Date</p>
-        <input id="enrol-date" type="date"></input><br>
-        <button id="add-student-submit">Submit</button>
-      </form>
+    <div class="page-header">
+      <% include ../helpers/navbar %>
     </div>
-    <div class="column column-right">
-      <h1>Student List</h1>
-      <div id="student-list"></div>
+    <div class="row">
+      <div class="column column-left">
+        <h2 id="add-new-student">Add Student</h2>
+        <form id="add-student-form" onSubmit="handleAddStudentSubmit()" action="#">
+          <p>First Name</p>
+          <input id="first-name" placeholder="John" required>
+          <p>Last Name</p>
+          <input id="last-name" placeholder="Doe" required></input><br>
+          <p>Email</p>
+          <input id="email" placeholder="john@doe.com" required></input><br>
+          <p>Enrol Date</p>
+          <input id="enrol-date" type="date" required></input><br>
+          <button id="add-student-submit">Submit</button>
+        </form>
+      </div>
+      <div class="column column-right">
+
+        <div class="search-wrapper">
+          <div class="search-container">
+            <form id="search-student" onSubmit="return false" class="search-form form">
+              <label>
+                <span class="screen-reader-text">Search for...</span>
+                <input type="search" class="search-field" placeholder="Search" value="" name="s" title="" />
+              </label>
+              <input type="submit" class="search-submit search-button" value="&#xf002" onClick="searchStudents()" />
+            </form>
+          </div>
+        </div>
+
+        <div id="student-list"></div>
+      </div>
     </div>
-  </div>
-</main>
+  </main>
 
   <div class="cd-panel cd-panel--from-left js-cd-panel-main">
     <header class="cd-panel__header">
       <h3 id="student-name"></h3>
       <a onclick="closeStudentTab()" class="cd-panel__close js-cd-close">Close</a>
     </header>
-
     <div class="cd-panel__container">
       <div class="cd-panel__content">
-        <p>Email: <span id="student-email"></span></p>
-        <input type="date" id="student-enrolDate" readonly="true"></input><br>
-        <input type="date" id="student-nextPayment" readonly="true"></input>
-        <p>Paid: <span id="student-paid"></span></p>
-        <button id="edit-student" onClick="editStudent()">Edit</button>
-        <button id="cancel-edit" onClick="cancelEdit()" style="visibility: hidden">Cancel</button>
-        <button id="save-edit" onClick="saveEdit()" style="visibility: hidden">Save</button>
+        <h4>Student Info</h4>
+        <div id="student-info">
+          <p>Email</p>
+          <div class="side-by-side">
+            <div style="display:inline;">
+              <input type="text" id="student-email" disabled="true"></input>
+            </div>
+            <div style="display:inline;">
+              <img id="manual-email" src="/images/message.png" onClick="manualEmail()">
+            </div>
+          </div>
+          <p>Date Enrolled</p>
+          <div class="side-by-side">
+            <input type="date" id="student-enrolDate" disabled="true"></input>
+          </div>
+          <button id="edit-student" onClick="editStudent()">Edit Info</button>
+          <button id="cancel-edit" onClick="cancelEdit()" style="visibility: hidden">Cancel</button>
+          <button id="save-edit" onClick="saveEdit()" style="visibility: hidden">Save</button>
+        </div>
+
+        <h4>Upcoming Payments</h4>
+        <div id="payment-info">
+          <p>Date due</p>
+          <div class="side-by-side">
+            <input type="date" id="student-nextPayment" disabled="true"></input>
+          </div>
+          <button id="made-payment" onClick="madePayment()">Mark As Paid</button>
+        </div>
+
+        <h4>Payment History</h4>
+        <div id="payment-history">
+          <p>No payments yet.</p>
+        </div>
       </div> <!-- cd-panel__content -->
     </div> <!-- cd-panel__container -->
   </div> <!-- cd-panel -->

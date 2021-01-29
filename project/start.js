@@ -24,8 +24,8 @@ app.get('/students', function (request, response) {
   response.render('pages/students');
 });
 
-app.get('/projects', function (request, response) {
-  response.render('pages/projects');
+app.get('/classes', function (request, response) {
+  response.render('pages/classes');
 });
 
 app.listen(app.get('port'), function () {
@@ -173,12 +173,9 @@ function sendEmail(subject, message, studentEmail, studentName) {
       }
     ]
   });
-  console.log("okay");
   requestMail.then((result) => {
-    console.log("good");
     console.log(result.body)
   }).catch((err) => {
-    console.log("bad");
     console.log(err.statusCode)
   });
 }
