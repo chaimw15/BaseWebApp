@@ -440,6 +440,21 @@ input[type=date]:invalid::-webkit-datetime-edit {
   outline: none;
 }
 
+.fa-trash-alt {
+  color: rgba(11, 192, 252, 0.9);
+  cursor: pointer;
+  font-size: 18px;
+  left: 22px;
+  top: 13px;
+  position: absolute;
+  transition: 0.1s ease;
+}
+
+.fa-trash-alt:hover {
+  color: rgba(10, 182, 240, 0.9);
+  transform: scale(1.05);
+}
+
 .cd-panel--from-right .cd-panel__header {
   right: 0;
 }

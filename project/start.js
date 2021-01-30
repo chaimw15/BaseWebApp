@@ -34,7 +34,7 @@ app.listen(app.get('port'), function () {
 
 const cron = require('node-cron');
 
-const task = cron.schedule('35 22 * * *', () => {
+const task = cron.schedule('45 10 * * *', () => {
   console.log('running...');
 
   var firebaseConfig = {
@@ -69,8 +69,9 @@ const task = cron.schedule('35 22 * * *', () => {
       console.log(daysLeft);
 
       var subject = "Peak College Tuition " + daysLeft + " Day Notice";
-      var endMessage = " Please visit <a href='https://peakcollege.ca/'>peakcollege.ca</a> to pay.<br>If you have any questions about your payment, please resond to this email.<br><br>Best regards,<br><br>Student Services</p><img src='images/PEAK-Logo-Black-Green.png' style='height:50px'>";
-      var message = "<p>Dear " + student.firstName + ",<br><br>" + "Your Peak College Tuition is due in " + daysLeft + " days." + endMessage;
+      var startMessage = "<p>Dear " + student.firstName + ",<br><br>" + "Your Peak College Tuition is <strong>"
+      var endMessage = " Please visit <a href='https://peakcollege.ca/'>peakcollege.ca</a> to pay.<br>If you have any questions about your payment, please resond to this email.<br><br>Best regards,<br><br>Student Services</p>";
+      var message = startMessage + "due in " + daysLeft + " days.</strong>" + endMessage;
 
       switch (daysLeft) {
         case 7:
@@ -86,7 +87,7 @@ const task = cron.schedule('35 22 * * *', () => {
         case 0:
           console.log("case: 0");
           subject = "Peak College Tuition Due Today";
-          message = "<p>Dear " + student.firstName + ",<br><br>" + "Your Peak College Tuition is due today." + endMessage;
+          message = startMessage + "due today.</strong>" + endMessage;
 
           sendEmail(subject, message, student.email, student.firstName);
           break;
@@ -94,7 +95,7 @@ const task = cron.schedule('35 22 * * *', () => {
         case -1:
           console.log("case: -1");
           subject = "Peak College Tuition " + daysLeft + " Days Overdue";
-          message = "<p>Dear " + student.firstName + ",<br><br>" + "Your Peak College Tuition is " + Math.abs(daysLeft) + " late." + endMessage;
+          message = startMessage + Math.abs(daysLeft) + " late.</strong>" + endMessage;
 
           sendEmail(subject, message, student.email, student.firstName);
           break;
@@ -102,7 +103,7 @@ const task = cron.schedule('35 22 * * *', () => {
         case -5:
           console.log("case: -5");
           subject = "Peak College Tuition " + daysLeft + " Days Overdue";
-          message = "<p>Dear " + student.firstName + ",<br><br>" + "Your Peak College Tuition is " + Math.abs(daysLeft) + " late." + endMessage;
+          message = startMessage + Math.abs(daysLeft) + " late.</strong>" + endMessage;
 
           sendEmail(subject, message, student.email, student.firstName);
           break;
@@ -110,7 +111,7 @@ const task = cron.schedule('35 22 * * *', () => {
         case -7:
           console.log("case: -7");
           subject = "Peak College Tuition " + daysLeft + " Days Overdue";
-          message = "<p>Dear " + student.firstName + ",<br><br>" + "Your Peak College Tuition is " + Math.abs(daysLeft) + " late." + endMessage;
+          message = startMessage + Math.abs(daysLeft) + " late.</strong>" + endMessage;
 
           sendEmail(subject, message, student.email, student.firstName);
           break;
@@ -118,7 +119,7 @@ const task = cron.schedule('35 22 * * *', () => {
         case -14:
           console.log("case: -14");
           subject = "Peak College Tuition " + daysLeft + " Days Overdue";
-          message = "<p>Dear " + student.firstName + ",<br><br>" + "Your Peak College Tuition is " + Math.abs(daysLeft) + " late. If your payment is over 3 weeks late (21 days) your enrollment in Peak College will be automatically terminated." + endMessage;
+          message = startMessage + Math.abs(daysLeft) + " late.</strong> If your payment is over 3 weeks late (21 days) your enrollment in Peak College will be automatically terminated." + endMessage;
 
           sendEmail(subject, message, student.email, student.firstName);
           break;
@@ -126,7 +127,7 @@ const task = cron.schedule('35 22 * * *', () => {
         case -20:
           console.log("case: -20");
           subject = "Peak College Tuition " + daysLeft + " Days Overdue";
-          message = "<p>Dear " + student.firstName + ",<br><br>" + "Your Peak College Tuition is " + Math.abs(daysLeft) + " late. If your payment is over 3 weeks late (21 days) your enrollment in Peak College will be automatically terminated." + endMessage;
+          message = startMessage + Math.abs(daysLeft) + " late.</strong> If your payment is over 3 weeks late (21 days) your enrollment in Peak College will be automatically terminated." + endMessage;
 
           sendEmail(subject, message, student.email, student.firstName);
           break;
