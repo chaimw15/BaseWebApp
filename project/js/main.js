@@ -35,12 +35,37 @@ function handleAddStudentSubmit() {
   var lastName = $("#last-name").val();
   var email = $("#email").val();
   var enrolDate = $("#enrol-date").val();
-  var nextPayment = getNextPayDate(enrolDate, enrolDate);
+  var nextPayment = getNearestPayDate(enrolDate);
 
-  addStudent(firstName, lastName, email, enrolDate, nextPayment);
+  var isValid = validateEmail(email);
+  if (isValid) {
+    addStudent(firstName, lastName, email, enrolDate, nextPayment);
+    $("#email").css("border-color", "#e0e0e5");
+  } else {
+    $("#add-student-form").submit(function (e) {
+      e.preventDefault();
+    });
+    $("#email").css("border-color", "red");
+  }
+}
+
+function hyphenatedName(name) {
+  console.log("here");
+  console.log(name);
+  var temp = name.split("-");
+  name = "";
+  for (var part in temp) {
+    name = name + capitalize(temp[part]) + "-";
+    console.log(name);
+  }
+
+  return name.slice(0, -1);
 }
 
 function addStudent(firstName, lastName, email, enrolDate, nextPayment) {
+  firstName = hyphenatedName(firstName);
+  lastName = hyphenatedName(lastName);
+  email = email.toLowerCase();
 
   var studentData = {
     firstName: firstName,
@@ -55,13 +80,18 @@ function addStudent(firstName, lastName, email, enrolDate, nextPayment) {
   var newStudentRef = database.push();
   newStudentRef.set(studentData, (error) => {
     if (error) {
-      // The write failed...
+      alert("Writing error. Couldn't add student to database.");
     } else {
       // Data saved successfully!
-      window.location.reload();
+      getStudents();
     }
   });
 
+}
+
+const capitalize = (s) => {
+  if (typeof s !== 'string') return ''
+  return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase()
 }
 
 function getStudents() {
@@ -110,38 +140,53 @@ function editStudent() {
   $("#cancel-edit").css("visibility", "visible");
   $("#save-edit").css("visibility", "visible");
   $("#student-name").prop("contenteditable", true);
+  $("#student-name").css("border", "1px solid #e0e0e5");
   $("#student-email").attr("disabled", false);
   $("#student-enrolDate").attr("disabled", false);
-  $("#student-nextPayment").attr("disabled", false);
 }
 
 function saveEdit() {
-  var name = $("#student-name").text();
   var email = $("#student-email").val();
-  var enrolDate = $("#student-enrolDate").val();
-  var nextPayment = $("#student-nextPayment").val();
 
-  $("#edit-student").css("visibility", "visible");
-  $("#cancel-edit").css("visibility", "hidden");
-  $("#save-edit").css("visibility", "hidden");
-  $("#student-name").prop("contenteditable", false);
-  $("#student-email").attr("disabled", true);
-  $("#student-enrolDate").attr("disabled", true);
-  $("#student-nextPayment").attr("disabled", true);
+  var isValid = validateEmail(email);
 
-  var split_names = name.split(" ");
+  if (isValid) {
+    var name = $("#student-name").text();
+    var enrolDate = $("#student-enrolDate").val();
+    var nextPayment = getNearestPayDate(enrolDate);
+    $("#student-nextPayment").val(nextPayment);
+    $("#student-email").css("border-color", "#e0e0e5");
 
-  var studentData = {
-    firstName: split_names[0],
-    lastName: split_names[1],
-    email: email,
-    enrolDate: enrolDate,
-    nextPayment: nextPayment
-  };
+    $("#edit-student").css("visibility", "visible");
+    $("#cancel-edit").css("visibility", "hidden");
+    $("#save-edit").css("visibility", "hidden");
+    $("#student-name").prop("contenteditable", false);
+    $("#student-name").css("border", "none");
+    $("#student-email").attr("disabled", true);
+    $("#student-enrolDate").attr("disabled", true);
 
-  firebase.database().ref("/students/" + currentStudentKey).update(studentData);
+    var split_names = name.split(" ");
 
-  getStudents();
+    firstName = hyphenatedName(split_names[0]);
+    lastName = hyphenatedName(split_names[1]);
+
+    var studentData = {
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      enrolDate: enrolDate,
+      nextPayment: nextPayment
+    };
+
+    $("#student-name").text(firstName + " " + lastName);
+
+    firebase.database().ref("/students/" + currentStudentKey).update(studentData);
+
+    getStudents();
+
+  } else {
+    $("#student-email").css("border-color", "red");
+  }
 }
 
 function cancelEdit() {
@@ -159,14 +204,58 @@ function cancelEdit() {
   $("#cancel-edit").css("visibility", "hidden");
   $("#save-edit").css("visibility", "hidden");
   $("#student-name").prop("contenteditable", false);
+  $("#student-name").css("border", "none");
   $("#student-email").attr("disabled", true);
   $("#student-enrolDate").attr("disabled", true);
-  $("#student-nextPayment").attr("disabled", true);
+}
+
+function getNearestPayDate(enrolDate) {
+  var currentDate = new Date();
+  var enrolArray = enrolDate.split("-");
+
+  var year = currentDate.getFullYear();
+  var month = currentDate.getMonth() + 1;
+  var currentDay = currentDate.getDate();
+  var day = parseInt(enrolArray[2]);
+
+  if (currentDay > day) {
+    month = month + 1;
+  }
+
+  if (month > 12) {
+    month = 1;
+    year = year + 1;
+  }
+
+  if (day == 31) {
+    if (month == 4 || month == 6 || month == 9 || month == 11) {
+      day = 30;
+    }
+  }
+
+  if (day > 28 && month == 2) {
+    if (isLeapYear(year)) {
+      day = 29;
+    } else {
+      day = 28;
+    }
+  }
+
+  if (month < 10) {
+    month = "0" + month;
+  }
+
+  if (day < 10) {
+    day = "0" + day;
+  }
+
+  return year + "-" + month + "-" + day;
 }
 
 function getNextPayDate(lastPayDate, enrolDate) {
   var lastPayArray = lastPayDate.split("-");
   var enrolArray = enrolDate.split("-");
+
   var year = parseInt(lastPayArray[0]);
   var month = parseInt(lastPayArray[1]);
   var day = parseInt(enrolArray[2]);
@@ -215,12 +304,12 @@ function madePayment() {
     console.log(nextPayment);
     $("#student-nextPayment").val(nextPayment);
 
-  var studentData = {
-    nextPayment: nextPayment
-  };
+    var studentData = {
+      nextPayment: nextPayment
+    };
 
-  firebase.database().ref("/students/" + currentStudentKey).update(studentData);
-});
+    firebase.database().ref("/students/" + currentStudentKey).update(studentData);
+  });
 }
 
 $("#search-student").submit(function (e) {
@@ -253,4 +342,9 @@ $(document).ready(function () {
 
 function manualEmail() {
   window.location.href = "mailto:" + $("#student-email").val();
+}
+
+function validateEmail(email) {
+  const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(email);
 }
