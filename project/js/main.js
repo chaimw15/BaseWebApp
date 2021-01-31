@@ -160,9 +160,29 @@ function saveEdit() {
   if (isValid) {
     var name = $("#student-name").text();
     var enrolDate = $("#student-enrolDate").val();
-    var nextPayment = getNearestPayDate(enrolDate);
+    var nextPayment;
+
+    if(differenceInDays(getCurrentDate(), enrolDate) > 0) {
+      nextPayment = getNearestPayDate(enrolDate);
+    } else {
+      nextPayment = getNextPayDate(enrolDate, enrolDate);
+    }
+
+    var lastPaidDueDate = $(".payment-history-due-date").first().text();
+
+    if(lastPaidDueDate != null && differenceInDays(lastPaidDueDate, getCurrentDate()) > 0 && differenceInDays(lastPaidDueDate, enrolDate) > 0) {
+      nextPayment = getNextPayDate(lastPaidDueDate, enrolDate);
+    }
+    
     $("#student-nextPayment").val(nextPayment);
     $("#student-email").css("border-color", "#e0e0e5");
+
+    var timeUntilDue = differenceInDays(nextPayment, getCurrentDate());
+    if (timeUntilDue > 0) {
+      $("#daysEarly").text(timeUntilDue + " days.");
+    } else {
+      $("#daysLate").text(timeUntilDue + " days ago.");
+    }
 
     $("#edit-student").css("visibility", "visible");
     $("#cancel-edit").css("visibility", "hidden");
@@ -311,13 +331,12 @@ function makePayment() {
       dueDate: student.nextPayment,
       payDate: getCurrentDate()
     }
-    console.log(newPayment);
 
     var nextPayment = getNextPayDate(student.nextPayment, student.enrolDate);
     $("#student-nextPayment").val(nextPayment);
 
     var timeUntilDue = differenceInDays(nextPayment, getCurrentDate());
-    if(timeUntilDue > 0) {
+    if (timeUntilDue > 0) {
       $("#daysEarly").text(timeUntilDue + " days.");
     } else {
       $("#daysLate").text(timeUntilDue + " days ago.");
@@ -386,9 +405,9 @@ function getPaymentHistory() {
         var daysDifference = differenceInDays(payment.dueDate, payment.payDate);
 
         if (daysDifference > 0) {
-          $("#payment-history").prepend("<p class='payments'>" + toNormalDate(payment.dueDate) + " payment paid on " + toNormalDate(payment.payDate) + " <span style='color: green'>" + daysDifference + " days early.</span></p>");
+          $("#payment-history").prepend("<p class='payments'><span class='payment-history-due-date'>" + payment.dueDate + "</span> payment paid on " + payment.payDate + " <span style='color: green'>" + daysDifference + " days early.</span></p>");
         } else {
-          $("#payment-history").prepend("<p class='payments'>" + toNormalDate(payment.dueDate) + " payment paid on " + toNormalDate(payment.payDate) + " <span style='color: red'>" + Math.abs(daysDifference) + " days late.</span></p>");
+          $("#payment-history").prepend("<p class='payments'><span class='payment-history-due-date'>" + payment.dueDate + "</span> payment paid on " + payment.payDate + " <span style='color: red'>" + Math.abs(daysDifference) + " days late.</span></p>");
         }
       }
     } else {
@@ -416,8 +435,6 @@ function getCurrentDate() {
 }
 
 function differenceInDays(date1, date2) {
-  console.log(date1);
-  console.log(date2);
   var Difference_In_Time = makeDateObject(date1).getTime() - makeDateObject(date2).getTime();
 
   return Math.ceil(Difference_In_Time / (1000 * 3600 * 24));
