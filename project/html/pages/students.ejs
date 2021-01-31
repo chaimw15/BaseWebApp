@@ -20,9 +20,9 @@
           <p>Last Name</p>
           <input id="last-name" placeholder="Doe" required></input><br>
           <p>Email</p>
-          <input id="email" placeholder="johndoe@gmail.com" required></input><br>
+          <input id="email" placeholder="john.doe@gmail.com" required></input><br>
           <p>Enrol Date</p>
-          <input id="enrol-date" type="date" required></input><br>
+          <input id="enrol-date" type="date" placeholder="yyyy-mm-dd" required></input><br>
           <button id="add-student-submit">Submit</button>
         </form>
       </div>
@@ -32,7 +32,7 @@
           <div class="search-container">
             <form id="search-student" onSubmit="return false" class="search-form form">
               <label>
-                <span class="screen-reader-text">Search for...</span>
+                <span class="screen-reader-text">Search</span>
                 <input type="search" class="search-field" placeholder="Search" value="" name="s" title="" />
               </label>
               <input type="submit" class="search-submit search-button" value="&#xf002" />
@@ -47,7 +47,7 @@
 
   <div class="cd-panel cd-panel--from-left js-cd-panel-main">
     <header class="cd-panel__header">
-      <i class="far fa-trash-alt" onclick="deleteStudent()"></i>
+      <span title="Delete Student"><i class="far fa-trash-alt" onclick="deleteStudent()"></i></span>
       <h3 id="student-name"></h3>
       <a onclick="closeStudentTab()" class="cd-panel__close js-cd-close">Close</a>
     </header>
@@ -60,8 +60,8 @@
             <div style="display:inline;">
               <input type="text" id="student-email" disabled="true"></input>
             </div>
-            <div style="display:inline;">
-              <img id="manual-email" src="/images/message.png" onClick="manualEmail()">
+            <div style="display:inline; vertical-align: middle;">
+              <span title="Email Student"><i class="far fa-envelope"></i></span>
             </div>
           </div>
           <p>Date Enrolled</p>
@@ -75,16 +75,19 @@
 
         <h4>Upcoming Payments</h4>
         <div id="payment-info">
-          <p>Date due</p>
+          <p>Date Due</p>
           <div class="side-by-side">
-            <input type="date" id="student-nextPayment" disabled="true"></input>
+            <div style="display:inline;">
+              <input type="date" id="student-nextPayment" disabled="true"></input>
+            </div>
+            <div id="days-until-due" style="display:inline;">
+            </div>
           </div>
-          <button id="made-payment" onClick="madePayment()">Mark As Paid</button>
+          <button id="make-payment" onClick="makePayment()">Mark As Paid</button>
         </div>
 
         <h4>Payment History</h4>
         <div id="payment-history">
-          <p id="history-default">No payments yet.</p>
         </div>
       </div> <!-- cd-panel__content -->
     </div> <!-- cd-panel__container -->

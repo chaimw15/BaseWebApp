@@ -70,7 +70,7 @@ const task = cron.schedule('45 10 * * *', () => {
 
       var subject = "Peak College Tuition " + daysLeft + " Day Notice";
       var startMessage = "<p>Dear " + student.firstName + ",<br><br>" + "Your Peak College Tuition is <strong>"
-      var endMessage = " Please visit <a href='https://peakcollege.ca/'>peakcollege.ca</a> to pay.<br>If you have any questions about your payment, please resond to this email.<br><br>Best regards,<br><br>Student Services</p>";
+      var endMessage = " Please visit <a href='https://peakcollege.ca/'>peakcollege.ca</a> to pay.<br>If you have any questions about your payment, please respond to this email.<br><br>Best regards,<br><br>Peak College Student Services</p>";
       var message = startMessage + "due in " + daysLeft + " days.</strong>" + endMessage;
 
       switch (daysLeft) {

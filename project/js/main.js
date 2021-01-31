@@ -50,13 +50,10 @@ function handleAddStudentSubmit() {
 }
 
 function hyphenatedName(name) {
-  console.log("here");
-  console.log(name);
   var temp = name.split("-");
   name = "";
   for (var part in temp) {
     name = name + capitalize(temp[part]) + "-";
-    console.log(name);
   }
 
   return name.slice(0, -1);
@@ -118,12 +115,22 @@ function openStudentTab(thisStudent) {
       if (thisStudent.localeCompare(studentKey) == 0) {
         var student = students[studentKey];
         currentStudentKey = studentKey;
+
+        var timeUntilDue = differenceInDays(student.nextPayment, getCurrentDate());
+        $("#days-until-due #dueDays").remove();
+        if (timeUntilDue > 0) {
+          $("#days-until-due").append("<p id='dueDays'>in <span id='daysEarly' style='color:green'>" + timeUntilDue + " days.</span></p>");
+        } else {
+          $("#days-until-due").append("<p id='dueDays'><span id='daysLate' style='color:red'>" + Math.abs(timeUntilDue) + " ago.</span></p>");
+        }
+
         $("#student-name").text(student.firstName + " " + student.lastName);
         $("#student-email").val(student.email);
         $("#student-enrolDate").val(student.enrolDate);
         $("#student-nextPayment").val(student.nextPayment);
         $(".cd-panel").addClass("cd-panel--is-visible");
         $("#" + studentKey).addClass("selected");
+        getPaymentHistory();
         break;
       }
     }
@@ -296,19 +303,33 @@ function isLeapYear(year) {
   return ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0);
 }
 
-function madePayment() {
+function makePayment() {
   firebase.database().ref("/students/" + currentStudentKey).once('value').then((snapshot) => {
     var student = snapshot.val();
 
+    var newPayment = {
+      dueDate: student.nextPayment,
+      payDate: getCurrentDate()
+    }
+    console.log(newPayment);
+
     var nextPayment = getNextPayDate(student.nextPayment, student.enrolDate);
-    console.log(nextPayment);
     $("#student-nextPayment").val(nextPayment);
+
+    var timeUntilDue = differenceInDays(nextPayment, getCurrentDate());
+    if(timeUntilDue > 0) {
+      $("#daysEarly").text(timeUntilDue + " days.");
+    } else {
+      $("#daysLate").text(timeUntilDue + " days ago.");
+    }
 
     var studentData = {
       nextPayment: nextPayment
     };
 
     firebase.database().ref("/students/" + currentStudentKey).update(studentData);
+    firebase.database().ref("/students/" + currentStudentKey + "/paymentHistory").push(newPayment);
+    getPaymentHistory();
   });
 }
 
@@ -318,11 +339,9 @@ $("#search-student").submit(function (e) {
 
 $(document).ready(function () {
   $(".search-field").on("input", function () {
-    console.log("searching...");
     // Declare variables
     var input, filter, a, i;
     input = $(this).val();
-    console.log(input);
     filter = input.toUpperCase();
     $list = $(".studentButton");
 
@@ -330,10 +349,8 @@ $(document).ready(function () {
     for (i = 0; i < $list.length; i++) {
       a = $list.eq(i).html();
       if (a.toUpperCase().indexOf(filter) > -1) {
-        console.log("found one!")
         $list.eq(i).show();
       } else {
-        console.log("nope")
         $list.eq(i).hide();
       }
     }
@@ -355,4 +372,111 @@ function deleteStudent() {
     getStudents();
     closeStudentTab();
   }
+}
+
+function getPaymentHistory() {
+  firebase.database().ref("/students/" + currentStudentKey + "/paymentHistory").once('value').then((snapshot) => {
+    var paymentHistory = snapshot.val();
+    $("#payment-history .payments").remove();
+    $("#payment-history  #history-default").remove();
+
+    if (paymentHistory != null) {
+      for (var paymentKey in paymentHistory) {
+        var payment = paymentHistory[paymentKey];
+        var daysDifference = differenceInDays(payment.dueDate, payment.payDate);
+
+        if (daysDifference > 0) {
+          $("#payment-history").prepend("<p class='payments'>" + toNormalDate(payment.dueDate) + " payment paid on " + toNormalDate(payment.payDate) + " <span style='color: green'>" + daysDifference + " days early.</span></p>");
+        } else {
+          $("#payment-history").prepend("<p class='payments'>" + toNormalDate(payment.dueDate) + " payment paid on " + toNormalDate(payment.payDate) + " <span style='color: red'>" + Math.abs(daysDifference) + " days late.</span></p>");
+        }
+      }
+    } else {
+      $("#payment-history").append('<p id="history-default">No payments yet.</p>');
+    }
+  });
+}
+
+function getCurrentDate() {
+  var date = new Date();
+
+  var year = date.getFullYear();
+  var month = date.getMonth() + 1;
+  var day = date.getDate();
+
+  if (month < 10) {
+    month = "0" + month;
+  }
+
+  if (day < 10) {
+    day = "0" + day;
+  }
+
+  return year + "-" + month + "-" + day
+}
+
+function differenceInDays(date1, date2) {
+  console.log(date1);
+  console.log(date2);
+  var Difference_In_Time = makeDateObject(date1).getTime() - makeDateObject(date2).getTime();
+
+  return Math.ceil(Difference_In_Time / (1000 * 3600 * 24));
+}
+
+function makeDateObject(dateString) {
+  var temp = dateString.split("-");
+
+  return new Date(parseInt(temp[0]), parseInt(temp[1]) - 1, parseInt(temp[2]));
+}
+
+function toNormalDate(inputDate) {
+  var temp = inputDate.split("-");
+  var year = temp[0];
+  var month = temp[1];
+  var day = temp[2];
+
+  switch (month) {
+    case "01":
+      month = "Jan."
+      break;
+    case "02":
+      month = "Feb."
+      break;
+    case "03":
+      month = "Mar."
+      break;
+    case "04":
+      month = "Apr."
+      break;
+    case "05":
+      month = "May"
+      break;
+    case "06":
+      month = "Jun."
+      break;
+    case "07":
+      month = "Jul."
+      break;
+    case "08":
+      month = "Aug."
+      break;
+    case "09":
+      month = "Sep."
+      break;
+    case "10":
+      month = "Oct."
+      break;
+    case "11":
+      month = "Nov."
+      break;
+    case "12":
+      month = "Dec."
+      break;
+
+    default:
+      break;
+  }
+
+  return month + " " + day + ", " + year;
+
 }
