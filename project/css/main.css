@@ -16,7 +16,29 @@ body {
   padding-bottom: 50px;
 }
 
-/* Start of header styling */
+h1, h2, h3, p {
+  font-family: 'Inter',sans-serif;
+}
+
+h1 {
+  font-weight: 700;
+  font-size: 40px;
+}
+
+h2 {
+  font-weight: 600;
+  font-size: 1.4rem;
+  line-height: 1.62;
+}
+
+h3 {
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  vertical-align: baseline;
+}
+
+/*#region Header Styling */
 .page-header {
   background-color: white;
 }
@@ -95,7 +117,7 @@ body {
 
 .nav-link:hover:after {
   width: 100%;
-  background: rgba(11, 192, 252, 0.9);
+  background: rgba(9, 195, 189, 0.9);
   transform: translateY(3px);
 }
 
@@ -134,32 +156,9 @@ body {
 #login-button:focus {
   outline: none;
 }
-/* End of header styling */
-
-h1, h2, h3, p {
-  font-family: 'Inter',sans-serif;
-}
-
-h1 {
-  font-weight: 700;
-  font-size: 40px;
-}
-
-h2 {
-  font-weight: 600;
-  font-size: 1.4rem;
-  line-height: 1.62;
-}
-
-h3 {
-  padding: 0;
-  border: 0;
-  font-size: 100%;
-  vertical-align: baseline;
-}
+/*#endregion*/
 
 .side-by-side {
-  white-space: nowrap;
   margin: 0 0 16 0;
 }
 
@@ -196,7 +195,7 @@ h3 {
   box-shadow: 0 5px 20px rgb(0 0 0 / 8%);
 }
 
-.column {
+.column, .column-home {
   float: left;
 }
 
@@ -220,7 +219,114 @@ h3 {
   clear: both;
 }
 
-/* Start of Search Bar Styling */
+.column-left-home {
+  width: 50%;
+  text-align: left;
+}
+
+.column-right-home {
+  width: 50%;
+}
+
+.row-home {
+  margin: 50 65 50 65;
+  padding: 0 15 0 15;
+}
+
+.row-home:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/*#region Notification Center Styling */
+
+#notification-center-wrapper {
+  background-color: white;
+  border-radius: 5px;
+  padding: 16px;
+}
+
+#notification-center .payments {
+  width: 100%;
+}
+
+#notification-center button {
+  border: solid rgba(25, 91, 150, 0.9) 1px;
+  border-radius: 3px;
+  background-color: rgb(230, 230, 230);
+  padding: 4 10 4 10;
+  transition: 0.15s;
+  font-family: 'Inter',sans-serif;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+#notification-center button:hover {
+  background-color: rgba(25, 91, 150, 0.9);
+  color: white;
+}
+
+#notification-center button:focus {
+  outline: none;
+}
+
+#notification-center .button-wrapper {
+  display: inline;
+  vertical-align: middle;
+  position: absolute;
+  right: 20px;
+}
+
+.notification-wrapper {
+  position: relative;
+  vertical-align: middle;
+  border: 1px solid #e0e0e5;
+  font-size: 1rem;
+  line-height: 2;
+  padding: 10 20;
+  border-radius: 0.25rem;
+  margin-bottom: 10px;
+}
+
+.notification-wrapper:last-child {
+  margin-bottom: 0px !important;
+}
+
+.notification-text-wrapper {
+  display: inline;
+  padding-right: 10px;
+  max-width: calc(100% - 125px);
+}
+
+.notification-text-wrapper p {
+  margin: 0px;
+  display: inline-block;
+  width: calc(100% - 125px);
+}
+
+#show-more-notifications {
+  margin-top: 16px;
+  border: none;
+  font-size: 14px;
+  color: rgba(9, 195, 189, 0.9);
+  background-color: transparent;
+}
+
+#show-more-notifications:hover {
+  color: rgb(8, 170, 165)
+}
+
+#show-more-notifications:focus {
+  outline: none;
+}
+
+.fa-chevron-down {
+  transform: translateY(1px);
+}
+
+/*#endregion*/
+
+/*#region Search Bar Styling */
 .search-field::-webkit-search-cancel-button{ 
     cursor: pointer;
 }
@@ -322,9 +428,9 @@ input.search-submit {
   color: white;
   outline: none;
 }
-/* End of Search Bar Styling */
+/*#endregion*/
 
-/* Start of Form Styling*/
+/*#region Form Styling*/
 #add-student-form p{
   font-size: 16px;
   margin: 0 0 5 0;
@@ -363,6 +469,7 @@ input[type=date]:invalid::-webkit-datetime-edit {
   font-family: 'Inter',sans-serif;
   font-size: 14px;
   text-transform: uppercase;
+  margin-top: 3px;
 }
 
 #add-student-submit:hover {
@@ -373,9 +480,10 @@ input[type=date]:invalid::-webkit-datetime-edit {
 #add-student-submit focus {
   outline: none;
 }
-/* End of Form Styling*/
 
-/* Start of side panel Styling */
+/*#endregion*/
+
+/*#region Side Panel Styling */
 .cd-panel {
   position: fixed;
   top: 0;
@@ -445,7 +553,7 @@ input[type=date]:invalid::-webkit-datetime-edit {
 }
 
 .fa-trash-alt {
-  color: rgba(11, 192, 252, 0.9);
+  color: rgba(9, 195, 189, 0.9);
   cursor: pointer;
   font-size: 18px;
   left: 22px;
@@ -455,7 +563,7 @@ input[type=date]:invalid::-webkit-datetime-edit {
 }
 
 .fa-trash-alt:hover {
-  color: rgb(8, 173, 228);
+  color: rgb(8, 170, 165);
 }
 
 .fa-envelope {
@@ -767,4 +875,4 @@ input[type=date]:invalid::-webkit-datetime-edit {
   display: inline;
   margin: 0px;
 }
-/* End of new side panel Styling */
+/*#endregion*/

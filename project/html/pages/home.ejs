@@ -11,11 +11,19 @@
     <% include ../helpers/navbar %>
   </div>
 
-  <div style="display: flex; justify-content: center; align-items: center; height: 85%;">
-    <div style="display: block; height: 36px;">
-      <img style="float:left; height: 100%; width: auto; padding: 5 0 5 0; margin-right: 10px;"
-        src="/images/exclamation.png">
-      <h2 style="float:right; color: #707070; margin: 0px;">Coming Soon!</h2>
+  <div class="row-home">
+    <div class="column-home column-left-home">
+      <h4>Notification Center</h4>
+      <div id="notification-center-wrapper">
+        <div id="notification-center">
+        </div>
+        <div style="text-align: center;">
+          <button id="show-more-notifications" onclick="updateNotifications()">Show More &nbsp;&nbsp;<i
+              class="fas fa-chevron-down"></i></button>
+        </div>
+      </div>
+    </div>
+    <div class="column-home column-right-home">
     </div>
   </div>
 

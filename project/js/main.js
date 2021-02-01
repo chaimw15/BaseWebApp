@@ -1,8 +1,11 @@
 $(document).ready(function () {
   getStudents();
+  getNotifications();
+  $("#show-more-notifications").hide();
 });
 
 var currentStudentKey = null;
+var sorted = [];
 
 function handleSignIn() {
   var provider = new firebase.auth.GoogleAuthProvider();
@@ -121,7 +124,7 @@ function openStudentTab(thisStudent) {
         if (timeUntilDue > 0) {
           $("#days-until-due").append("<p id='dueDays'>in <span id='daysEarly' style='color:green'>" + timeUntilDue + " days.</span></p>");
         } else {
-          $("#days-until-due").append("<p id='dueDays'><span id='daysLate' style='color:red'>" + Math.abs(timeUntilDue) + " ago.</span></p>");
+          $("#days-until-due").append("<p id='dueDays'><span id='daysLate' style='color:red'>" + Math.abs(timeUntilDue) + " overdue.</span></p>");
         }
 
         $("#student-name").text(student.firstName + " " + student.lastName);
@@ -162,7 +165,7 @@ function saveEdit() {
     var enrolDate = $("#student-enrolDate").val();
     var nextPayment;
 
-    if(differenceInDays(getCurrentDate(), enrolDate) > 0) {
+    if (differenceInDays(getCurrentDate(), enrolDate) > 0) {
       nextPayment = getNearestPayDate(enrolDate);
     } else {
       nextPayment = getNextPayDate(enrolDate, enrolDate);
@@ -170,10 +173,10 @@ function saveEdit() {
 
     var lastPaidDueDate = $(".payment-history-due-date").first().text();
 
-    if(lastPaidDueDate != null && differenceInDays(lastPaidDueDate, getCurrentDate()) > 0 && differenceInDays(lastPaidDueDate, enrolDate) > 0) {
+    if (lastPaidDueDate != null && differenceInDays(lastPaidDueDate, getCurrentDate()) > 0 && differenceInDays(lastPaidDueDate, enrolDate) > 0) {
       nextPayment = getNextPayDate(lastPaidDueDate, enrolDate);
     }
-    
+
     $("#student-nextPayment").val(nextPayment);
     $("#student-email").css("border-color", "#e0e0e5");
 
@@ -181,7 +184,7 @@ function saveEdit() {
     if (timeUntilDue > 0) {
       $("#daysEarly").text(timeUntilDue + " days.");
     } else {
-      $("#daysLate").text(timeUntilDue + " days ago.");
+      $("#daysLate").text(timeUntilDue + " days overdue.");
     }
 
     $("#edit-student").css("visibility", "visible");
@@ -339,7 +342,7 @@ function makePayment() {
     if (timeUntilDue > 0) {
       $("#daysEarly").text(timeUntilDue + " days.");
     } else {
-      $("#daysLate").text(timeUntilDue + " days ago.");
+      $("#daysLate").text(timeUntilDue + " days overdue.");
     }
 
     var studentData = {
@@ -407,7 +410,7 @@ function getPaymentHistory() {
         if (daysDifference > 0) {
           $("#payment-history").prepend("<p class='payments'><span class='payment-history-due-date'>" + payment.dueDate + "</span> payment paid on " + payment.payDate + " <span style='color: green'>" + daysDifference + " days early.</span></p>");
         } else {
-          $("#payment-history").prepend("<p class='payments'><span class='payment-history-due-date'>" + payment.dueDate + "</span> payment paid on " + payment.payDate + " <span style='color: red'>" + Math.abs(daysDifference) + " days late.</span></p>");
+          $("#payment-history").prepend("<p class='payments'><span class='payment-history-due-date'>" + payment.dueDate + "</span> payment paid on " + payment.payDate + " <span style='color: red'>" + Math.abs(daysDifference) + " days overdue.</span></p>");
         }
       }
     } else {
@@ -495,5 +498,107 @@ function toNormalDate(inputDate) {
   }
 
   return month + " " + day + ", " + year;
+}
 
+function getNotifications() {
+  return firebase.database().ref("students").once('value').then((snapshot) => {
+    var students = snapshot.val();
+
+    var studentArray = [];
+    var i = 0;
+
+    for (var studentKey in students) {
+      var student = students[studentKey];
+      var days = differenceInDays(student.nextPayment, getCurrentDate());
+
+      studentArray[i] = { days: days, student: student };
+
+      i++;
+    }
+
+    sorted = quickSort(studentArray, 0, studentArray.length - 1);
+
+    (function myLoop(index) {
+      setTimeout(function () {
+        if (sorted[index].days > 0) {
+          $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + ": due in <span style='color: green'>" + sorted[index].days + " days.</span></p></div><div class='button-wrapper'><button id='make-payment' onClick='makePaymentHome()'>Mark As Paid</button></div></div>").hide().fadeIn(250));
+        } else {
+          $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + " is <span style='color: red'>" + sorted[index].days + " days overdue.</span></p></div><div class='button-wrapper'><button id='make-payment' onClick='makePaymentHome()'>Mark As Paid</button><div></div>").hide().fadeIn(250));
+        }
+  
+        if (sorted[index + 1] == null) {
+          $("#show-more-notifications").remove();
+          return;
+        }
+
+        if(index + 1 == 5) {
+          $("#show-more-notifications").fadeIn(100);
+        }
+
+        index++;
+        if (index < 5) myLoop(index);
+      }, 20)
+    })(0);
+  });
+}
+
+function updateNotifications() {
+  var numItems = $('.notification-wrapper').length;
+
+  (function myLoop(index) {
+    setTimeout(function () {
+      if (sorted[index].days > 0) {
+        $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + ": due in <span style='color: green'>" + sorted[index].days + " days.</span></p></div><div class='button-wrapper'><button id='make-payment' onClick='makePaymentHome()'>Mark As Paid</button></div></div>").hide().fadeIn(250));
+      } else {
+        $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + " is <span style='color: red'>" + sorted[index].days + " days overdue.</span></p></div><div class='button-wrapper'><button id='make-payment' onClick='makePaymentHome()'>Mark As Paid</button><div></div>").hide().fadeIn(250));
+      }
+
+      if (sorted[index + 1] == null) {
+        $("#show-more-notifications").remove();
+        return;
+      }
+      index++;
+      if (index < numItems + 5) myLoop(index);
+    }, 20)
+  })(numItems);
+}
+
+function swap(items, leftIndex, rightIndex) {
+  var temp = items[leftIndex];
+  items[leftIndex] = items[rightIndex];
+  items[rightIndex] = temp;
+}
+
+function partition(items, left, right) {
+  var pivot = items[Math.floor((right + left) / 2)].days, //middle element
+    i = left, //left pointer
+    j = right; //right pointer
+  while (i <= j) {
+    while (items[i].days < pivot) {
+      i++;
+    }
+    while (items[j].days > pivot) {
+      j--;
+    }
+    if (i <= j) {
+      swap(items, i, j); //sawpping two elements
+      i++;
+      j--;
+    }
+  }
+  return i;
+}
+
+function quickSort(items, left, right) {
+  var index;
+  if (items.length > 1) {
+    index = partition(items, left, right); //index returned from partition
+    if (left < index - 1) { //more elements on the left side of the pivot
+      quickSort(items, left, index - 1);
+    }
+    if (index < right) { //more elements on the right side of the pivot
+      quickSort(items, index, right);
+    }
+  }
+  return items;
 }
