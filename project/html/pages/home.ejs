@@ -25,7 +25,32 @@
       </div>
     </div>
     <div class="column-home column-right-home">
-      
+      <h4>Email Settings</h4>
+      <div id="email-settings-wrapper">
+        <div id="email-settings">
+        </div>
+        <div style="text-align: center;">
+          <button id="add-new-email-button" onclick="showAddEmail()"><i class="far fa-plus-square"></i></button>
+        </div>
+      </div>
+      <div>
+        <form id="add-email-form">
+          <p>Days</p>
+          <div style="display: inline-block; width: 100%; margin-bottom: 16px;">
+            <div style="float: left; width: 50%">
+              <input type="number" min="0" id="days-to-email" placeholder="2" required>
+            </div>
+            <div id="email-radio-buttons">
+              <input type="radio" id="days-before" name="when" value="before" required>
+              <label for="before">Before</label><br>
+              <input type="radio" id="days-after" name="when" value="after" required>
+              <label id="days-after-label" for="after">After</label>
+            </div>
+          </div>
+          <button type="button" onclick="addNewEmail()" id="add-email-submit">Submit</button>
+          <button type="button" id="cancel-email-add" onclick="cancelAddEmail()">Cancel</button>
+        </form>
+      </div>
 
     </div>
   </div>

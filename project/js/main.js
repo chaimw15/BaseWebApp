@@ -1,6 +1,8 @@
 $(document).ready(function () {
   getStudents();
   getNotifications();
+  getEmailSettings();
+  $("#add-email-form").hide();
   $("#show-more-notifications").hide();
 });
 
@@ -98,7 +100,6 @@ function getStudents() {
   var selectedStudent = $(".selected").attr('id');
 
   $('#student-list .studentButton').remove();
-  $('#student-list .line-break').remove();
 
   return firebase.database().ref("students").once('value').then((snapshot) => {
     var students = snapshot.val();
@@ -123,8 +124,10 @@ function openStudentTab(thisStudent) {
         $("#days-until-due #dueDays").remove();
         if (timeUntilDue > 0) {
           $("#days-until-due").append("<p id='dueDays'>in <span id='daysEarly' style='color:green'>" + timeUntilDue + " days.</span></p>");
+        } else if(timeUntilDue == 0){
+          $("#days-until-due").append("<p id='dueDays'>due <span id='daysEarly' style='color:green'>today.</span></p>");
         } else {
-          $("#days-until-due").append("<p id='dueDays'><span id='daysLate' style='color:red'>" + Math.abs(timeUntilDue) + " overdue.</span></p>");
+          $("#days-until-due").append("<p id='dueDays'><span id='daysLate' style='color:red'>" + Math.abs(timeUntilDue) + " days overdue.</span></p>");
         }
 
         $("#student-name").text(student.firstName + " " + student.lastName);
@@ -359,6 +362,10 @@ $("#search-student").submit(function (e) {
   e.preventDefault();
 });
 
+$("#add-email-form").submit(function (e) {
+  e.preventDefault();
+});
+
 $(document).ready(function () {
   $(".search-field").on("input", function () {
     // Declare variables
@@ -522,16 +529,18 @@ function getNotifications() {
       setTimeout(function () {
         if (sorted[index].days > 0) {
           $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + ": due in <span style='color: green'>" + sorted[index].days + " days.</span></p></div><div class='button-wrapper'><button id='make-payment' onClick='makePaymentHome()'>Mark As Paid</button></div></div>").hide().fadeIn(250));
+        } else if (sorted[index].days == 0) {
+          $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + " is due <span style='color: green'>today.</span></p></div><div class='button-wrapper'><button id='make-payment' onClick='makePaymentHome()'>Mark As Paid</button><div></div>").hide().fadeIn(250));
         } else {
           $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + " is <span style='color: red'>" + sorted[index].days + " days overdue.</span></p></div><div class='button-wrapper'><button id='make-payment' onClick='makePaymentHome()'>Mark As Paid</button><div></div>").hide().fadeIn(250));
         }
-  
+
         if (sorted[index + 1] == null) {
           $("#show-more-notifications").remove();
           return;
         }
 
-        if(index + 1 == 5) {
+        if (index + 1 == 5) {
           $("#show-more-notifications").fadeIn(100);
         }
 
@@ -549,6 +558,8 @@ function updateNotifications() {
     setTimeout(function () {
       if (sorted[index].days > 0) {
         $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + ": due in <span style='color: green'>" + sorted[index].days + " days.</span></p></div><div class='button-wrapper'><button id='make-payment' onClick='makePaymentHome()'>Mark As Paid</button></div></div>").hide().fadeIn(250));
+      } else if (sorted[index].days == 0) {
+        $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + " is due <span style='color: green'>today.</span></p></div><div class='button-wrapper'><button id='make-payment' onClick='makePaymentHome()'>Mark As Paid</button><div></div>").hide().fadeIn(250));
       } else {
         $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + " is <span style='color: red'>" + sorted[index].days + " days overdue.</span></p></div><div class='button-wrapper'><button id='make-payment' onClick='makePaymentHome()'>Mark As Paid</button><div></div>").hide().fadeIn(250));
       }
@@ -601,4 +612,85 @@ function quickSort(items, left, right) {
     }
   }
   return items;
+}
+
+function addNewEmail() {
+  var days = Math.ceil($("#days-to-email").val());
+  var when = $('input[name="when"]:checked').val();
+
+  if (when.localeCompare("after") == 0) {
+    days = days * -1;
+  }
+
+  var emailData = {
+    days: days
+  };
+
+  var database = firebase.database().ref("email-settings");
+
+  var newEmailRef = database.push();
+  newEmailRef.set(emailData, (error) => {
+    if (error) {
+      alert("Writing error. Couldn't add email to database.");
+    } else {
+      getEmailSettings();
+    }
+  });
+
+  $("#days-to-email").val('');
+  $("#add-email-form").fadeOut(200);
+}
+
+function getEmailSettings() {
+  $('.email-info-wrapper').remove();
+
+  return firebase.database().ref("email-settings").once('value').then((snapshot) => {
+    var emails = snapshot.val();
+    var emailDays = [];
+    var i = 0;
+
+    for (var emailKey in emails) {
+      emailDays[i] = emails[emailKey].days;
+      i++;
+    }
+
+    emailDays.sort(function (a, b) {
+      return b - a;
+    });
+
+    console.log(emailDays);
+
+    for (var j in emailDays) {
+      if (emailDays[j] > 0) {
+        $("#email-settings").append($("<div class='email-info-wrapper' style='display:inline-block'><div style='float:left'><p class='email-info'>" + emailDays[j] + " days <span style='color: green;'>before</span> the due date.</p></div><div style='float:right; padding-left: 16px;'><a onclick='deleteEmail(`" + emailDays[j] + "`)'><i class='far fa-trash-alt'></i></a></div></div>").hide().fadeIn(250));
+      } else if (emailDays[j] == 0) {
+        $("#email-settings").append($("<div class='email-info-wrapper' style='display:inline-block'><div style='float:left'><p class='email-info'>On the due date.</p></div><div style='float:right; padding-left: 16px;'><a onclick='deleteEmail(`" + emailDays[j] + "`)'><i class='far fa-trash-alt'></i></a></div></div>").hide().fadeIn(250));
+      } else {
+        $("#email-settings").append($("<div class='email-info-wrapper' style='display:inline-block'><div style='float:left'><p class='email-info'>" + Math.abs(emailDays[j]) + " days <span style='color: red;'>after</span> the due date.</p></div><div style='float:right; padding-left: 16px;'><a onclick='deleteEmail(`" + emailDays[j] + "`)'><i class='far fa-trash-alt'></i></a></div></div>").hide().fadeIn(250));
+      }
+    }
+  });
+}
+
+function showAddEmail() {
+  $("#add-email-form").fadeIn(500);
+}
+
+function cancelAddEmail() {
+  $("#days-to-email").val('');
+  $("#add-email-form").fadeOut(200);
+}
+
+function deleteEmail(days) {
+  return firebase.database().ref("email-settings").once('value').then((snapshot) => {
+    var emails = snapshot.val();
+
+    for (var emailKey in emails) {
+      if(days == emails[emailKey].days) {
+        firebase.database().ref("/email-settings/" + emailKey).remove();
+        break;
+      }
+    }
+    getEmailSettings();
+  });
 }

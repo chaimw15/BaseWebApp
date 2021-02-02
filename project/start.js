@@ -56,86 +56,52 @@ const task = cron.schedule('45 10 * * *', () => {
 
   console.log('still running...');
 
-  firebase.database().ref("students").once('value').then((snapshot) => {
+  var database = firebase.database();
+
+  database.ref("students").once('value').then((snapshot) => {
     var students = snapshot.val();
 
-    for (var studentKey in students) {
-      var student = students[studentKey];
-      console.log(student.lastName);
-      var nextPayment = student.nextPayment;
-      nextPayment = makeDateObject(nextPayment);
+    database.ref("email-settings").once('value').then((snapshot2) => {
+      var emails = snapshot2.val();
 
-      var daysLeft = daysUntilPayment(nextPayment);
-      console.log(daysLeft);
+      for (var studentKey in students) {
+        var student = students[studentKey];
+        console.log(student.lastName);
+        var nextPayment = student.nextPayment;
+        nextPayment = makeDateObject(nextPayment);
 
-      var subject = "Peak College Tuition " + daysLeft + " Day Notice";
-      var startMessage = "<p>Dear " + student.firstName + ",<br><br>" + "Your Peak College Tuition is <strong>"
-      var endMessage = " Please visit <a href='https://peakcollege.ca/'>peakcollege.ca</a> to pay.<br>If you have any questions about your payment, please respond to this email.<br><br>Best regards,<br><br>Peak College Student Services</p>";
-      var message = startMessage + "due in " + daysLeft + " days.</strong>" + endMessage;
+        var daysLeft = daysUntilPayment(nextPayment);
+        console.log(daysLeft);
 
-      switch (daysLeft) {
-        case 7:
-          console.log("case: 7");
-          sendEmail(subject, message, student.email, student.firstName);
-          break;
+        var subject = "Peak College Tuition " + daysLeft + " Day Notice";
+        var startMessage = "<p>Dear " + student.firstName + ",<br><br>" + "Your Peak College Tuition is <strong>"
+        var endMessage = " Please visit <a href='https://peakcollege.ca/'>peakcollege.ca</a> to pay.<br>If you have any questions about your payment, please respond to this email.<br><br>Best regards,<br><br>Peak College Student Services</p>";
+        var message = startMessage + "due in " + daysLeft + " days.</strong>" + endMessage;
 
-        case 2:
-          console.log("case: 2");
-          sendEmail(subject, message, student.email, student.firstName);
-          break;
+        for (emailKeys in emails) {
+          if (emails[emailKeys].days == daysLeft) {
+            if (daysLeft > 0) {
+              sendEmail(subject, message, student.email, student.firstName);
+            } else if (daysLeft == 0) {
+              subject = "Peak College Tuition Due Today";
+              message = startMessage + "due today.</strong>" + endMessage;
 
-        case 0:
-          console.log("case: 0");
-          subject = "Peak College Tuition Due Today";
-          message = startMessage + "due today.</strong>" + endMessage;
+              sendEmail(subject, message, student.email, student.firstName);
+            } else if (daysLeft <= -14) {
+              subject = "Peak College Tuition " + daysLeft + " Days Overdue";
+              message = startMessage + Math.abs(daysLeft) + " late.</strong> If your payment is over 3 weeks late (21 days) your enrollment in Peak College will be automatically terminated." + endMessage;
 
-          sendEmail(subject, message, student.email, student.firstName);
-          break;
+              sendEmail(subject, message, student.email, student.firstName);
+            } else {
+              subject = "Peak College Tuition " + daysLeft + " Days Overdue";
+              message = startMessage + Math.abs(daysLeft) + " late.</strong>" + endMessage;
 
-        case -1:
-          console.log("case: -1");
-          subject = "Peak College Tuition " + daysLeft + " Days Overdue";
-          message = startMessage + Math.abs(daysLeft) + " late.</strong>" + endMessage;
-
-          sendEmail(subject, message, student.email, student.firstName);
-          break;
-
-        case -5:
-          console.log("case: -5");
-          subject = "Peak College Tuition " + daysLeft + " Days Overdue";
-          message = startMessage + Math.abs(daysLeft) + " late.</strong>" + endMessage;
-
-          sendEmail(subject, message, student.email, student.firstName);
-          break;
-
-        case -7:
-          console.log("case: -7");
-          subject = "Peak College Tuition " + daysLeft + " Days Overdue";
-          message = startMessage + Math.abs(daysLeft) + " late.</strong>" + endMessage;
-
-          sendEmail(subject, message, student.email, student.firstName);
-          break;
-
-        case -14:
-          console.log("case: -14");
-          subject = "Peak College Tuition " + daysLeft + " Days Overdue";
-          message = startMessage + Math.abs(daysLeft) + " late.</strong> If your payment is over 3 weeks late (21 days) your enrollment in Peak College will be automatically terminated." + endMessage;
-
-          sendEmail(subject, message, student.email, student.firstName);
-          break;
-
-        case -20:
-          console.log("case: -20");
-          subject = "Peak College Tuition " + daysLeft + " Days Overdue";
-          message = startMessage + Math.abs(daysLeft) + " late.</strong> If your payment is over 3 weeks late (21 days) your enrollment in Peak College will be automatically terminated." + endMessage;
-
-          sendEmail(subject, message, student.email, student.firstName);
-          break;
-
-        default:
-          break;
+              sendEmail(subject, message, student.email, student.firstName);
+            }
+          }
+        }
       }
-    }
+    });
   });
 });
 

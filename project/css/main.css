@@ -226,6 +226,8 @@ h3 {
 
 .column-right-home {
   width: 40%;
+  text-align: left;
+  padding-left: 65px;
 }
 
 .row-home {
@@ -254,7 +256,7 @@ h3 {
 #notification-center button {
   border: solid rgba(25, 91, 150, 0.9) 1px;
   border-radius: 3px;
-  background-color: rgb(230, 230, 230);
+  background-color: rgba(230, 230, 230, 0.7);
   padding: 4 10 4 10;
   transition: 0.15s;
   font-family: 'Inter',sans-serif;
@@ -268,6 +270,41 @@ h3 {
 
 #notification-center button:focus {
   outline: none;
+}
+
+#email-settings-wrapper {
+  background-color: white;
+  border-radius: 5px;
+  padding: 16px;
+  font-size: 16px;
+  margin-bottom: 25px;
+}
+
+.fa-plus-square {
+  font-size: 20px;
+}
+
+.email-info-wrapper {
+  border: 1px solid #e0e0e5;
+  vertical-align: middle;
+  font-size: 1rem;
+  line-height: 2;
+  padding: 10 20;
+  border-radius: 0.25rem;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.email-info {
+  margin: 0px;
+}
+
+.email-info-wrapper .fa-trash-alt {
+  position: relative;
+  top: auto;
+  left: auto;
+  font-size: 16px;
+  line-height: 2;
 }
 
 #notification-center .button-wrapper {
@@ -312,11 +349,18 @@ h3 {
   background-color: transparent;
 }
 
-#show-more-notifications:hover {
+#add-new-email-button {
+  border: none;
+  font-size: 14px;
+  color: rgba(9, 195, 189, 0.9);
+  background-color: transparent;
+}
+
+#show-more-notifications:hover, #add-new-email-button:hover {
   color: rgb(8, 170, 165)
 }
 
-#show-more-notifications:focus {
+#show-more-notifications:focus, #add-new-email-button:focus {
   outline: none;
 }
 
@@ -433,14 +477,25 @@ input.search-submit {
 #add-student-form p{
   font-size: 16px;
   margin: 0 0 5 0;
+  color: rgba(25, 91, 150, 0.6);
+}
+
+#add-email-form p{
+  font-size: 16px;
+  margin: 0 0 5 0;
+  color: rgba(25, 91, 150, 0.6);
 }
 
 input[type=date]:invalid::-webkit-datetime-edit {
-  color: rgba(25, 91, 150, 0.6);
+  color: rgba(51, 51, 51, 0.61);
 }
 
 #add-student-form ::placeholder {
-  color: rgba(25, 91, 150, 0.6);
+  color:  rgba(51, 51, 51, 0.61);
+}
+
+#add-email-form ::placeholder {
+  color:  rgba(51, 51, 51, 0.61);
 }
 
 #first-name, #last-name, #email, #enrol-date {
@@ -455,14 +510,50 @@ input[type=date]:invalid::-webkit-datetime-edit {
   padding: 0.375rem 1.25rem;
 }
 
-#first-name, #last-name, #email, #enrol-date:focus{
+#first-name, #last-name, #email, #enrol-date, #days-to-email, #email-message:focus{
   outline: none;
 }
 
-#add-student-submit {
+#email-message {
+  margin-bottom: 25px;
+  width: 100%;
+  font-size: 16px;
+  padding-left: 8px;
+  border-radius: 0.25rem;
+  border: 1px solid #e0e0e5;
+  font-size: 1rem;
+  line-height: 2;
+  padding: 0.375rem 1.25rem;
+}
+
+#days-to-email {
+  font-size: 16px;
+  padding-left: 8px;
+  border-radius: 0.25rem;
+  border: 1px solid #e0e0e5;
+  font-size: 1rem;
+  line-height: 2;
+  padding: 0.375rem 1.25rem;
+  width: 100%;
+}
+
+#add-email-form label {
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+#email-radio-buttons {
+  float: Left;
+  padding-left: 10px;
+  line-height: 1;
+}
+
+#add-student-submit, 
+#add-email-submit, 
+#cancel-email-add {
   border: solid rgba(25, 91, 150, 0.9) 1px;
   border-radius: 3px;
-  background-color: rgb(230, 230, 230);
+  background-color: rgba(230, 230, 230, 0.7);
   padding: 8 25 8 25;
   transition: 0.1s;
   font-family: 'Inter',sans-serif;
@@ -471,12 +562,12 @@ input[type=date]:invalid::-webkit-datetime-edit {
   margin-top: 3px;
 }
 
-#add-student-submit:hover {
+#add-student-submit:hover, #add-email-submit:hover, #cancel-email-add:hover {
   background-color: rgba(25, 91, 150, 0.9);
   color: white;
 }
 
-#add-student-submit focus {
+#add-student-submit:focus, #add-email-submit:focus, #cancel-email-add:focus {
   outline: none;
 }
 
@@ -834,7 +925,7 @@ input[type=date]:invalid::-webkit-datetime-edit {
 .cd-panel__content button {
   border: solid rgba(25, 91, 150, 0.9) 1px;
   border-radius: 3px;
-  background-color: rgb(230, 230, 230);
+  background-color: rgba(230, 230, 230, 0.7);
   padding: 8 25 8 25;
   transition: 0.1s;
   font-family: 'Inter',sans-serif;
