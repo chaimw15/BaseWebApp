@@ -273,9 +273,7 @@ h3 {
 }
 
 #email-settings-wrapper {
-  background-color: white;
   border-radius: 5px;
-  padding: 16px;
   font-size: 16px;
   margin-bottom: 25px;
 }
@@ -285,7 +283,8 @@ h3 {
 }
 
 .email-info-wrapper {
-  border: 1px solid #e0e0e5;
+  background-color: white;
+  border: 1px solid rgba(9, 195, 189, 0.9);
   vertical-align: middle;
   font-size: 1rem;
   line-height: 2;
@@ -293,6 +292,7 @@ h3 {
   border-radius: 0.25rem;
   margin-bottom: 10px;
   width: 100%;
+  cursor: default;
 }
 
 .email-info {

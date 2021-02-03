@@ -124,7 +124,7 @@ function openStudentTab(thisStudent) {
         $("#days-until-due #dueDays").remove();
         if (timeUntilDue > 0) {
           $("#days-until-due").append("<p id='dueDays'>in <span id='daysEarly' style='color:green'>" + timeUntilDue + " days.</span></p>");
-        } else if(timeUntilDue == 0){
+        } else if (timeUntilDue == 0) {
           $("#days-until-due").append("<p id='dueDays'>due <span id='daysEarly' style='color:green'>today.</span></p>");
         } else {
           $("#days-until-due").append("<p id='dueDays'><span id='daysLate' style='color:red'>" + Math.abs(timeUntilDue) + " days overdue.</span></p>");
@@ -186,8 +186,10 @@ function saveEdit() {
     var timeUntilDue = differenceInDays(nextPayment, getCurrentDate());
     if (timeUntilDue > 0) {
       $("#daysEarly").text(timeUntilDue + " days.");
+    } else if (timeUntilDue > 0) {
+      $("dueDays").html("due <span id='daysEarly' style='color:green'>today.</span>");
     } else {
-      $("#daysLate").text(timeUntilDue + " days overdue.");
+      $("#daysLate").text(Math.abs(timeUntilDue) + " days overdue.");
     }
 
     $("#edit-student").css("visibility", "visible");
@@ -344,8 +346,10 @@ function makePayment() {
     var timeUntilDue = differenceInDays(nextPayment, getCurrentDate());
     if (timeUntilDue > 0) {
       $("#daysEarly").text(timeUntilDue + " days.");
+    } else if (timeUntilDue > 0) {
+      $("dueDays").html("due <span id='daysEarly' style='color:green'>today.</span>");
     } else {
-      $("#daysLate").text(timeUntilDue + " days overdue.");
+      $("#daysLate").text(Math.abs(timeUntilDue) + " days overdue.");
     }
 
     var studentData = {
@@ -532,7 +536,7 @@ function getNotifications() {
         } else if (sorted[index].days == 0) {
           $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + " is due <span style='color: green'>today.</span></p></div><div class='button-wrapper'><button id='make-payment' onClick='makePaymentHome()'>Mark As Paid</button><div></div>").hide().fadeIn(250));
         } else {
-          $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + " is <span style='color: red'>" + sorted[index].days + " days overdue.</span></p></div><div class='button-wrapper'><button id='make-payment' onClick='makePaymentHome()'>Mark As Paid</button><div></div>").hide().fadeIn(250));
+          $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + " is <span style='color: red'>" + Math.abs(sorted[index].days) + " days overdue.</span></p></div><div class='button-wrapper'><button id='make-payment' onClick='makePaymentHome()'>Mark As Paid</button><div></div>").hide().fadeIn(250));
         }
 
         if (sorted[index + 1] == null) {
@@ -561,7 +565,7 @@ function updateNotifications() {
       } else if (sorted[index].days == 0) {
         $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + " is due <span style='color: green'>today.</span></p></div><div class='button-wrapper'><button id='make-payment' onClick='makePaymentHome()'>Mark As Paid</button><div></div>").hide().fadeIn(250));
       } else {
-        $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + " is <span style='color: red'>" + sorted[index].days + " days overdue.</span></p></div><div class='button-wrapper'><button id='make-payment' onClick='makePaymentHome()'>Mark As Paid</button><div></div>").hide().fadeIn(250));
+        $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + " is <span style='color: red'>" + Math.abs(sorted[index].days) + " days overdue.</span></p></div><div class='button-wrapper'><button id='make-payment' onClick='makePaymentHome()'>Mark As Paid</button><div></div>").hide().fadeIn(250));
       }
 
       if (sorted[index + 1] == null) {
@@ -686,7 +690,7 @@ function deleteEmail(days) {
     var emails = snapshot.val();
 
     for (var emailKey in emails) {
-      if(days == emails[emailKey].days) {
+      if (days == emails[emailKey].days) {
         firebase.database().ref("/email-settings/" + emailKey).remove();
         break;
       }
