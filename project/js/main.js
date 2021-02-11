@@ -160,45 +160,68 @@ function editStudent() {
   $("#student-name").css("border", "1px solid #e0e0e5");
   $("#student-email").attr("disabled", false);
   $("#student-enrolDate").attr("disabled", false);
+  $("#student-nextPayment").attr("disabled", false);
+}
+
+function enrolChange() {
+  var enrolDate = $("#student-enrolDate").val();
+  var nextPayment;
+
+  if (differenceInDays(getCurrentDate(), enrolDate) > 0) {
+    nextPayment = getNearestPayDate(enrolDate);
+  } else {
+    nextPayment = getNextPayDate(enrolDate, enrolDate);
+  }
+
+  var lastPaidDueDate = $(".payment-history-due-date").first().text();
+
+  if (lastPaidDueDate != null && differenceInDays(lastPaidDueDate, getCurrentDate()) > 0 && differenceInDays(lastPaidDueDate, enrolDate) > 0) {
+    nextPayment = getNextPayDate(lastPaidDueDate, enrolDate);
+  }
+
+  $("#student-nextPayment").val(nextPayment);
+  var timeUntilDue = differenceInDays(nextPayment, getCurrentDate());
+  if (timeUntilDue == -1) {
+    $("#daysLate").text(Math.abs(timeUntilDue) + " day overdue.");
+  } else if (timeUntilDue == 1) {
+    $("#daysEarly").text(timeUntilDue + " day.");
+  } else if (timeUntilDue > 0) {
+    $("#daysEarly").text(timeUntilDue + " days.");
+  } else if (timeUntilDue == 0) {
+    $("dueDays").html("due <span id='daysEarly' style='color:green'>today.</span>");
+  } else {
+    $("#daysLate").text(Math.abs(timeUntilDue) + " days overdue.");
+  }
+}
+
+function nextPaymentChange() {
+  var nextPayment = $("#student-nextPayment").val();
+  var timeUntilDue = differenceInDays(nextPayment, getCurrentDate());
+  if (timeUntilDue == -1) {
+    $("#daysLate").text(Math.abs(timeUntilDue) + " day overdue.");
+  } else if (timeUntilDue == 1) {
+    $("#daysEarly").text(timeUntilDue + " day.");
+  } else if (timeUntilDue > 0) {
+    $("#daysEarly").text(timeUntilDue + " days.");
+  } else if (timeUntilDue == 0) {
+    $("dueDays").html("due <span id='daysEarly' style='color:green'>today.</span>");
+  } else {
+    $("#daysLate").text(Math.abs(timeUntilDue) + " days overdue.");
+  }
 }
 
 function saveEdit() {
   var email = $("#student-email").val();
+  var enrolDate = $("#student-enrolDate").val();
+  var nextPayment = $("#student-nextPayment").val();
 
   var isValid = validateEmail(email);
 
   if (isValid) {
     var name = $("#student-name").text();
     var enrolDate = $("#student-enrolDate").val();
-    var nextPayment;
 
-    if (differenceInDays(getCurrentDate(), enrolDate) > 0) {
-      nextPayment = getNearestPayDate(enrolDate);
-    } else {
-      nextPayment = getNextPayDate(enrolDate, enrolDate);
-    }
-
-    var lastPaidDueDate = $(".payment-history-due-date").first().text();
-
-    if (lastPaidDueDate != null && differenceInDays(lastPaidDueDate, getCurrentDate()) > 0 && differenceInDays(lastPaidDueDate, enrolDate) > 0) {
-      nextPayment = getNextPayDate(lastPaidDueDate, enrolDate);
-    }
-
-    $("#student-nextPayment").val(nextPayment);
     $("#student-email").css("border-color", "#e0e0e5");
-
-    var timeUntilDue = differenceInDays(nextPayment, getCurrentDate());
-    if (timeUntilDue == -1) {
-      $("#daysLate").text(Math.abs(timeUntilDue) + " day overdue.");
-    } else if (timeUntilDue == 1) {
-      $("#daysEarly").text(timeUntilDue + " day.");
-    } else if (timeUntilDue > 0) {
-      $("#daysEarly").text(timeUntilDue + " days.");
-    } else if (timeUntilDue == 0) {
-      $("dueDays").html("due <span id='daysEarly' style='color:green'>today.</span>");
-    } else {
-      $("#daysLate").text(Math.abs(timeUntilDue) + " days overdue.");
-    }
 
     $("#edit-student").css("visibility", "visible");
     $("#cancel-edit").css("visibility", "hidden");
@@ -207,6 +230,7 @@ function saveEdit() {
     $("#student-name").css("border", "none");
     $("#student-email").attr("disabled", true);
     $("#student-enrolDate").attr("disabled", true);
+    $("#student-nextPayment").attr("disabled", true);
 
     var split_names = name.split(" ");
 
@@ -250,6 +274,7 @@ function cancelEdit() {
   $("#student-name").css("border", "none");
   $("#student-email").attr("disabled", true);
   $("#student-enrolDate").attr("disabled", true);
+  $("#student-nextPayment").attr("disabled", true);
 }
 
 function getNearestPayDate(enrolDate) {
@@ -429,14 +454,14 @@ function getPaymentHistory() {
       for (var paymentKey in paymentHistory) {
         var payment = paymentHistory[paymentKey];
         var daysDifference = differenceInDays(payment.dueDate, payment.payDate);
-        
+
         if (daysDifference == -1) {
           $("#payment-history").prepend("<p class='payments'><span class='payment-history-due-date'>" + payment.dueDate + "</span> payment paid on " + payment.payDate + ", <span style='color: red'>" + Math.abs(daysDifference) + " day overdue.</span></p>");
         } else if (daysDifference == 1) {
           $("#payment-history").prepend("<p class='payments'><span class='payment-history-due-date'>" + payment.dueDate + "</span> payment paid on " + payment.payDate + ", <span style='color: green'>" + daysDifference + " day early.</span></p>");
         } else if (daysDifference > 0) {
           $("#payment-history").prepend("<p class='payments'><span class='payment-history-due-date'>" + payment.dueDate + "</span> payment paid on " + payment.payDate + ", <span style='color: green'>" + daysDifference + " days early.</span></p>");
-        } else if(daysDifference == 0) {
+        } else if (daysDifference == 0) {
           $("#payment-history").prepend("<p class='payments'><span class='payment-history-due-date'>" + payment.dueDate + "</span> payment paid on " + payment.payDate + ", <span style='color: green'>right on time.</span></p>");
         } else {
           $("#payment-history").prepend("<p class='payments'><span class='payment-history-due-date'>" + payment.dueDate + "</span> payment paid on " + payment.payDate + ", <span style='color: red'>" + Math.abs(daysDifference) + " days overdue.</span></p>");
