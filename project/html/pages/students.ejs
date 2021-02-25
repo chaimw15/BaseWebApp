@@ -21,8 +21,21 @@
           <input id="last-name" placeholder="Doe" required></input><br>
           <p>Email</p>
           <input id="email" placeholder="john.doe@gmail.com" required></input><br>
-          <p>Enrol Date</p>
+          <p>Registration Date</p>
           <input id="enrol-date" type="date" placeholder="yyyy-mm-dd" required></input><br>
+          <div style="display: inline-block; width: 70%;">
+            <div style="float: left; width: 65%">
+              <p>Tuition Fee</p>
+              <span id="dollar-sign">$</span><input id="tuition-input" type="number" min="0" placeholder="2750"
+                required></input>
+            </div>
+            <div style="float: left; width: 35%">
+              <p>Months</p>
+              <input type="number" id="tuition-months" min="0" placeholder="4" required>
+            </div>
+          </div>
+          <p>Downpayment</p>
+          <span id="dollar-sign">$</span><input id="downpayment" type="number" min="0" placeholder="500" required></input><br>
           <button id="add-student-submit">Submit</button>
         </form>
       </div>
@@ -55,8 +68,8 @@
       <div class="cd-panel__content">
         <h4>Student Info</h4>
         <div id="student-info">
-          <p>Email</p>
-          <div class="side-by-side">
+          <label for="student-email">Email</label>
+          <div class="margin-med">
             <div style="display:inline;">
               <input type="text" id="student-email" disabled="true"></input>
             </div>
@@ -64,26 +77,44 @@
               <span title="Email Student"><a onclick="manualEmail()"><i class="far fa-envelope"></i></a></span>
             </div>
           </div>
-          <p>Date Enrolled</p>
-          <div class="side-by-side">
+          <label for="student-enrolDate">Registration Date</label>
+          <div class="margin-med">
             <input type="date" id="student-enrolDate" onchange="enrolChange()" disabled="true"></input>
           </div>
-          <button id="edit-student" onclick="editStudent()">Edit Info</button>
-          <button id="cancel-edit" onclick="cancelEdit()" style="visibility: hidden">Cancel</button>
-          <button id="save-edit" onclick="saveEdit()" style="visibility: hidden">Save</button>
+          <div class="margin-med">
+            <label for="student-tuition">Tuition</label><br>
+            <span id="dollar-sign">$</span><input id="student-tuition" type="number" disabled="true" required></input><br>
+          </div>
+          <div class="" style="width:100%;">
+            <div style="display: inline-block; width: 218px;">
+              <label for="tuition-remaining">Remaining Balance</label><br>
+              <span id="dollar-sign">$</span><input id="tuition-remaining" type="number" disabled="true"></input><br>
+            </div>
+            <div style="display: inline-block; width: 100px; margin-left:15px;">
+              <label for="student-monthsLeft">Months Left</label><br>
+              <input id="student-monthsLeft" type="number" disabled="true" required></input><br>
+            </div>
+          </div>
+          <span title="Edit Student"><i class="far fa-edit" id="edit-student" onclick="editStudent()"></i></span>
+          <span title="Save Edit"><i class="far fa-check-square" id="save-edit" onclick="saveEdit()" style="visibility: hidden"></i></span>
+          <span title="Cancel Edit"><i class="far fa-window-close" id="cancel-edit" onclick="cancelEdit()" style="visibility: hidden"></i></span>
         </div>
 
         <h4>Upcoming Payments</h4>
         <div id="payment-info">
-          <p>Date Due</p>
-          <div class="side-by-side">
+          <label for="student-amountDue">Amount Due</label>
+          <div class="margin-med">
+            <span id="dollar-sign">$</span><input id="student-amountDue" type="number" disabled="true"></input>
+          </div>
+          <label for="student-nextPayment">Due Date</label>
+          <div class="margin-med">
             <div style="display:inline;">
               <input type="date" id="student-nextPayment" onchange="nextPaymentChange()" disabled="true"></input>
             </div>
             <div id="days-until-due" style="display:inline;">
             </div>
           </div>
-          <button id="make-payment" onclick="makePayment()">Mark As Paid</button>
+          <button id="make-payment" onclick="makePayment()">Log Payment</button>
         </div>
 
         <h4>Payment History</h4>
@@ -92,6 +123,7 @@
       </div> <!-- cd-panel__content -->
     </div> <!-- cd-panel__container -->
   </div> <!-- cd-panel -->
+  <span class="close-pane" onclick="closeStudentTab()"></span>
 
 </body>
 
