@@ -351,12 +351,17 @@ h3 {
 
 #add-new-email-button {
   border: none;
+  border-radius: 4rem;
   font-size: 14px;
   color: rgba(9, 195, 189, 0.9);
   background-color: transparent;
 }
 
-#show-more-notifications:hover, #add-new-email-button:hover {
+#add-new-email-button:hover {
+  color: rgb(8, 170, 165)
+}
+
+#show-more-notifications:hover {
   color: rgb(8, 170, 165)
 }
 
@@ -1053,7 +1058,7 @@ input[type=number] {
 }
 
 
-#edit-student, #save-edit, #cancel-edit {
+#edit-student, #save-edit, #cancel-edit, #edit-emails, #done-editing-emails {
   color: rgba(9, 195, 189, 0.9);
   cursor: pointer;
   font-size: 20px;
@@ -1061,6 +1066,16 @@ input[type=number] {
   top: 16px;
   position: absolute;
   transition: color 0.1s ease;
+}
+
+#edit-emails {
+  top: 2.5px;
+  right: 0px;
+}
+
+#done-editing-emails {
+  top: 3.5px;
+  right: 3.5px;
 }
 
 #save-edit, #cancel-edit {
@@ -1071,7 +1086,7 @@ input[type=number] {
   right: 44px;
 }
 
-#edit-student:hover, #save-edit:hover, #cancel-edit:hover {
+#edit-student:hover, #save-edit:hover, #cancel-edit:hover, #edit-emails:hover, #done-editing-emails:hover {
   color: rgb(8, 170, 165);
 }
 /*#endregion*/

@@ -24,13 +24,15 @@
         </div>
       </div>
     </div>
-    <div class="column-home column-right-home">
+    <div class="column-home column-right-home" style="position:relative">
       <h4>Email Settings</h4>
+      <span title="Edit Settings"><i class="far fa-edit" id="edit-emails" onclick="editEmails()"></i></span>
+      <span title="Done Editing"><i class="far fa-check-circle" id="done-editing-emails" onclick="finishEmailEdit()" style="visibility:hidden;"></i></span>
       <div id="email-settings-wrapper">
         <div id="email-settings">
         </div>
         <div style="text-align: center;">
-          <button id="add-new-email-button" onclick="showAddEmail()"><i class="far fa-plus-square"></i></button>
+          <button id="add-new-email-button" onclick="showAddEmail()" style="visibility: hidden">Add New</button>
         </div>
       </div>
       <div>

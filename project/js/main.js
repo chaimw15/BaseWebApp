@@ -1,7 +1,7 @@
 $(document).ready(function () {
   getStudents();
   getNotifications();
-  getEmailSettings();
+  getEmailSettings("hidden");
   $("#add-email-form").hide();
   $("#show-more-notifications").hide();
 });
@@ -867,15 +867,16 @@ function addNewEmail() {
     if (error) {
       alert("Writing error. Couldn't add email to database.");
     } else {
-      getEmailSettings();
+      getEmailSettings("visible");
     }
   });
 
   $("#days-to-email").val('');
   $("#add-email-form").fadeOut(200);
+  $("#add-new-email-button").show();
 }
 
-function getEmailSettings() {
+function getEmailSettings(isvisible) {
   $('.email-info-wrapper').remove();
 
   return firebase.database().ref("email-settings").once('value').then((snapshot) => {
@@ -894,15 +895,15 @@ function getEmailSettings() {
 
     for (var j in emailDays) {
       if (emailDays[j] == -1) {
-        $("#email-settings").append($("<div class='email-info-wrapper' style='display:inline-block'><div style='float:left'><p class='email-info'>" + Math.abs(emailDays[j]) + " day <span style='color: red;'>after</span> the due date.</p></div><div style='float:right; padding-left: 16px;'><a onclick='deleteEmail(`" + emailDays[j] + "`)'><i class='far fa-trash-alt'></i></a></div></div>").hide().fadeIn(250));
+        $("#email-settings").append($("<div class='email-info-wrapper' style='display:inline-block'><div style='float:left'><p class='email-info'>" + Math.abs(emailDays[j]) + " day <span style='color: red;'>after</span> the due date.</p></div><div style='float:right; padding-left: 16px;'><a class='trash-email' onclick='deleteEmail(`" + emailDays[j] + "`)' style='visibility: " + isvisible + "'><i class='far fa-trash-alt'></i></a></div></div>").hide().fadeIn(250));
       } else if (emailDays[j] == 1) {
-        $("#email-settings").append($("<div class='email-info-wrapper' style='display:inline-block'><div style='float:left'><p class='email-info'>" + emailDays[j] + " day <span style='color: green;'>before</span> the due date.</p></div><div style='float:right; padding-left: 16px;'><a onclick='deleteEmail(`" + emailDays[j] + "`)'><i class='far fa-trash-alt'></i></a></div></div>").hide().fadeIn(250));
+        $("#email-settings").append($("<div class='email-info-wrapper' style='display:inline-block'><div style='float:left'><p class='email-info'>" + emailDays[j] + " day <span style='color: green;'>before</span> the due date.</p></div><div style='float:right; padding-left: 16px;'><a class='trash-email' onclick='deleteEmail(`" + emailDays[j] + "`)' style='visibility: " + isvisible + "'><i class='far fa-trash-alt'></i></a></div></div>").hide().fadeIn(250));
       } else if (emailDays[j] > 0) {
-        $("#email-settings").append($("<div class='email-info-wrapper' style='display:inline-block'><div style='float:left'><p class='email-info'>" + emailDays[j] + " days <span style='color: green;'>before</span> the due date.</p></div><div style='float:right; padding-left: 16px;'><a onclick='deleteEmail(`" + emailDays[j] + "`)'><i class='far fa-trash-alt'></i></a></div></div>").hide().fadeIn(250));
+        $("#email-settings").append($("<div class='email-info-wrapper' style='display:inline-block'><div style='float:left'><p class='email-info'>" + emailDays[j] + " days <span style='color: green;'>before</span> the due date.</p></div><div style='float:right; padding-left: 16px;'><a class='trash-email' onclick='deleteEmail(`" + emailDays[j] + "`)' style='visibility: " + isvisible + "'><i class='far fa-trash-alt'></i></a></div></div>").hide().fadeIn(250));
       } else if (emailDays[j] == 0) {
-        $("#email-settings").append($("<div class='email-info-wrapper' style='display:inline-block'><div style='float:left'><p class='email-info'>On the due date.</p></div><div style='float:right; padding-left: 16px;'><a onclick='deleteEmail(`" + emailDays[j] + "`)'><i class='far fa-trash-alt'></i></a></div></div>").hide().fadeIn(250));
+        $("#email-settings").append($("<div class='email-info-wrapper' style='display:inline-block'><div style='float:left'><p class='email-info'>On the due date.</p></div><div style='float:right; padding-left: 16px;' ><a class='trash-email' onclick='deleteEmail(`" + emailDays[j] + "`)' style='visibility: " + isvisible + "'><i class='far fa-trash-alt'></i></a></div></div>").hide().fadeIn(250));
       } else {
-        $("#email-settings").append($("<div class='email-info-wrapper' style='display:inline-block'><div style='float:left'><p class='email-info'>" + Math.abs(emailDays[j]) + " days <span style='color: red;'>after</span> the due date.</p></div><div style='float:right; padding-left: 16px;'><a onclick='deleteEmail(`" + emailDays[j] + "`)'><i class='far fa-trash-alt'></i></a></div></div>").hide().fadeIn(250));
+        $("#email-settings").append($("<div class='email-info-wrapper' style='display:inline-block'><div style='float:left'><p class='email-info'>" + Math.abs(emailDays[j]) + " days <span style='color: red;'>after</span> the due date.</p></div><div style='float:right; padding-left: 16px;'><a class='trash-email' onclick='deleteEmail(`" + emailDays[j] + "`)' style='visibility: " + isvisible + "'><i class='far fa-trash-alt'></i></a></div></div>").hide().fadeIn(250));
       }
     }
   });
@@ -910,11 +911,13 @@ function getEmailSettings() {
 
 function showAddEmail() {
   $("#add-email-form").fadeIn(500);
+  $("#add-new-email-button").hide();
 }
 
 function cancelAddEmail() {
   $("#days-to-email").val('');
   $("#add-email-form").fadeOut(200);
+  $("#add-new-email-button").show();
 }
 
 function deleteEmail(days) {
@@ -946,4 +949,18 @@ function twoDecimals(e) {
       this.value = "";
     }
   }
+}
+
+function editEmails() {
+  $("#add-new-email-button").css('visibility', 'visible');
+  $(".trash-email").css('visibility', 'visible');
+  $("#edit-emails").css('visibility', 'hidden');
+  $("#done-editing-emails").css('visibility', 'visible');
+}
+
+function finishEmailEdit() {
+  $("#add-new-email-button").css('visibility', 'hidden');
+  $(".trash-email").css('visibility', 'hidden');
+  $("#edit-emails").css('visibility', 'visible');
+  $("#done-editing-emails").css('visibility', 'hidden');
 }
