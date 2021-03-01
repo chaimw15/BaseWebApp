@@ -15,41 +15,61 @@
       <div class="column column-left">
         <h4 id="add-new-student">Add Student</h4>
         <form id="add-student-form" onSubmit="handleAddStudentSubmit()" action="#">
-          <p>First Name</p>
-          <input id="first-name" placeholder="John" required>
-          <p>Last Name</p>
-          <input id="last-name" placeholder="Doe" required></input><br>
-          <p>Email</p>
-          <input id="email" placeholder="john.doe@gmail.com" required></input><br>
-          <p>Registration Date</p>
-          <input id="enrol-date" type="date" placeholder="yyyy-mm-dd" required></input><br>
+          <label for="first-name">First Name</label><br>
+          <input id="first-name" placeholder="John" required><br>
+          <label for="last-name">Last Name</label><br>
+          <input id="last-name" placeholder="Doe" required><br>
+          <label for="email">Email</label><br>
+          <input id="email" placeholder="john.doe@gmail.com" required><br>
+          <label for="enrol-date">Registration Date</label><br>
+          <input id="enrol-date" type="date" placeholder="yyyy-mm-dd" required><br>
           <div style="display: inline-block; width: 70%;">
             <div style="float: left; width: 65%">
-              <p>Tuition Fee</p>
+              <label for="tuition-input">Tuition Fee</label><br>
               <span id="dollar-sign">$</span><input id="tuition-input" type="number" min="0" placeholder="2750"
-                required></input>
+                required>
             </div>
             <div style="float: left; width: 35%">
-              <p>Months</p>
+              <label for="tuition-months">Months</label><br>
               <input type="number" id="tuition-months" min="0" placeholder="4" required>
             </div>
-          </div>
-          <p>Downpayment</p>
-          <span id="dollar-sign">$</span><input id="downpayment" type="number" min="0" placeholder="500" required></input><br>
+          </div><br>
+          <label for="downpayment">Downpayment</label><br>
+          <span id="dollar-sign">$</span><input id="downpayment" type="number" min="0" placeholder="500" required><br>
+          <label for="student-class">Class</label><br>
+          <select id="student-class" name="student-class">
+            <option value="PSW">Personal Support Worker</option>
+            <option value="PSWBP">PSW Bridging Program</option>
+            <option value="FSW">Food Service Worker</option>
+            <option value="DSW">Developmental Services Worker</option>
+          </select><br>
           <button id="add-student-submit">Submit</button>
         </form>
       </div>
       <div class="column column-right">
-
-        <div class="search-wrapper">
-          <div class="search-container">
-            <form id="search-student" onSubmit="return false" class="search-form form">
-              <label>
-                <span class="screen-reader-text">Search</span>
-                <input type="search" class="search-field" placeholder="Search" value="" name="s" title="" />
-              </label>
-              <input type="submit" class="search-submit search-button" value="&#xf002" />
+        <div id="filter-wrapper">
+          <div id="filters">
+            <form style="margin: 0px;">
+              <label for="filter-class">Filter By Class</label><br>
+              <select id="filter-class" name="filter-class">
+                <option value="PSW">All</option>
+                <option value="PSW">Personal Support Worker</option>
+                <option value="PSWBP">PSW Bridging Program</option>
+                <option value="FSW">Food Service Worker</option>
+                <option value="DSW">Developmental Services Worker</option>
+              </select>
             </form>
+          </div>
+          <div class="search-wrapper">
+            <div class="search-container">
+              <form id="search-student" onSubmit="return false" class="search-form form">
+                <label style="width:100%">
+                  <span class="screen-reader-text">Search</span>
+                  <input type="search" class="search-field" placeholder="Search" value="" name="s" title="" />
+                </label>
+                <input type="submit" class="search-submit search-button" value="&#xf002" />
+              </form>
+            </div>
           </div>
         </div>
 
@@ -71,7 +91,7 @@
           <label for="student-email">Email</label>
           <div class="margin-med">
             <div style="display:inline;">
-              <input type="text" id="student-email" disabled="true"></input>
+              <input type="text" id="student-email" disabled="true">
             </div>
             <div style="display:inline; vertical-align: middle;">
               <span title="Email Student"><a onclick="manualEmail()"><i class="far fa-envelope"></i></a></span>
@@ -79,37 +99,39 @@
           </div>
           <label for="student-enrolDate">Registration Date</label>
           <div class="margin-med">
-            <input type="date" id="student-enrolDate" onchange="enrolChange()" disabled="true"></input>
+            <input type="date" id="student-enrolDate" onchange="enrolChange()" disabled="true">
           </div>
           <div class="margin-med">
             <label for="student-tuition">Tuition</label><br>
-            <span id="dollar-sign">$</span><input id="student-tuition" type="number" disabled="true" required></input><br>
+            <span id="dollar-sign">$</span><input id="student-tuition" type="number" disabled="true" required><br>
           </div>
           <div class="" style="width:100%;">
             <div style="display: inline-block; width: 218px;">
               <label for="tuition-remaining">Remaining Balance</label><br>
-              <span id="dollar-sign">$</span><input id="tuition-remaining" type="number" disabled="true"></input><br>
+              <span id="dollar-sign">$</span><input id="tuition-remaining" type="number" disabled="true"><br>
             </div>
             <div style="display: inline-block; width: 100px; margin-left:15px;">
               <label for="student-monthsLeft">Months Left</label><br>
-              <input id="student-monthsLeft" type="number" disabled="true" required></input><br>
+              <input id="student-monthsLeft" type="number" disabled="true" required><br>
             </div>
           </div>
           <span title="Edit Student"><i class="far fa-edit" id="edit-student" onclick="editStudent()"></i></span>
-          <span title="Save Edit"><i class="far fa-check-circle" id="save-edit" onclick="saveEdit()" style="visibility: hidden"></i></span>
-          <span title="Cancel Edit"><i class="far fa-window-close" id="cancel-edit" onclick="cancelEdit()" style="visibility: hidden"></i></span>
+          <span title="Save Edit"><i class="far fa-check-circle" id="save-edit" onclick="saveEdit()"
+              style="visibility: hidden"></i></span>
+          <span title="Cancel Edit"><i class="far fa-window-close" id="cancel-edit" onclick="cancelEdit()"
+              style="visibility: hidden"></i></span>
         </div>
 
         <h4>Upcoming Payments</h4>
         <div id="payment-info">
           <label for="student-amountDue">Amount Due</label>
           <div class="margin-med">
-            <span id="dollar-sign">$</span><input id="student-amountDue" type="number" disabled="true"></input>
+            <span id="dollar-sign">$</span><input id="student-amountDue" type="number" disabled="true">
           </div>
           <label for="student-nextPayment">Due Date</label>
           <div class="margin-med">
             <div style="display:inline;">
-              <input type="date" id="student-nextPayment" onchange="nextPaymentChange()" disabled="true"></input>
+              <input type="date" id="student-nextPayment" onchange="nextPaymentChange()" disabled="true">
             </div>
             <div id="days-until-due" style="display:inline;">
             </div>

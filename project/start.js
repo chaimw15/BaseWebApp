@@ -34,7 +34,7 @@ app.listen(app.get('port'), function () {
 
 const cron = require('node-cron');
 
-const task = cron.schedule('45 10 * * *', () => {
+const task = cron.schedule('15 0 * * *', () => {
   console.log('running...');
 
   var firebaseConfig = {
@@ -66,36 +66,51 @@ const task = cron.schedule('45 10 * * *', () => {
 
       for (var studentKey in students) {
         var student = students[studentKey];
-        console.log(student.lastName);
+
         var nextPayment = student.nextPayment;
         nextPayment = makeDateObject(nextPayment);
 
         var daysLeft = daysUntilPayment(nextPayment);
-        console.log(daysLeft);
 
-        var subject = "Peak College Tuition " + daysLeft + " Day Notice";
-        var startMessage = "<p>Dear " + student.firstName + ",<br><br>" + "Your Peak College Tuition is <strong>"
-        var endMessage = " Please visit <a href='https://peakcollege.ca/'>peakcollege.ca</a> to pay.<br>If you have any questions about your payment, please respond to this email.<br><br>Best regards,<br><br>Peak College Student Services</p>";
-        var message = startMessage + "due in " + daysLeft + " days.</strong>" + endMessage;
+        var amountDue = 0;
 
-        for (emailKeys in emails) {
-          if (emails[emailKeys].days == daysLeft) {
-            if (daysLeft > 0) {
-              sendEmail(subject, message, student.email, student.firstName);
-            } else if (daysLeft == 0) {
-              subject = "Peak College Tuition Due Today";
-              message = startMessage + "due today.</strong>" + endMessage;
+        if (student.monthsLeft != null && student.monthsLeft > 0) {
+          amountDue = (student.tuition - student.principal) / student.monthsLeft;
+        }
 
-              sendEmail(subject, message, student.email, student.firstName);
-            } else if (daysLeft <= -14) {
-              subject = "Peak College Tuition " + daysLeft + " Days Overdue";
-              message = startMessage + Math.abs(daysLeft) + " late.</strong> If your payment is over 3 weeks late (21 days) your enrollment in Peak College will be automatically terminated." + endMessage;
+        if (daysLeft < 0) {
+          amountDue *= 1.03;
+        }
 
-              sendEmail(subject, message, student.email, student.firstName);
-            } else {
-              subject = "Peak College Tuition " + daysLeft + " Days Overdue";
-              message = startMessage + Math.abs(daysLeft) + " late.</strong>" + endMessage;
+        if (amountDue > 0) {
+          amountDue = amountDue.toFixed(2);
 
+          var subject = "Peak College Tuition " + daysLeft + " Day Notice";
+          var startMessage = "<p>Dear " + student.firstName + ",<br><br>" + "Your Peak College tuition payment of $" + amountDue + " is <strong>"
+          var endMessage = " Please send us an e-transfer at <a href='mailto:info@peakcollege.ca'>info@peakcollege.ca</a> to pay.<br>If you have any questions about your payment, please respond to this email.<br><br>Best regards,<br><br>Peak College Student Services</p>";
+          var message = startMessage + "due in " + daysLeft + " days.</strong>" + endMessage;
+
+          for (emailKeys in emails) {
+            if (emails[emailKeys].days == daysLeft) {
+              if (daysLeft == 1) {
+                message = startMessage + "due in 1 day.</strong>" + endMessage;
+
+              } else if (daysLeft == 0) {
+                subject = "Peak College Tuition Due Today";
+                message = startMessage + "due today.</strong>" + endMessage;
+
+              } else if (daysLeft == -1) {
+                message = startMessage + "1 day overdue.</strong>" + endMessage;
+
+              } else if (daysLeft < -1) {
+                subject = "Peak College Tuition " + daysLeft + " Days Overdue";
+                message = startMessage + Math.abs(daysLeft) + " overdue.</strong>" + endMessage;
+
+              } else if (daysLeft <= -14) {
+                subject = "Peak College Tuition " + daysLeft + " Days Overdue";
+                message = startMessage + Math.abs(daysLeft) + " overdue.</strong> If your payment is over 3 weeks late (21 days) your enrollment in Peak College will be automatically terminated." + endMessage;
+
+              }
               sendEmail(subject, message, student.email, student.firstName);
             }
           }

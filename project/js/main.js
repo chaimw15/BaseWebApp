@@ -44,10 +44,11 @@ function handleAddStudentSubmit() {
   var tuition = $("#tuition-input").val();
   var tuitionMonths = $("#tuition-months").val();
   var downpayment = $("#downpayment").val();
+  var studentClass = $('#student-class').find(":selected").text();
 
   var isValid = validateEmail(email);
   if (isValid) {
-    addStudent(firstName, lastName, email, enrolDate, nextPayment, tuition, tuitionMonths, downpayment);
+    addStudent(firstName, lastName, email, enrolDate, nextPayment, tuition, tuitionMonths, downpayment, studentClass);
     $("#email").css("border-color", "#e0e0e5");
   } else {
     $("#add-student-form").submit(function (e) {
@@ -67,7 +68,7 @@ function hyphenatedName(name) {
   return name.slice(0, -1);
 }
 
-function addStudent(firstName, lastName, email, enrolDate, nextPayment, tuition, tuitionMonths, downpayment) {
+function addStudent(firstName, lastName, email, enrolDate, nextPayment, tuition, tuitionMonths, downpayment, studentClass) {
   firstName = hyphenatedName(firstName);
   lastName = hyphenatedName(lastName);
   email = email.toLowerCase();
@@ -84,7 +85,8 @@ function addStudent(firstName, lastName, email, enrolDate, nextPayment, tuition,
     tuition: parseFloat(tuition),
     monthsLeft: parseInt(tuitionMonths),
     principal: parseFloat(downpayment),
-    interest: 0
+    interest: 0,
+    studentClass: studentClass
   };
 
   var database = firebase.database().ref("students");
@@ -916,7 +918,7 @@ function showAddEmail() {
 
 function cancelAddEmail() {
   $("#days-to-email").val('');
-  $("#add-email-form").fadeOut(200);
+  $("#add-email-form").hide();
   $("#add-new-email-button").show();
 }
 
@@ -964,3 +966,29 @@ function finishEmailEdit() {
   $("#edit-emails").css('visibility', 'visible');
   $("#done-editing-emails").css('visibility', 'hidden');
 }
+
+$(document).on('change', '#filter-class', function () {
+  return firebase.database().ref("students").once('value').then((snapshot) => {
+    var students = snapshot.val();
+
+    var filter, a, i, studentClass;
+    filter = $(this).find(":selected").text();
+    $list = $(".studentButton");
+
+    if (filter.localeCompare("All") == 0) {
+      for (i = 0; i < $list.length; i++) {
+        $list.eq(i).show();
+      }
+    } else {
+      for (i = 0; i < $list.length; i++) {
+        a = $list.eq(i).attr('id');
+        studentClass = students[a].studentClass;
+        if (studentClass.indexOf(filter) > -1) {
+          $list.eq(i).show();
+        } else {
+          $list.eq(i).hide();
+        }
+      }
+    }
+  });
+});
