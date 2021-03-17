@@ -1,6 +1,6 @@
 {
-  "name": "Build Your First Webapp",
-  "description": "A barebones Node.js app using Express 4",
+  "name": "Peak College Web App",
+  "description": "A web app built with Node.js created by Chaim Weinerman for Peak College to track student payments and classes.",
   "repository": "",
   "logo": "",
   "keywords": ["node", "express", "static"],

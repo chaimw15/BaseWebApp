@@ -5,18 +5,28 @@ Background Colors: #EFF8FC
 Footer Color: #272727
 Text Colors: #333, white
 
+var(--darkBlue)
+
 */
+
+:root {
+  --darkBlue: rgba(25, 91, 150, 0.9);
+  --darkBlueHover: rgba(25, 91, 150, 1);
+  --highlight: #5DB8EF;
+  --highlightHover: #54a6da;
+  --lightBorder: #e0e0e5;
+}
 
 body {
   font-family: 'Inter',sans-serif;
   text-align: center;
-  color:#333;
+  color:#1E1E1E;
   font-size: 22px;
-  background-color: #eff8fc;
+  background:  #C8D2E3;
   padding-bottom: 50px;
 }
 
-* {
+* , button:focus{
   outline: none;
 }
 
@@ -67,12 +77,13 @@ h3 {
   font-size: 14px;
   padding: 0 20 0 20;
   display: block;
-  height: 75px;
+  height: 97px;
 }
 
 .grid-item-left {
   width: 25%;
   text-align: left;
+  vertical-align: middle;
 }
 .grid-item-right {
   width: 20%;
@@ -84,9 +95,10 @@ h3 {
 }
 
 #site-logo {
-  height: 100%; 
+  height: 89px; 
   width: auto; 
   object-fit: contain;
+  margin: 4 0;
 }
 
 .grid-item ul {
@@ -101,7 +113,7 @@ h3 {
 .nav-link {
   color:#333;
   transition: 0.1s transform ease-in-out;
-  padding: 27 15 27 15;
+  padding: 38 15 38 15;
 }
 
 .nav-link:hover {
@@ -121,14 +133,14 @@ h3 {
 
 .nav-link:hover:after {
   width: 100%;
-  background: rgba(9, 195, 189, 0.9);
+  background: var(--highlight);
   transform: translateY(3px);
 }
 
 .grid-item-middle::before {
   content: "";
   right: 0;
-  transform: translateY(100%);
+  transform: translateY(36px);
   height: 25px;
   width: 1px;
   background: rgba(25, 91, 150, 0.3);
@@ -145,16 +157,16 @@ h3 {
 #login-button {
   border-radius: 3px;
   border: none;
-  background-color: rgba(25, 91, 150, 0.9);
+  background-color: var(--darkBlue);
   color: white;
   padding: 12 36 12 36;
-  margin:  15 0 15 0;
+  margin:  26 0 26 0;
   right: 0;
   transition: background-color .2s ease;
 }
 
 #login-button:hover {
-  background-color: rgb(25, 91, 150);
+  background-color: var(--darkBlueHover);
 }
 
 /*#endregion*/
@@ -168,7 +180,7 @@ h3 {
 }
 
 #student-list .selected {
-  background-color: rgba(25, 91, 150, 0.9);
+  background-color: var(--darkBlue);
   color: white;
 }
 
@@ -251,7 +263,7 @@ h3 {
 }
 
 #notification-center button {
-  border: solid rgba(25, 91, 150, 0.9) 1px;
+  border: solid var(--darkBlue) 1px;
   border-radius: 3px;
   background-color: rgba(230, 230, 230, 0.7);
   padding: 4 10 4 10;
@@ -261,7 +273,7 @@ h3 {
   text-transform: uppercase;
 }
 #notification-center button:hover {
-  background-color: rgba(25, 91, 150, 0.9);
+  background-color: var(--darkBlueHover);
   color: white;
 }
 
@@ -277,7 +289,7 @@ h3 {
 
 .email-info-wrapper {
   background-color: white;
-  border: 1px solid rgba(9, 195, 189, 0.9);
+  border: 1px solid var(--highlight);
   vertical-align: middle;
   font-size: 1rem;
   line-height: 2;
@@ -338,7 +350,7 @@ h3 {
   margin-top: 16px;
   border: none;
   font-size: 14px;
-  color: rgba(9, 195, 189, 0.9);
+  color: var(--highlight);
   background-color: transparent;
 }
 
@@ -346,16 +358,16 @@ h3 {
   border: none;
   border-radius: 4rem;
   font-size: 14px;
-  color: rgba(9, 195, 189, 0.9);
+  color: var(--highlight);
   background-color: transparent;
 }
 
 #add-new-email-button:hover {
-  color: rgb(8, 170, 165)
+  color: var(--highlightHover);
 }
 
 #show-more-notifications:hover {
-  color: rgb(8, 170, 165)
+  color: var(--highlightHover);
 }
 
 .fa-chevron-down {
@@ -467,7 +479,7 @@ input.search-submit {
   line-height: 1.15;
   letter-spacing: 0.1rem;
   text-transform: uppercase;
-  background: rgba(25, 91, 150, 0.9);
+  background: var(--darkBlue);
   color: white;
   border: 1px solid transparent;
   vertical-align: middle;
@@ -478,14 +490,14 @@ input.search-submit {
 .search-button:active,
 .search-button:focus {
   cursor: pointer;
-  background: rgba(25, 91, 150, 0.9);
+  background: var(--darkBlue);
   color: white;
 }
 
 #filters label{
   font-size: 16px;
   margin: 0 0 5 0;
-  color: rgba(25, 91, 150, 0.9);
+  color: var(--darkBlue);
 }
 
 #filter-class {
@@ -503,7 +515,7 @@ input.search-submit {
 #add-student-form p, #add-student-form label{
   font-size: 16px;
   margin: 0 0 5 0;
-  color: rgba(25, 91, 150, 0.6);
+  color: var(--darkBlue);
 }
 
 #add-email-form p{
@@ -538,17 +550,21 @@ input[type=number] {
   margin-bottom: 25px;
   width: 70%;
   border-radius: 0.25rem;
-  border: 1px solid #e0e0e5;
+  border: 1px solid var(--lightBorder);
   font-size: 1rem;
   line-height: 2;
   padding: 0.375rem 1.25rem;
+}
+
+#student-class::-webkit-inner-spin-button {
+  padding-right: 50px;
 }
 
 #downpayment {
   margin-bottom: 25px;
   width: calc(70% - 36px);
   border-radius: 0 0.25rem 0.25rem 0;
-  border: 1px solid #e0e0e5;
+  border: 1px solid var(--lightBorder);
   font-size: 1rem;
   line-height: 2;
   padding: 0.375rem 1.25rem;
@@ -557,10 +573,8 @@ input[type=number] {
 #tuition-input {
   margin-bottom: 25px;
   width: calc(90% - 36px);
-  font-size: 16px;
-  padding-left: 8px;
   border-radius: 0 0.25rem 0.25rem 0;
-  border: 1px solid #e0e0e5;
+  border: 1px solid var(--lightBorder);
   font-size: 1rem;
   line-height: 2;
   padding: 0.375rem 1.25rem;
@@ -569,10 +583,8 @@ input[type=number] {
 #tuition-months {
   margin-bottom: 25px;
   width: 100%;
-  font-size: 16px;
-  padding-left: 8px;
   border-radius: 0.25rem;
-  border: 1px solid #e0e0e5;
+  border: 1px solid var(--lightBorder);
   font-size: 1rem;
   line-height: 2;
   padding: 0.375rem 1.25rem;
@@ -581,20 +593,16 @@ input[type=number] {
 #email-message {
   margin-bottom: 25px;
   width: 100%;
-  font-size: 16px;
-  padding-left: 8px;
   border-radius: 0.25rem;
-  border: 1px solid #e0e0e5;
+  border: 1px solid var(--lightBorder);
   font-size: 1rem;
   line-height: 2;
   padding: 0.375rem 1.25rem;
 }
 
 #days-to-email {
-  font-size: 16px;
-  padding-left: 8px;
   border-radius: 0.25rem;
-  border: 1px solid #e0e0e5;
+  border: 1px solid var(--lightBorder);
   font-size: 1rem;
   line-height: 2;
   padding: 0.375rem 1.25rem;
@@ -615,7 +623,7 @@ input[type=number] {
 #add-student-submit, 
 #add-email-submit, 
 #cancel-email-add {
-  border: solid rgba(25, 91, 150, 0.9) 1px;
+  border: solid var(--darkBlue) 1px;
   border-radius: 3px;
   background-color: rgba(230, 230, 230, 0.7);
   padding: 8 25 8 25;
@@ -627,7 +635,7 @@ input[type=number] {
 }
 
 #add-student-submit:hover, #add-email-submit:hover, #cancel-email-add:hover {
-  background-color: rgba(25, 91, 150, 0.9);
+  background-color: var(--darkBlue);
   color: white;
 }
 
@@ -692,14 +700,14 @@ input[type=number] {
 }
 
 .cd-panel__header h3 {
-  color: rgba(25, 91, 150, 0.9);
+  color: var(--darkBlue);
   display: inline-block;
   padding: 0.375rem 1.25rem;
   border-radius: 0.25rem;
 }
 
 .fa-trash-alt {
-  color: rgba(9, 195, 189, 0.9);
+  color: var(--highlight);
   cursor: pointer;
   font-size: 18px;
   left: 22px;
@@ -709,7 +717,7 @@ input[type=number] {
 }
 
 .fa-trash-alt:hover {
-  color: rgb(8, 170, 165);
+  color: var(--highlightHover);
 }
 
 .fa-envelope {
@@ -1002,7 +1010,7 @@ input[type=number] {
 }
 
 .cd-panel__content button {
-  border: solid rgba(25, 91, 150, 0.9) 1px;
+  border: solid var(--darkBlue) 1px;
   border-radius: 3px;
   background-color: rgba(230, 230, 230, 0.7);
   padding: 8 25 8 25;
@@ -1012,7 +1020,7 @@ input[type=number] {
   text-transform: uppercase;
 }
 .cd-panel__content button:hover {
-  background-color: rgba(25, 91, 150, 0.9);
+  background-color: var(--darkBlue);
   color: white;
 }
 
@@ -1060,7 +1068,7 @@ input[type=number] {
 
 
 #edit-student, #save-edit, #cancel-edit, #edit-emails, #done-editing-emails {
-  color: rgba(9, 195, 189, 0.9);
+  color: var(--highlight);
   cursor: pointer;
   font-size: 20px;
   right: 16px;
@@ -1088,18 +1096,206 @@ input[type=number] {
 }
 
 #edit-student:hover, #save-edit:hover, #cancel-edit:hover, #edit-emails:hover, #done-editing-emails:hover {
-  color: rgb(8, 170, 165);
+  color: var(--highlightHover);
 }
 /*#endregion*/
 
 #dollar-sign {
   background-color: rgb(238, 238, 238);
   color: rgba(25, 91, 150, 0.6);
-  margin-bottom: 25px;
   border-radius: 0.25rem 0 0 0.25rem;
   border: 1px solid #e0e0e5;
   border-right: none;
   font-size: 1rem;
   line-height: 2;
   padding: 0.75rem;
+}
+
+/* NEW STUFF */
+.log-payment {
+  background: rgba(230, 230, 230, 0.7);
+  border-radius: 3px;
+  border: solid var(--darkBlue) 1px;
+  height: 32px;
+  overflow: hidden;
+  position: relative;
+  text-align: center;
+  width: 104.4px;
+  -webkit-tap-highlight-color: transparent;
+  transition: width 300ms cubic-bezier(0.4, 0.0, 0.2, 1),
+    height 300ms cubic-bezier(0.4, 0.0, 0.2, 1),
+    box-shadow 300ms cubic-bezier(0.4, 0.0, 0.2, 1),
+    border-radius 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+.log-payment:not(.expand) {
+  cursor: pointer;
+}
+.log-payment:not(.expand):hover {
+  background: var(--darkBlue);
+  color: white;
+}
+.from {
+  position: absolute;
+  margin-left: 10px;
+  transition: opacity 200ms 100ms cubic-bezier(0.0, 0.0, 0.2, 1);
+}
+.from-contents {
+  text-align: center;
+  transform-origin: 0 0;
+  transition: transform 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+.to {
+  opacity: 0;
+  position: absolute;
+  transition: opacity 100ms cubic-bezier(0.4, 0.0, 1, 1);
+}
+.to-contents {
+  transform: scale(.55);
+  transform-origin: 0 0;
+  transition: transform 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+.log-payment-label {
+  font-size: 12px;
+  line-height: 32px;
+}
+.top {
+  background: var(--darkBlue);
+  display: flex;
+  flex-direction: row;
+  height: 70px;
+  transition: height 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
+  width: 300px;
+}
+.name-large {
+  color: #fff;
+  font-size: 14px;
+  line-height: 70px;
+  margin-left: 20px;
+}
+.x-touch {
+  align-items: center;
+  align-self: center;
+  cursor: pointer;
+  display: flex;
+  height: 50px;
+  justify-content: center;
+  margin-left: auto;
+  width: 50px;
+}
+.x {
+  background: #fff;
+  border-radius: 10px;
+  height: 20px;
+  position: relative;
+  width: 20px;
+}
+.x-touch:hover .x {
+  background: #e0e0e5;
+}
+.line1 {
+  background: var(--darkBlue);
+  height: 12px;
+  position: absolute;
+  transform: translateX(9px) translateY(4px) rotate(45deg);
+  width: 2px;
+}
+.line2 {
+  background: var(--darkBlue);
+  height: 12px;
+  position: absolute;
+  transform: translateX(9px) translateY(4px) rotate(-45deg);
+  width: 2px;
+}
+.bottom {
+  background: #FFF;
+  text-align: left;
+  color:  #444247;
+  font-size: 14px;
+  height: 239px;
+  padding: 16px 20px;
+  width: 300px;
+}
+
+.bottom label {
+  font-size: 14px;
+}
+
+#payment-date {
+  font-size: 14px;
+  margin-bottom: 25px;
+}
+
+#add-payment-form .margin-med {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+  flex-direction: row;
+}
+
+#add-payment-form #dollar-sign {
+  font-size: 14px;
+  padding: 6px 12px;
+}
+
+#payment-input {
+  background-color: white;
+  border: 1px solid #e0e0e5;
+  font-size: 14px;
+  line-height: 2;
+  padding: 0.375rem 1.25rem;
+  user-select: none;
+  font-family: 'Inter',sans-serif;
+  border-radius: 0 0.25rem 0.25rem 0;
+  width: 165px;
+}
+
+.payment-row {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  height: 60px;
+}
+.twitter {
+  margin-left: 16px;
+  height: 30px;
+  position: relative;
+  top: 0px;
+  width: 30px;
+}
+.medium {
+  height: 30px;
+  margin-left: 16px;
+  position: relative;
+  width: 30px;
+}
+.link {
+  margin-left: 16px;
+}
+.link a {
+  color:  #444247;
+  text-decoration: none;
+}
+.link a:hover {
+  color:  #777579;
+}
+.log-payment.expand {
+  border-radius: 6px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.10), 0 6px 6px rgba(0,0,0,0.16);
+  height: 309px;
+  width: 300px;
+  border: none;
+}
+.expand .from {
+  opacity: 0;
+  transition: opacity 100ms cubic-bezier(0.4, 0.0, 1, 1);
+}
+.expand .from-contents {
+  transform: scale(1.91);
+}
+.expand .to {
+  opacity: 1;
+  transition: opacity 200ms 100ms cubic-bezier(0.0, 0.0, 0.2, 1);
+}
+.expand .to-contents {
+  transform: scale(1);
 }

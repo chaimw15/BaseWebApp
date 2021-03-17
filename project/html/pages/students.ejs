@@ -34,7 +34,7 @@
               <input type="number" id="tuition-months" min="0" placeholder="4" required>
             </div>
           </div><br>
-          <label for="downpayment">Downpayment</label><br>
+          <label for="downpayment">Paid To Date</label><br>
           <span id="dollar-sign">$</span><input id="downpayment" type="number" min="0" placeholder="500" required><br>
           <label for="student-class">Class</label><br>
           <select id="student-class" name="student-class">
@@ -97,9 +97,9 @@
               <span title="Email Student"><a onclick="manualEmail()"><i class="far fa-envelope"></i></a></span>
             </div>
           </div>
-          <label for="student-enrolDate">Registration Date</label>
+          <label for="student-startDate">Registration Date</label>
           <div class="margin-med">
-            <input type="date" id="student-enrolDate" onchange="enrolChange()" disabled="true">
+            <input type="date" id="student-startDate" onchange="enrolChange()" disabled="true">
           </div>
           <div class="margin-med">
             <label for="student-tuition">Tuition</label><br>
@@ -111,7 +111,7 @@
               <span id="dollar-sign">$</span><input id="tuition-remaining" type="number" disabled="true"><br>
             </div>
             <div style="display: inline-block; width: 100px; margin-left:15px;">
-              <label for="student-monthsLeft">Months Left</label><br>
+              <label for="student-monthsLeft">Months</label><br>
               <input id="student-monthsLeft" type="number" disabled="true" required><br>
             </div>
           </div>
@@ -136,7 +136,40 @@
             <div id="days-until-due" style="display:inline;">
             </div>
           </div>
-          <button id="make-payment" onclick="makePayment()">Log Payment</button>
+          <div class="log-payment" onclick="openLogPayment()">
+            <div class="from">
+              <div class="from-contents">
+                <div class="log-payment-label">LOG PAYMENT</div>
+              </div>
+            </div>
+            <div class="to">
+              <div class="to-contents">
+                <div class="top">
+                  <div class="avatar-large me"></div>
+                  <div class="name-large">LOG PAYMENT</div>
+                  <div class="x-touch"
+                    onclick="document.querySelector('.log-payment').classList.remove('expand');event.stopPropagation();">
+                    <div class="x">
+                      <div class="line1"></div>
+                      <div class="line2"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="bottom">
+                  <form id="add-payment-form">
+                    <label for="payment-input">Amount</label>
+                    <div class="margin-med">
+                    <span id="dollar-sign">$</span><input id="payment-input" type="number" min="0" placeholder="500"
+                      required>
+                    </div>
+                    <label for="payment-date">Payment Date</label><br>
+                    <input id="payment-date" type="date" placeholder="yyyy-mm-dd" required><br>
+                    <button id="add-payment-submit" onclick="studentTabPayment()">Submit</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <h4>Payment History</h4>
