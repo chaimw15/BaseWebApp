@@ -89,6 +89,7 @@ function addStudent(firstName, lastName, email, startDate, tuition, totalMonths,
   email = email.toLowerCase();
 
   tuition = parseFloat(tuition).toFixed(2);
+  downpayment = parseFloat(downpayment).toFixed(2);
 
   var studentData = {
     firstName: firstName,
@@ -106,7 +107,7 @@ function addStudent(firstName, lastName, email, startDate, tuition, totalMonths,
   var newStudentRef = database.push();
   newStudentRef.then(function () {
     currentStudentKey = newStudentRef.getKey();
-    makePayment(downpayment, startDate, function () { });
+    makePayment(parseFloat(downpayment), startDate, function () { });
   });
 
   newStudentRef.set(studentData, (error) => {
@@ -1074,6 +1075,7 @@ function calculateAmountDue2(student) {
 
   var months = {};
   var nextPayment = student.startDate;
+  var paymentCounter = student.tuition;
 
   // Intitialize Months
   for (var i = 0; i < student.totalMonths; i++) {
@@ -1081,7 +1083,15 @@ function calculateAmountDue2(student) {
     nextPayment = getNextPayDate(nextPayment, student.startDate);
     month.dueDate = nextPayment;
     month.paidThisMonth = 0;
-    month.dueThisMonth = student.tuition / student.totalMonths;
+    if (paymentCounter > 500) {
+      month.dueThisMonth = Math.max(student.tuition / student.totalMonths, 500);
+    } else {
+      month.dueThisMonth = paymentCounter;
+    }
+    console.log(student.firstName);
+    console.log("payment counter: " + paymentCounter);
+    console.log("Due this month: " + month.dueThisMonth);
+    paymentCounter = paymentCounter - month.dueThisMonth;
     if (differenceInDays(nextPayment, getCurrentDate()) < 0) {
       month.interest = month.dueThisMonth * 0.03;
     } else {
@@ -1089,6 +1099,8 @@ function calculateAmountDue2(student) {
     }
     months["m" + i] = month;
   }
+
+  console.log(months);
 
   var payments = student.payments;
  
@@ -1160,9 +1172,6 @@ function calculateAmountDue2(student) {
 
   var remainingBalance = student.tuition - amountPaid;
 
-  if(amountDue < 500 && remainingBalance >= 500) {
-    amountDue = 500;
-  }
 
   if (remainingBalance < 0) {
     amountDue = remainingBalance;
