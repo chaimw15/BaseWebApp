@@ -81,13 +81,13 @@ const task = cron.schedule('30 19 * * * ', () => {
 
           var subject = "Peak College Tuition " + daysLeft + " Day Notice";
           var startMessage = "<p>Dear " + student.firstName + ",<br><br>" + "Your Peak College tuition payment of $" + amountDue + " is <strong>"
-          var endMessage = " Please send us an e-transfer at <a href='mailto:info@peakcollege.ca'>info@peakcollege.ca</a> to pay.<br><br>If you have any questions about your payment, please respond to this email.<br><br>Best regards,<br><br>Peak College Student Services</p>";
+          var endMessage = " Please send an e-transfer to <a href='mailto:yunny@peakcollege.ca'>yunny@peakcollege.ca</a> to pay.<br><br>If you have any questions about your payment, please respond to this email.<br><br>Best regards,<br><br>Peak College Student Services</p>";
           var message = startMessage + "due in " + daysLeft + " days.</strong>" + endMessage;
 
           for (emailKeys in emails) {
             if (emails[emailKeys].days == daysLeft) {
               if (daysLeft == 1) {
-                message = startMessage + "due in 1 day.</strong> If your payment is late a charge of 3% interest will be added to your bill." + endMessage;
+                message = startMessage + "due tomorrow.</strong> If your payment is late a charge of 3% interest will be added to your bill." + endMessage;
 
               } else if (daysLeft == 0) {
                 subject = "Peak College Tuition Due Today";
