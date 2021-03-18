@@ -56,7 +56,7 @@ const task = cron.schedule('* * * * *', () => {
     firebase.app();
   }
 
-  console.log('still running...');
+  console.log('Firebase initialized...');
 
   var database = firebase.database();
 
@@ -73,15 +73,15 @@ const task = cron.schedule('* * * * *', () => {
         amountDue = returnData[0];
         dueDate = returnData[1];
         remainingBalance = returnData[2];
-        console.log("Amount due: " + amountDue);
-        console.log("Due date: " + dueDate);
-        console.log("Remaining Balance: " + remainingBalance);
 
         var daysLeft = differenceInDays(dueDate, getCurrentDate());
-        console.log("Days Left: " + daysLeft);
 
         if (amountDue > 0) {
+          console.log("Prepping email to " + student.firstName);
+          
           amountDue = amountDue.toFixed(2);
+
+          console.log("Amount due is: " + amountDue);
 
           var subject = "Peak College Tuition " + daysLeft + " Day Notice";
           var startMessage = "<p>Dear " + student.firstName + ",<br><br>" + "Your Peak College tuition payment of $" + amountDue + " is <strong>"
@@ -120,8 +120,6 @@ const task = cron.schedule('* * * * *', () => {
 });
 
 function differenceInDays(laterDate, earlierDate) {
-  console.log("Later date: " + laterDate);
-  console.log("Earlier date: " + laterDate);
   var Difference_In_Time = makeDateObject(laterDate).getTime() - makeDateObject(earlierDate).getTime();
 
   return Math.ceil(Difference_In_Time / (1000 * 3600 * 24));
@@ -147,13 +145,12 @@ function getCurrentDate() {
 
 function makeDateObject(dateString) {
   var temp = dateString.split("-");
-  console.log(dateString);
 
   return new Date(parseInt(temp[0]), parseInt(temp[1]) - 1, parseInt(temp[2]));
 }
 
 function sendEmail(subject, message, studentEmail, studentName) {
-  console.log("eh");
+  console.log("Sending email...");
   console.log(message);
   /*
   const requestMail = mailjet.post("send", { 'version': 'v3.1' }).request({
@@ -178,6 +175,7 @@ function sendEmail(subject, message, studentEmail, studentName) {
   });
   requestMail.then((result) => {
     console.log(result.body)
+    console.log("Email sent!");
   }).catch((err) => {
     console.log(err.statusCode)
   });
