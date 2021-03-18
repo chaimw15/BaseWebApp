@@ -36,7 +36,7 @@ app.listen(app.get('port'), function () {
 
 const cron = require('node-cron');
 
-const task = cron.schedule('30 11 * * *', () => {
+const task = cron.schedule('19 11 * * *', () => {
   console.log('Running...');
 
   var firebaseConfig = {
@@ -153,7 +153,7 @@ function makeDateObject(dateString) {
 function sendEmail(subject, message, studentEmail, studentName) {
   console.log("Sending email...");
   console.log(message);
-
+  /*
   const requestMail = mailjet.post("send", { 'version': 'v3.1' }).request({
     "Messages": [
       {
@@ -180,6 +180,7 @@ function sendEmail(subject, message, studentEmail, studentName) {
   }).catch((err) => {
     console.log(err.statusCode)
   });
+  */
 }
 
 function calculateAmountDue2(student) {
