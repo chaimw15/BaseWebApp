@@ -36,7 +36,7 @@ app.listen(app.get('port'), function () {
 
 const cron = require('node-cron');
 
-const task = cron.schedule('37 10 * * *', () => {
+const task = cron.schedule('1 * * * *', () => {
   console.log('running...');
 
   var firebaseConfig = {
@@ -69,7 +69,7 @@ const task = cron.schedule('37 10 * * *', () => {
       for (var studentKey in students) {
         var student = students[studentKey];
 
-        var returnData = calculateAmountDue2(student, studentKey);
+        var returnData = calculateAmountDue2(student);
         amountDue = returnData[0];
         dueDate = returnData[1];
         remainingBalance = returnData[2];
@@ -120,6 +120,8 @@ const task = cron.schedule('37 10 * * *', () => {
 });
 
 function differenceInDays(laterDate, earlierDate) {
+  console.log("Later date: " + laterDate);
+  console.log("Earlier date: " + laterDate);
   var Difference_In_Time = makeDateObject(laterDate).getTime() - makeDateObject(earlierDate).getTime();
 
   return Math.ceil(Difference_In_Time / (1000 * 3600 * 24));
