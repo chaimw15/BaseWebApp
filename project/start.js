@@ -36,8 +36,8 @@ app.listen(app.get('port'), function () {
 
 const cron = require('node-cron');
 
-const task = cron.schedule('* * * * *', () => {
-  console.log('running...');
+const task = cron.schedule('15 11 * * *', () => {
+  console.log('Running...');
 
   var firebaseConfig = {
     apiKey: process.env.FIREBASE_API_KEY,
@@ -77,11 +77,11 @@ const task = cron.schedule('* * * * *', () => {
         var daysLeft = differenceInDays(dueDate, getCurrentDate());
 
         if (amountDue > 0) {
-          console.log("Prepping email to " + student.firstName);
+          console.log("Prepping email to " + student.firstName + "...");
           
           amountDue = amountDue.toFixed(2);
 
-          console.log("Amount due is: " + amountDue);
+          console.log("Amount due is: $" + amountDue);
 
           var subject = "Peak College Tuition " + daysLeft + " Day Notice";
           var startMessage = "<p>Dear " + student.firstName + ",<br><br>" + "Your Peak College tuition payment of $" + amountDue + " is <strong>"
