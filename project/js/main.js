@@ -285,9 +285,8 @@ function saveEdit() {
     $("#student-monthsLeft").attr("disabled", true);
 
     var startDate = $("#student-startDate").val();
-    var nextPayment = $("#student-nextPayment").val();
     var tuition = parseFloat($("#student-tuition").val());
-    var monthsLeft = parseInt($("#student-monthsLeft").val());
+    var totalMonths = parseInt($("#student-monthsLeft").val());
 
     var name = $("#student-name").text();
 
@@ -307,9 +306,8 @@ function saveEdit() {
       lastName: lastName,
       email: email,
       startDate: startDate,
-      nextPayment: nextPayment,
-      tuition: parseFloat(tuition),
-      monthsLeft: parseInt(monthsLeft)
+      tuition: parseFloat(tuition.toFixed(2)),
+      totalMonths: parseInt(totalMonths)
     };
 
     firebase.database().ref("/students/" + currentStudentKey).update(studentData);
@@ -317,21 +315,16 @@ function saveEdit() {
     firebase.database().ref("/students/" + currentStudentKey).once('value').then((snapshot) => {
       var student = snapshot.val();
 
-      var timeUntilDue = differenceInDays(nextPayment, getCurrentDate());
-      var amountDue = 0;
-
-      if (monthsLeft != null && monthsLeft > 0) {
-        amountDue = (tuition - student.principal) / monthsLeft;
-      }
-
-      if (timeUntilDue < 0) {
-        amountDue *= 1.03;
-      }
+      var returnData = calculateAmountDue2(student);
+      var amountDue = returnData[0];
+      var dueDate = returnData[1];
+      var remainingBalance = returnData[2];
 
       $("#student-name").text(firstName + " " + lastName);
       $("#student-tuition").val(tuition.toFixed(2));
       $("#student-amountDue").val(amountDue.toFixed(2));
-      $("#tuition-remaining").val((tuition - student.principal).toFixed(2));
+      $("#tuition-remaining").val(remainingBalance.toFixed(2));
+      $("#student-nextPayment").val(dueDate);
 
     });
     getStudents();
@@ -460,9 +453,9 @@ function studentTabPayment() {
       var student = snapshot.val();
 
       var returnData = calculateAmountDue2(student);
-      amountDue = returnData[0];
-      dueDate = returnData[1];
-      remainingBalance = returnData[2];
+      var amountDue = returnData[0];
+      var dueDate = returnData[1];
+      var remainingBalance = returnData[2];
 
       if (amountDue > 0) {
         var timeUntilDue = differenceInDays(dueDate, getCurrentDate());

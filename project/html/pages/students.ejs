@@ -156,7 +156,7 @@
                   </div>
                 </div>
                 <div class="bottom">
-                  <form id="add-payment-form">
+                  <form id="add-payment-form" onsubmit="studentTabPayment();return false">
                     <label for="payment-input">Amount</label>
                     <div class="margin-med">
                     <span id="dollar-sign">$</span><input id="payment-input" type="number" min="0" placeholder="500"
@@ -164,7 +164,7 @@
                     </div>
                     <label for="payment-date">Payment Date</label><br>
                     <input id="payment-date" type="date" placeholder="yyyy-mm-dd" required><br>
-                    <button id="add-payment-submit" onclick="studentTabPayment()">Submit</button>
+                    <button id="add-payment-submit">Submit</button>
                   </form>
                 </div>
               </div>
