@@ -36,7 +36,7 @@ app.listen(app.get('port'), function () {
 
 const cron = require('node-cron');
 
-const task = cron.schedule('5 21 * * *', () => {
+const task = cron.schedule('12 21 * * *', () => {
   console.log('running...');
 
   var firebaseConfig = {
@@ -145,6 +145,7 @@ function getCurrentDate() {
 
 function makeDateObject(dateString) {
   var temp = dateString.split("-");
+  console.log(dateString);
 
   return new Date(parseInt(temp[0]), parseInt(temp[1]) - 1, parseInt(temp[2]));
 }
@@ -178,18 +179,24 @@ function sendEmail(subject, message, studentEmail, studentName) {
   });
 }
 
-function calculateAmountDue2(student, studentKey) {
+function calculateAmountDue2(student) {
 
   var months = {};
-  var nextPayment = student.enrolDate;
+  var nextPayment = student.startDate;
+  var paymentCounter = student.tuition;
 
   // Intitialize Months
   for (var i = 0; i < student.totalMonths; i++) {
     var month = {};
-    nextPayment = getNextPayDate(nextPayment, student.enrolDate);
+    nextPayment = getNextPayDate(nextPayment, student.startDate);
     month.dueDate = nextPayment;
     month.paidThisMonth = 0;
-    month.dueThisMonth = student.tuition / student.totalMonths;
+    if (paymentCounter > 500) {
+      month.dueThisMonth = Math.max(student.tuition / student.totalMonths, 500);
+    } else {
+      month.dueThisMonth = paymentCounter;
+    }
+    paymentCounter = paymentCounter - month.dueThisMonth;
     if (differenceInDays(nextPayment, getCurrentDate()) < 0) {
       month.interest = month.dueThisMonth * 0.03;
     } else {
@@ -267,6 +274,7 @@ function calculateAmountDue2(student, studentKey) {
   }
 
   var remainingBalance = student.tuition - amountPaid;
+
 
   if (remainingBalance < 0) {
     amountDue = remainingBalance;
