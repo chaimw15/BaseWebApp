@@ -81,7 +81,7 @@ const task = cron.schedule('* * * * *', () => {
           
           amountDue = amountDue.toFixed(2);
 
-          console.log("Amount due is: $" + amountDue);
+          console.log("$" + amountDue + " due in " + daysLeft + " days");
 
           var subject = "Peak College Tuition " + daysLeft + " Day Notice";
           var startMessage = "<p>Dear " + student.firstName + ",<br><br>" + "Your Peak College tuition payment of $" + amountDue + " is <strong>"
