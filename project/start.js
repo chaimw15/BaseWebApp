@@ -154,6 +154,8 @@ function makeDateObject(dateString) {
 
 function sendEmail(subject, message, studentEmail, studentName) {
   console.log("eh");
+  console.log(message);
+  /*
   const requestMail = mailjet.post("send", { 'version': 'v3.1' }).request({
     "Messages": [
       {
@@ -179,6 +181,7 @@ function sendEmail(subject, message, studentEmail, studentName) {
   }).catch((err) => {
     console.log(err.statusCode)
   });
+  */
 }
 
 function calculateAmountDue2(student) {
