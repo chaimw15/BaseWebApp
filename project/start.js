@@ -77,11 +77,9 @@ const task = cron.schedule('* * * * *', () => {
         var daysLeft = differenceInDays(dueDate, getCurrentDate());
 
         if (amountDue > 0) {
-          console.log("Prepping email to " + student.firstName + "...");
+          
           
           amountDue = amountDue.toFixed(2);
-
-          console.log("$" + amountDue + " due in " + daysLeft + " days");
 
           var subject = "Peak College Tuition " + daysLeft + " Day Notice";
           var startMessage = "<p>Dear " + student.firstName + ",<br><br>" + "Your Peak College tuition payment of $" + amountDue + " is <strong>"
@@ -151,8 +149,10 @@ function makeDateObject(dateString) {
 }
 
 function sendEmail(subject, message, studentEmail, studentName) {
-  console.log("Sending email...");
+  console.log("Prepping email to " + studentName + "...");
+  console.log(subject);
   console.log(message);
+  console.log("Sending email...");
   /*
   const requestMail = mailjet.post("send", { 'version': 'v3.1' }).request({
     "Messages": [
