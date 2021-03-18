@@ -36,7 +36,7 @@ app.listen(app.get('port'), function () {
 
 const cron = require('node-cron');
 
-const task = cron.schedule('1 * * * *', () => {
+const task = cron.schedule('* * * * *', () => {
   console.log('running...');
 
   var firebaseConfig = {
