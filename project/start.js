@@ -36,7 +36,7 @@ app.listen(app.get('port'), function () {
 
 const cron = require('node-cron');
 
-const task = cron.schedule('55 20 * * *', () => {
+const task = cron.schedule('5 21 * * *', () => {
   console.log('running...');
 
   var firebaseConfig = {
@@ -73,8 +73,12 @@ const task = cron.schedule('55 20 * * *', () => {
         amountDue = returnData[0];
         dueDate = returnData[1];
         remainingBalance = returnData[2];
+        console.log("Amount due: " + amountDue);
+        console.log("Due date: " + dueDate);
+        console.log("Remaining Balance: " + remainingBalance);
 
         var daysLeft = differenceInDays(dueDate, getCurrentDate());
+        console.log("Days Left: " + daysLeft);
 
         if (amountDue > 0) {
           amountDue = amountDue.toFixed(2);
@@ -98,11 +102,11 @@ const task = cron.schedule('55 20 * * *', () => {
                 message = startMessage + "1 day overdue.</strong> This bill includes 3% interest on your unpaid balance." + endMessage;
 
               } else if (daysLeft < -1) {
-                subject = "Peak College Tuition " + daysLeft + " Days Overdue";
+                subject = "Peak College Tuition " + Math.abs(daysLeft) + " Days Overdue";
                 message = startMessage + Math.abs(daysLeft) + " overdue.</strong> This bill includes 3% interest on your unpaid balance." + endMessage;
 
               } else if (daysLeft <= -14) {
-                subject = "Peak College Tuition " + daysLeft + " Days Overdue";
+                subject = "Peak College Tuition " + Math.abs(daysLeft) + " Days Overdue";
                 message = startMessage + Math.abs(daysLeft) + " overdue.</strong> This bill includes 3% interest on your unpaid balance." + endMessage;
 
               }
