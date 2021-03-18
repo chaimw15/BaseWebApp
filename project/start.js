@@ -70,9 +70,9 @@ const task = cron.schedule('45 10 * * *', () => {
         var student = students[studentKey];
 
         var returnData = calculateAmountDue2(student);
-        amountDue = returnData[0];
-        dueDate = returnData[1];
-        remainingBalance = returnData[2];
+        var amountDue = returnData[0];
+        var dueDate = returnData[1];
+        var remainingBalance = returnData[2];
 
         var daysLeft = differenceInDays(dueDate, getCurrentDate());
 

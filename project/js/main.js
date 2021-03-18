@@ -151,9 +151,9 @@ function openStudentTab(thisStudent) {
         currentStudentKey = studentKey;
 
         var returnData = calculateAmountDue2(student);
-        amountDue = returnData[0];
-        dueDate = returnData[1];
-        remainingBalance = returnData[2];
+        var amountDue = returnData[0];
+        var dueDate = returnData[1];
+        var remainingBalance = returnData[2];
 
         var timeUntilDue = differenceInDays(dueDate, getCurrentDate());
 
@@ -554,9 +554,9 @@ function notificationCenterPayment(studentKey) {
       var student = snapshot.val();
 
       var returnData = calculateAmountDue2(student);
-      amountDue = returnData[0];
-      dueDate = returnData[1];
-      remainingBalance = returnData[2];
+      var amountDue = returnData[0];
+      var dueDate = returnData[1];
+      var remainingBalance = returnData[2];
 
       var days = differenceInDays(dueDate, getCurrentDate());
 
@@ -789,9 +789,9 @@ function getNotifications() {
       currentStudentKey = studentKey;
 
       var returnData = calculateAmountDue2(student);
-      amountDue = returnData[0];
-      dueDate = returnData[1];
-      remainingBalance = returnData[2];
+      var amountDue = returnData[0];
+      var dueDate = returnData[1];
+      var remainingBalance = returnData[2];
 
       var days = differenceInDays(dueDate, getCurrentDate());
       if (amountDue > 0) {
