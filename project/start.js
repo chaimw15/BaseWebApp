@@ -95,6 +95,7 @@ const task = cron.schedule('30 11 * * *', () => {
 
               } else if (daysLeft == 0) {
                 subject = "Peak College Tuition Due Today";
+                startMessage = "<p>Dear " + student.firstName + ",<br><br>" + "Please disregard our last email. Your Peak College tuition payment is $" + amountDue + " and is <strong>"
                 message = startMessage + "due today.</strong> If your payment is late a charge of 3% interest will be added to your bill." + endMessage;
 
               } else if (daysLeft == -1) {
