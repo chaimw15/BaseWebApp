@@ -1088,9 +1088,6 @@ function calculateAmountDue2(student) {
     } else {
       month.dueThisMonth = paymentCounter;
     }
-    console.log(student.firstName);
-    console.log("payment counter: " + paymentCounter);
-    console.log("Due this month: " + month.dueThisMonth);
     paymentCounter = paymentCounter - month.dueThisMonth;
     if (differenceInDays(nextPayment, getCurrentDate()) < 0) {
       month.interest = month.dueThisMonth * 0.03;
@@ -1099,8 +1096,6 @@ function calculateAmountDue2(student) {
     }
     months["m" + i] = month;
   }
-
-  console.log(months);
 
   var payments = student.payments;
  
