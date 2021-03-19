@@ -36,7 +36,7 @@ app.listen(app.get('port'), function () {
 
 const cron = require('node-cron');
 
-const task = cron.schedule('45 10 * * *', () => {
+const task = cron.schedule('00 17 * * *', () => {
   console.log('Running...');
 
   var firebaseConfig = {
@@ -152,7 +152,6 @@ function sendEmail(subject, message, studentEmail, studentName) {
   console.log(subject);
   console.log(message);
   console.log("Sending email...");
-/*
   const requestMail = mailjet.post("send", { 'version': 'v3.1' }).request({
     "Messages": [
       {
@@ -179,11 +178,9 @@ function sendEmail(subject, message, studentEmail, studentName) {
   }).catch((err) => {
     console.log(err.statusCode)
   });
-  */
 }
 
 function calculateAmountDue2(student) {
-  console.log("hi")
   var months = {};
   var nextPayment = student.startDate;
   var paymentCounter = student.tuition - student.downpayment;
@@ -224,7 +221,6 @@ function calculateAmountDue2(student) {
           //if payment is before due date
           if (differenceInDays(month.dueDate, payment.payDate) >= 0) {
             if (monthKey > 0 && differenceInDays(months[monthKey - 1].dueDate, payment.payDate) >= 0) {
-              console.log("excess payment");
               for (var j = i - 1; j > monthKey - 1; j--) {
                 var lastMonth = months[j];
                 var dueInLastMonth = lastMonth.dueThisMonth;
