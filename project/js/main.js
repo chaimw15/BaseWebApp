@@ -46,11 +46,27 @@ function handleAddStudentSubmit() {
   var totalMonths = $("#tuition-months").val();
 
   email = email.trim();
+  firstName = firstName.trim();
+  lastName = lastName.trim();
+
+  var split_names = firstName.split(" ");
+  var middleName = "";
+
+  if (split_names.length > 2) {
+    for (var i = 1; i < split_names.length; i++) {
+      middleName = middleName + " " + split_names[i];
+    }
+    middleName = formatName(middleName);
+  }
+
+  firstName = formatName(firstName);
+  lastName = formatName(lastName);
+  email = email.toLowerCase();
 
   var isValid = validateEmail(email);
   if (isValid) {
     $("#email").css("border-color", "#e0e0e5");
-    addStudent(firstName, lastName, email, startDate, tuition, totalMonths, studentClass, downpayment);
+    addStudent(firstName, middleName, lastName, email, startDate, tuition, totalMonths, studentClass, downpayment);
   } else {
     $("#add-student-form").submit(function (e) {
       e.preventDefault();
@@ -83,32 +99,26 @@ function formatName(name) {
   return name;
 }
 
-function addStudent(firstName, lastName, email, startDate, tuition, totalMonths, studentClass, downpayment) {
-  firstName = formatName(firstName);
-  lastName = formatName(lastName);
-  email = email.toLowerCase();
-
+function addStudent(firstName, middleName, lastName, email, startDate, tuition, totalMonths, studentClass, downpayment) {
   tuition = parseFloat(tuition).toFixed(2);
   downpayment = parseFloat(downpayment).toFixed(2);
 
   var studentData = {
     firstName: firstName,
+    middleName: middleName,
     lastName: lastName,
     email: email,
     startDate: startDate,
     tuition: parseFloat(tuition),
     totalMonths: parseInt(totalMonths),
     studentClass: studentClass,
-    remainingBalance: parseFloat(tuition)
+    remainingBalance: parseFloat(tuition),
+    downpayment: parseFloat(downpayment)
   };
 
   var database = firebase.database().ref("students");
 
   var newStudentRef = database.push();
-  newStudentRef.then(function () {
-    currentStudentKey = newStudentRef.getKey();
-    makePayment(parseFloat(downpayment), startDate, function () { });
-  });
 
   newStudentRef.set(studentData, (error) => {
     if (error) {
@@ -179,7 +189,7 @@ function openStudentTab(thisStudent) {
           amountDue = Math.abs(amountDue);
         }
 
-        $("#student-name").text(student.firstName + " " + student.lastName);
+        $("#student-name").text(student.firstName + " " + student.middleName + " " + student.lastName);
         $("#student-email").val(student.email);
         $("#student-startDate").val(student.startDate);
         $("#student-tuition").val(student.tuition.toFixed(2));
@@ -293,17 +303,20 @@ function saveEdit() {
     var split_names = name.split(" ");
 
     var lastName = formatName(split_names[split_names.length - 1]);
-    var firstName = "";
+    var firstName = formatName(split_names[0]);
+    var middleName = "";
 
-    for (var i = 0; i < split_names.length - 1; i++) {
-      firstName = firstName + " " + split_names[i];
+    if (split_names.length > 2) {
+      for (var i = 1; i < split_names.length - 1; i++) {
+        middleName = middleName + " " + split_names[i];
+      }
+      middleName = formatName(middleName);
     }
-
-    firstName = formatName(firstName);
 
     var studentData = {
       firstName: firstName,
       lastName: lastName,
+      middleName: middleName,
       email: email,
       startDate: startDate,
       tuition: parseFloat(tuition.toFixed(2)),
@@ -320,7 +333,7 @@ function saveEdit() {
       var dueDate = returnData[1];
       var remainingBalance = returnData[2];
 
-      $("#student-name").text(firstName + " " + lastName);
+      $("#student-name").text(firstName + " " + student.middleName + " " + lastName);
       $("#student-tuition").val(tuition.toFixed(2));
       $("#student-amountDue").val(amountDue.toFixed(2));
       $("#tuition-remaining").val(remainingBalance.toFixed(2));
@@ -338,12 +351,11 @@ function cancelEdit() {
   firebase.database().ref("/students/" + currentStudentKey).once('value').then((snapshot) => {
     var student = snapshot.val();
 
-    $("#student-name").text(student.firstName + " " + student.lastName);
+    $("#student-name").text(student.firstName + " " + student.middleName + " " + student.lastName);
     $("#student-email").val(student.email);
     $("#student-startDate").val(student.startDate);
-    $("#student-nextPayment").val(student.nextPayment);
     $("#student-tuition").val(student.tuition);
-    $("#student-monthsLeft").val(student.monthsLeft);
+    $("#student-monthsLeft").val(student.totalMonths);
 
     $("#edit-student").css("visibility", "visible");
     $("#cancel-edit").css("visibility", "hidden");
@@ -479,8 +491,10 @@ function studentTabPayment() {
         $("#dueDays").remove();
         $("#student-nextPayment").val(null);
         $("#tuition-remaining").val(remainingBalance.toFixed(2));
-        $("#student-amountDue").val(amountDue.toFixed(2));
+        $("#student-amountDue").val(Math.abs(amountDue).toFixed(2));
+        $("label[for='student-amountDue']").text("Required Refund");
       }
+      $("#payment-input").val(0);
       getPaymentHistory();
     });
   });
@@ -677,8 +691,9 @@ function deleteStudent() {
 }
 
 function getPaymentHistory() {
-  firebase.database().ref("/students/" + currentStudentKey + "/payments").once('value').then((snapshot) => {
-    var paymentHistory = snapshot.val();
+  firebase.database().ref("/students/" + currentStudentKey).once('value').then((snapshot) => {
+    var student = snapshot.val();
+    var paymentHistory = student.payments;
     $("#payment-history .payments").remove();
     $("#payment-history  #history-default").remove();
 
@@ -689,9 +704,17 @@ function getPaymentHistory() {
 
         $("#payment-history").prepend("<p class='payments'><span class='payment-history-due-date'>$" + amountPaid + "</span> paid on " + payment.payDate + ".</p>");
       }
+      if (student.downpayment > 0) {
+        $("#payment-history").append("<p class='payments'><span class='payment-history-due-date'>$" + student.downpayment + "</span> downpayment.</p>");
+      }
     } else {
-      $("#payment-history").append('<p id="history-default">No payments yet.</p>');
+      if (student.downpayment > 0) {
+        $("#payment-history").append("<p class='payments'><span class='payment-history-due-date'>$" + student.downpayment + "</span> downpayment.</p>");
+      } else {
+        $("#payment-history").append('<p id="history-default">No payments yet.</p>');
+      }
     }
+
   });
 }
 
@@ -1064,14 +1087,15 @@ function openLogPayment() {
   }
 }
 
-function calculateAmountDue2(student) {
+function calculateAmountDue4(student) {
 
   var months = {};
   var nextPayment = student.startDate;
-  var paymentCounter = student.tuition;
+  var paymentCounter = student.tuition - student.downpayment;
 
   // Intitialize Months
-  for (var i = 0; i < student.totalMonths; i++) {
+  var i;
+  for (i = 0; i < student.totalMonths; i++) {
     var month = {};
     nextPayment = getNextPayDate(nextPayment, student.startDate);
     month.dueDate = nextPayment;
@@ -1082,48 +1106,92 @@ function calculateAmountDue2(student) {
       month.dueThisMonth = paymentCounter;
     }
     paymentCounter = paymentCounter - month.dueThisMonth;
-    if (differenceInDays(nextPayment, getCurrentDate()) < 0) {
+    if (differenceInDays(month.dueDate, getCurrentDate()) < 0) {
       month.interest = month.dueThisMonth * 0.03;
     } else {
       month.interest = 0;
     }
-    months["m" + i] = month;
+    months[i] = month;
   }
 
   var payments = student.payments;
- 
+
   var excessPayment = 0;
 
   if (payments != null) {
+    //cycle through payments
     for (var paymentKey in payments) {
       payment = payments[paymentKey];
       payment.amountLeft = payment.amount;
+      //cycle through months
       for (var monthKey in months) {
         var month = months[monthKey];
         if (month.paidThisMonth < month.dueThisMonth) {
+          //if payment is before due date
           if (differenceInDays(month.dueDate, payment.payDate) >= 0) {
+            //if payment is more than the remaining balance this month
             if (payment.amountLeft > month.dueThisMonth - month.paidThisMonth) {
               payment.amountLeft = payment.amountLeft - (month.dueThisMonth - month.paidThisMonth);
               month.paidThisMonth = month.dueThisMonth;
               month.interest = 0;
+
+              for (var j = i - 1; j > monthKey; j--) {
+                var lastMonth = months[j];
+                var dueInLastMonth = lastMonth.dueThisMonth;
+                if (dueInLastMonth > payment.amountLeft) {
+                  lastMonth.dueThisMonth = lastMonth.dueThisMonth - payment.amountLeft;
+                  payment.amountLeft = 0
+                  break;
+                } else if (dueInLastMonth == 0) {
+                  continue;
+                } else {
+                  lastMonth.dueThisMonth = 0;
+                  payment.amountLeft = payment.amountLeft - dueInLastMonth;
+                }
+              }
+
+              break;
+
+              //if payment is less than the remaining balance this month
             } else {
               month.paidThisMonth = month.paidThisMonth + payment.amountLeft;
               month.interest = month.interest - 0.03 * payment.amountLeft;
               payment.amountLeft = 0;
               break;
             }
+            //if payment is after due date
           } else {
+            // if payment is more than the interst due this month
             if (payment.amountLeft > month.interest) {
-              if (payment.amountLeft - month.interest > month.dueThisMonth - month.paidThisMonth) {
+              if (payment.amountLeft > month.dueThisMonth - month.paidThisMonth + month.interest) {
                 payment.amountLeft = payment.amountLeft - month.interest - (month.dueThisMonth - month.paidThisMonth);
                 month.paidThisMonth = month.dueThisMonth;
                 month.interest = 0;
+
+                for (var j = i - 1; j > monthKey; j--) {
+                  var lastMonth = months[j];
+                  var dueInLastMonth = lastMonth.dueThisMonth;
+                  if (dueInLastMonth > payment.amountLeft) {
+                    lastMonth.dueThisMonth = lastMonth.dueThisMonth - payment.amountLeft;
+                    payment.amountLeft = 0
+                    break;
+                  } else if (dueInLastMonth == 0) {
+                    continue;
+                  } else {
+                    lastMonth.dueThisMonth = 0;
+                    payment.amountLeft = payment.amountLeft - dueInLastMonth;
+                  }
+                }
+
+                break;
+
               } else {
                 month.paidThisMonth = month.paidThisMonth + payment.amountLeft - month.interest;
                 month.interest = 0;
                 payment.amountLeft = 0;
                 break;
               }
+              // if payment is less than the interst due this month
             } else {
               month.interest = month.interest - payment.amountLeft;
               payment.amountLeft = 0;
@@ -1138,8 +1206,14 @@ function calculateAmountDue2(student) {
 
   var amountDue = 0;
   var amountPaid = excessPayment;
+  var tuitionAdjusted = 0;
   var dueDate = "";
 
+  for (var monthKey in months) {
+    tuitionAdjusted = tuitionAdjusted + months[monthKey].dueThisMonth;
+  }
+
+  console.log(months);
   for (var monthKey in months) {
     var month = months[monthKey];
     amountPaid = amountPaid + month.paidThisMonth;
@@ -1158,7 +1232,222 @@ function calculateAmountDue2(student) {
     }
   }
 
-  var remainingBalance = student.tuition - amountPaid;
+  var remainingBalance = tuitionAdjusted - amountPaid;
+
+
+  if (remainingBalance < 0) {
+    amountDue = remainingBalance;
+  }
+
+  return [amountDue, dueDate, remainingBalance];
+}
+
+function calculateAmountDue3(student) {
+  var months = {};
+  var nextPayment = student.startDate;
+  var paymentCounter = student.tuition - student.downpayment;
+
+  // Intitialize Months
+  var i;
+  for (i = 0; i < student.totalMonths; i++) {
+    var month = {};
+    nextPayment = getNextPayDate(nextPayment, student.startDate);
+    month.dueDate = nextPayment;
+    month.paidThisMonth = 0;
+    if (paymentCounter > 500) {
+      month.dueThisMonth = Math.max(student.tuition / student.totalMonths, 500);
+    } else {
+      month.dueThisMonth = paymentCounter;
+    }
+    paymentCounter = paymentCounter - month.dueThisMonth;
+    if (differenceInDays(month.dueDate, getCurrentDate()) < 0) {
+      month.interest = month.dueThisMonth * 0.03;
+    } else {
+      month.interest = 0;
+    }
+    months[i] = month;
+  }
+
+  var payments = student.payments;
+
+  for (var paymentKey in payments) {
+    var payment = payments[paymentKey];
+    for (var monthKey in months) {
+      var month = months[monthKey];
+      if (differenceInDays(month.dueDate, payment.payDate) >= 0) {
+        if (payment.amount < month.amountDue - month.amountPaid) {
+          month.amountPaid = month.amountPaid + payment.amount;
+          month.interest = month.interest - payment.amount * 0.03;
+          break;
+        } else {
+          var paymentLeft = payment.amount - (month.amountDue - month.amountPaid);
+          month.amountPaid = month.amountDue;
+          month.interest = 0;
+
+          for (var k = 0; k < monthKey; k++) {
+            if (paymentLeft > months[k].interest) {
+              paymentLeft = paymentLeft - months[k].interest;
+              months[k].interest = 0;
+            } else {
+              months[k].interest = months[k].interest - paymentLeft;
+              paymentLeft = 0;
+              break;
+            }
+          }
+
+          if (paymentLeft > 0) {
+            for (var j = i - 1; j > monthKey; j--) {
+              var lastMonth = months[j];
+              var dueInLastMonth = lastMonth.dueThisMonth;
+              if (dueInLastMonth > paymentLeft) {
+                lastMonth.dueThisMonth = lastMonth.dueThisMonth - paymentLeft;
+                paymentLeft = 0
+                break;
+              } else if (dueInLastMonth == 0) {
+                continue;
+              } else {
+                lastMonth.dueThisMonth = 0;
+                paymentLeft = paymentLeft - dueInLastMonth;
+              }
+            }
+          }
+
+          break;
+        }
+      }
+    }
+  }
+}
+
+function calculateAmountDue2(student) {
+  console.log("hi")
+  var months = {};
+  var nextPayment = student.startDate;
+  var paymentCounter = student.tuition - student.downpayment;
+
+  // Intitialize Months
+  var i;
+  for (i = 0; i < student.totalMonths; i++) {
+    var month = {};
+    nextPayment = getNextPayDate(nextPayment, student.startDate);
+    month.dueDate = nextPayment;
+    month.paidThisMonth = 0;
+    if (paymentCounter > Math.max(student.tuition / student.totalMonths, 500)) {
+      month.dueThisMonth = Math.max(student.tuition / student.totalMonths, 500);
+    } else {
+      month.dueThisMonth = paymentCounter;
+    }
+    paymentCounter = paymentCounter - month.dueThisMonth;
+    if (differenceInDays(month.dueDate, getCurrentDate()) < 0) {
+      month.interest = month.dueThisMonth * 0.03;
+    } else {
+      month.interest = 0;
+    }
+    months[i] = month;
+  }
+
+  var payments = student.payments;
+  var excessPayment = 0;
+
+  if (payments != null) {
+    //cycle through payments
+    for (var paymentKey in payments) {
+      payment = payments[paymentKey];
+      payment.amountLeft = payment.amount;
+      //cycle through months
+      for (var monthKey in months) {
+        var month = months[monthKey];
+        if (month.paidThisMonth < month.dueThisMonth) {
+          //if payment is before due date
+          if (differenceInDays(month.dueDate, payment.payDate) >= 0) {
+            if (monthKey > 0 && differenceInDays(months[monthKey - 1].dueDate, payment.payDate) >= 0) {
+              console.log("excess payment");
+              for (var j = i - 1; j > monthKey - 1; j--) {
+                var lastMonth = months[j];
+                var dueInLastMonth = lastMonth.dueThisMonth;
+                if (dueInLastMonth > payment.amountLeft) {
+                  lastMonth.dueThisMonth = lastMonth.dueThisMonth - payment.amountLeft;
+                  payment.amountLeft = 0
+                  break;
+                } else if (dueInLastMonth == 0) {
+                  continue;
+                } else {
+                  lastMonth.dueThisMonth = 0;
+                  payment.amountLeft = payment.amountLeft - dueInLastMonth;
+                }
+              }
+              break;
+            }
+            //if payment is more than the remaining balance this month
+            if (payment.amountLeft > month.dueThisMonth - month.paidThisMonth) {
+              payment.amountLeft = payment.amountLeft - (month.dueThisMonth - month.paidThisMonth);
+              month.paidThisMonth = month.dueThisMonth;
+              month.interest = 0;
+
+              //if payment is less than the remaining balance this month
+            } else {
+              month.paidThisMonth = month.paidThisMonth + payment.amountLeft;
+              month.interest = month.interest - 0.03 * payment.amountLeft;
+              payment.amountLeft = 0;
+              break;
+            }
+            //if payment is after due date
+          } else {
+            // if payment is more than the interst due this month
+            if (payment.amountLeft > month.interest) {
+              if (payment.amountLeft > month.dueThisMonth - month.paidThisMonth + month.interest) {
+                payment.amountLeft = payment.amountLeft - month.interest - (month.dueThisMonth - month.paidThisMonth);
+                month.paidThisMonth = month.dueThisMonth;
+                month.interest = 0;
+
+              } else {
+                month.paidThisMonth = month.paidThisMonth + payment.amountLeft - month.interest;
+                month.interest = 0;
+                payment.amountLeft = 0;
+                break;
+              }
+              // if payment is less than the interst due this month
+            } else {
+              month.interest = month.interest - payment.amountLeft;
+              payment.amountLeft = 0;
+              break;
+            }
+          }
+        }
+      }
+      excessPayment = excessPayment + payment.amountLeft;
+    }
+  }
+
+  var amountDue = 0;
+  var amountPaid = excessPayment;
+  var tuitionAdjusted = 0;
+  var dueDate = "";
+
+  for (var monthKey in months) {
+    tuitionAdjusted = tuitionAdjusted + months[monthKey].dueThisMonth;
+  }
+
+  console.log(months);
+  for (var monthKey in months) {
+    var month = months[monthKey];
+    amountPaid = amountPaid + month.paidThisMonth;
+    if (month.dueThisMonth - month.paidThisMonth > 0) {
+      if (differenceInDays(month.dueDate, getCurrentDate()) >= 0) {
+        amountDue = amountDue + month.dueThisMonth - month.paidThisMonth;
+        dueDate = month.dueDate;
+        break;
+      } else if (differenceInDays(month.dueDate, getCurrentDate()) >= -14) {
+        amountDue = amountDue + month.dueThisMonth - month.paidThisMonth + month.interest;
+        dueDate = month.dueDate;
+        break;
+      } else {
+        amountDue = amountDue + month.dueThisMonth - month.paidThisMonth + month.interest;
+      }
+    }
+  }
+
+  var remainingBalance = tuitionAdjusted - amountPaid;
 
 
   if (remainingBalance < 0) {

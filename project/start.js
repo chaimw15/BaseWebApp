@@ -152,7 +152,7 @@ function sendEmail(subject, message, studentEmail, studentName) {
   console.log(subject);
   console.log(message);
   console.log("Sending email...");
-
+/*
   const requestMail = mailjet.post("send", { 'version': 'v3.1' }).request({
     "Messages": [
       {
@@ -179,68 +179,97 @@ function sendEmail(subject, message, studentEmail, studentName) {
   }).catch((err) => {
     console.log(err.statusCode)
   });
+  */
 }
 
 function calculateAmountDue2(student) {
-
+  console.log("hi")
   var months = {};
   var nextPayment = student.startDate;
-  var paymentCounter = student.tuition;
+  var paymentCounter = student.tuition - student.downpayment;
 
   // Intitialize Months
-  for (var i = 0; i < student.totalMonths; i++) {
+  var i;
+  for (i = 0; i < student.totalMonths; i++) {
     var month = {};
     nextPayment = getNextPayDate(nextPayment, student.startDate);
     month.dueDate = nextPayment;
     month.paidThisMonth = 0;
-    if (paymentCounter > 500) {
+    if (paymentCounter > Math.max(student.tuition / student.totalMonths, 500)) {
       month.dueThisMonth = Math.max(student.tuition / student.totalMonths, 500);
     } else {
       month.dueThisMonth = paymentCounter;
     }
     paymentCounter = paymentCounter - month.dueThisMonth;
-    if (differenceInDays(nextPayment, getCurrentDate()) < 0) {
+    if (differenceInDays(month.dueDate, getCurrentDate()) < 0) {
       month.interest = month.dueThisMonth * 0.03;
     } else {
       month.interest = 0;
     }
-    months["m" + i] = month;
+    months[i] = month;
   }
 
   var payments = student.payments;
-
   var excessPayment = 0;
 
   if (payments != null) {
+    //cycle through payments
     for (var paymentKey in payments) {
       payment = payments[paymentKey];
       payment.amountLeft = payment.amount;
+      //cycle through months
       for (var monthKey in months) {
         var month = months[monthKey];
         if (month.paidThisMonth < month.dueThisMonth) {
+          //if payment is before due date
           if (differenceInDays(month.dueDate, payment.payDate) >= 0) {
+            if (monthKey > 0 && differenceInDays(months[monthKey - 1].dueDate, payment.payDate) >= 0) {
+              console.log("excess payment");
+              for (var j = i - 1; j > monthKey - 1; j--) {
+                var lastMonth = months[j];
+                var dueInLastMonth = lastMonth.dueThisMonth;
+                if (dueInLastMonth > payment.amountLeft) {
+                  lastMonth.dueThisMonth = lastMonth.dueThisMonth - payment.amountLeft;
+                  payment.amountLeft = 0
+                  break;
+                } else if (dueInLastMonth == 0) {
+                  continue;
+                } else {
+                  lastMonth.dueThisMonth = 0;
+                  payment.amountLeft = payment.amountLeft - dueInLastMonth;
+                }
+              }
+              break;
+            }
+            //if payment is more than the remaining balance this month
             if (payment.amountLeft > month.dueThisMonth - month.paidThisMonth) {
               payment.amountLeft = payment.amountLeft - (month.dueThisMonth - month.paidThisMonth);
               month.paidThisMonth = month.dueThisMonth;
               month.interest = 0;
+
+              //if payment is less than the remaining balance this month
             } else {
               month.paidThisMonth = month.paidThisMonth + payment.amountLeft;
               month.interest = month.interest - 0.03 * payment.amountLeft;
               payment.amountLeft = 0;
               break;
             }
+            //if payment is after due date
           } else {
+            // if payment is more than the interst due this month
             if (payment.amountLeft > month.interest) {
-              if (payment.amountLeft - month.interest > month.dueThisMonth - month.paidThisMonth) {
+              if (payment.amountLeft > month.dueThisMonth - month.paidThisMonth + month.interest) {
                 payment.amountLeft = payment.amountLeft - month.interest - (month.dueThisMonth - month.paidThisMonth);
                 month.paidThisMonth = month.dueThisMonth;
                 month.interest = 0;
+
               } else {
                 month.paidThisMonth = month.paidThisMonth + payment.amountLeft - month.interest;
                 month.interest = 0;
                 payment.amountLeft = 0;
                 break;
               }
+              // if payment is less than the interst due this month
             } else {
               month.interest = month.interest - payment.amountLeft;
               payment.amountLeft = 0;
@@ -255,8 +284,14 @@ function calculateAmountDue2(student) {
 
   var amountDue = 0;
   var amountPaid = excessPayment;
+  var tuitionAdjusted = 0;
   var dueDate = "";
 
+  for (var monthKey in months) {
+    tuitionAdjusted = tuitionAdjusted + months[monthKey].dueThisMonth;
+  }
+
+  console.log(months);
   for (var monthKey in months) {
     var month = months[monthKey];
     amountPaid = amountPaid + month.paidThisMonth;
@@ -275,7 +310,7 @@ function calculateAmountDue2(student) {
     }
   }
 
-  var remainingBalance = student.tuition - amountPaid;
+  var remainingBalance = tuitionAdjusted - amountPaid;
 
 
   if (remainingBalance < 0) {
