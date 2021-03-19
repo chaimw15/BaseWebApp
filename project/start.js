@@ -36,7 +36,7 @@ app.listen(app.get('port'), function () {
 
 const cron = require('node-cron');
 
-const task = cron.schedule('00 17 * * *', () => {
+const task = cron.schedule('52 16 * * *', () => {
   console.log('Running...');
 
   var firebaseConfig = {
@@ -77,8 +77,8 @@ const task = cron.schedule('00 17 * * *', () => {
         var daysLeft = differenceInDays(dueDate, getCurrentDate());
 
         if (amountDue > 0) {
-          
-          
+
+
           amountDue = amountDue.toFixed(2);
 
           var subject = "Peak College Tuition " + daysLeft + " Day Notice";
@@ -106,8 +106,10 @@ const task = cron.schedule('00 17 * * *', () => {
               } else if (daysLeft <= -14) {
                 subject = "Peak College Tuition " + Math.abs(daysLeft) + " Days Overdue";
                 message = startMessage + Math.abs(daysLeft) + " overdue.</strong> This bill includes 3% interest on your unpaid balance." + endMessage;
-
               }
+              console.log("Prepping email to " + student.firstName + "...");
+              console.log("Amount due: $" + amountDue);
+              console.log("Sending email...");
               sendEmail(subject, message, student.email, student.firstName);
             }
           }
@@ -148,10 +150,6 @@ function makeDateObject(dateString) {
 }
 
 function sendEmail(subject, message, studentEmail, studentName) {
-  console.log("Prepping email to " + studentName + "...");
-  console.log(subject);
-  console.log(message);
-  console.log("Sending email...");
   const requestMail = mailjet.post("send", { 'version': 'v3.1' }).request({
     "Messages": [
       {
@@ -287,7 +285,6 @@ function calculateAmountDue2(student) {
     tuitionAdjusted = tuitionAdjusted + months[monthKey].dueThisMonth;
   }
 
-  console.log(months);
   for (var monthKey in months) {
     var month = months[monthKey];
     amountPaid = amountPaid + month.paidThisMonth;
