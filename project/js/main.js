@@ -143,9 +143,26 @@ function getStudents() {
   return firebase.database().ref("students").once('value').then((snapshot) => {
     var students = snapshot.val();
 
+    var tempArray = [];
+
     for (var studentKey in students) {
-      var student = students[studentKey];
-      $("#student-list").append(`<div><a class='studentButton' id='` + studentKey + `' onClick="openStudentTab('` + studentKey + `')">` + student.firstName + " " + student.lastName + "</a></div>");
+      var studentObject = {
+        student: students[studentKey],
+        studentKey: studentKey
+      }
+      tempArray.push(studentObject);
+    }
+
+    tempArray.sort(function (a, b) {
+      console.log("hi");
+      if (a.student.lastName.localeCompare(b.student.lastName) < 0) { return -1; }
+      if (a.student.lastName.localeCompare(b.student.lastName) >= 0) { return 1; }
+      return 0;
+    });
+
+    for (var tempKey in tempArray) {
+      var student = tempArray[tempKey];
+      $("#student-list").append(`<div><a class='studentButton' id='` + student.studentKey + `' onClick="openStudentTab('` + student.studentKey + `')">` + student.student.firstName + " " + student.student.lastName + "</a></div>");
     }
     $("#" + selectedStudent).addClass("selected");
   });
@@ -1320,7 +1337,6 @@ function calculateAmountDue3(student) {
 }
 
 function calculateAmountDue2(student) {
-  console.log("hi")
   var months = {};
   var nextPayment = student.startDate;
   var paymentCounter = student.tuition - student.downpayment;
@@ -1361,7 +1377,6 @@ function calculateAmountDue2(student) {
           //if payment is before due date
           if (differenceInDays(month.dueDate, payment.payDate) >= 0) {
             if (monthKey > 0 && differenceInDays(months[monthKey - 1].dueDate, payment.payDate) >= 0) {
-              console.log("excess payment");
               for (var j = i - 1; j > monthKey - 1; j--) {
                 var lastMonth = months[j];
                 var dueInLastMonth = lastMonth.dueThisMonth;
