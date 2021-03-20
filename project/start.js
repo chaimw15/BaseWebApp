@@ -83,7 +83,7 @@ const task = cron.schedule('05 17 * * *', () => {
 
           var subject = "Peak College Tuition " + daysLeft + " Day Notice";
           var startMessage = "<p>Dear " + student.firstName + ",<br><br>" + "Your Peak College tuition payment of $" + amountDue + " is <strong>"
-          var endMessage = " Please send an e-transfer to <a href='mailto:yunny@peakcollege.ca'>yunny@peakcollege.ca</a> to pay.<br><br>If you have any questions about your payment, please respond to this email.<br><br>Best regards,<br><br>Peak College Student Services</p>";
+          var endMessage = " Please send an e-transfer to <a href='mailto:yunny@peakcollege.ca'>yunny@peakcollege.ca</a> to pay. Your remaining balance is $" + remainingBalance + ".<br><br>If you have any questions about your payment, please respond to this email.<br><br>Best regards,<br><br>Peak College Student Services</p>";
           var message = startMessage + "due in " + daysLeft + " days.</strong>" + endMessage;
 
           for (emailKeys in emails) {
@@ -150,32 +150,35 @@ function makeDateObject(dateString) {
 }
 
 function sendEmail(subject, message, studentEmail, studentName) {
-  const requestMail = mailjet.post("send", { 'version': 'v3.1' }).request({
-    "Messages": [
-      {
-        "From": {
-          "Email": "ara@peakcollege.ca",
-          "Name": "Peak Healthcare College"
-        },
-        "To": [
-          {
-            "Email": studentEmail,
-            "Name": studentName
-          }
-        ],
-        "Subject": subject,
-        "TextPart": "Peak College Automated Email",
-        "HTMLPart": message,
-        "CustomID": "PeakCollegeApp01"
-      }
-    ]
-  });
-  requestMail.then((result) => {
-    console.log(result.body)
-    console.log("Email sent!");
-  }).catch((err) => {
-    console.log(err.statusCode)
-  });
+  /*
+    const requestMail = mailjet.post("send", { 'version': 'v3.1' }).request({
+      "Messages": [
+        {
+          "From": {
+            "Email": "ara@peakcollege.ca",
+            "Name": "Peak Healthcare College"
+          },
+          "To": [
+            {
+              "Email": studentEmail,
+              "Name": studentName
+            }
+          ],
+          "Subject": subject,
+          "TextPart": "Peak College Automated Email",
+          "HTMLPart": message,
+          "CustomID": "PeakCollegeApp01"
+        }
+      ]
+    });
+    
+    requestMail.then((result) => {
+      console.log(result.body)
+      console.log("Email sent!");
+    }).catch((err) => {
+      console.log(err.statusCode)
+    });
+  */
 }
 
 function calculateAmountDue2(student) {
