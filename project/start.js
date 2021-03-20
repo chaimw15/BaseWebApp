@@ -110,7 +110,7 @@ const task = cron.schedule('05 17 * * *', () => {
               console.log("Prepping email to " + student.firstName + "...");
               console.log("Amount due: $" + amountDue);
               console.log("Sending email...");
-              sendEmail(subject, message, student.email, student.firstName);
+              //sendEmail(subject, message, student.email, student.firstName);
             }
           }
         }
@@ -150,7 +150,6 @@ function makeDateObject(dateString) {
 }
 
 function sendEmail(subject, message, studentEmail, studentName) {
-  /*
     const requestMail = mailjet.post("send", { 'version': 'v3.1' }).request({
       "Messages": [
         {
@@ -178,7 +177,6 @@ function sendEmail(subject, message, studentEmail, studentName) {
     }).catch((err) => {
       console.log(err.statusCode)
     });
-  */
 }
 
 function calculateAmountDue2(student) {
