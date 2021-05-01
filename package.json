@@ -14,7 +14,6 @@
     "firebaseui": "^4.8.0",
     "node-cron": "^2.0.3",
     "node-mailjet": "^3.3.1",
-    "node-sass": "^5.0.0",
     "pdf-to-base64": "^1.0.3",
     "pdfkit": "^0.12.1"
   },
@@ -32,6 +31,5 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "sass": "^1.32.11"
   }
 }
