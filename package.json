@@ -4,8 +4,7 @@
   "description": "A web app built with Node.js created by Chaim Weinerman for Peak College to track student payments and classes.",
   "main": "index.js",
   "scripts": {
-    "start": "node project/start.js",
-    "scss": "node-sass --watch project/scss -o project/css"
+    "start": "node project/start.js"
   },
   "dependencies": {
     "base64-stream": "^1.0.0",
