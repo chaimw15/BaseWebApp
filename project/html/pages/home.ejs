@@ -10,53 +10,55 @@
   <div class="page-header">
     <% include ../helpers/navbar %>
   </div>
-
-  <div class="row-home">
-    <div class="column-home column-left-home">
-      <h4>Notification Center</h4>
-      <div id="notification-center-wrapper">
-        <div id="notification-center">
-        </div>
-        <div style="text-align: center;">
-          <button id="show-more-notifications" onclick="updateNotifications()">Show More &nbsp;&nbsp;
-            <i class="fas fa-chevron-down"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-    <div class="column-home column-right-home" style="position:relative">
-      <h4>Email Settings</h4>
-      <span title="Edit Settings"><i class="far fa-edit" id="edit-emails" onclick="editEmails()"></i></span>
-      <span title="Done Editing"><i class="far fa-check-circle" id="done-editing-emails" onclick="finishEmailEdit()" style="visibility:hidden;"></i></span>
-      <div id="email-settings-wrapper">
-        <div id="email-settings">
-        </div>
-        <div style="text-align: center;">
-          <button id="add-new-email-button" onclick="showAddEmail()" style="visibility: hidden; margin-bottom: 133px;">Add New</button>
-        </div>
-      </div>
-      <div>
-        <form id="add-email-form">
-          <p>Days</p>
-          <div style="display: inline-block; width: 100%; margin-bottom: 16px;">
-            <div style="float: left; width: 50%">
-              <input type="number" min="0" id="days-to-email" placeholder="2" required>
-            </div>
-            <div id="email-radio-buttons">
-              <input type="radio" id="days-before" name="when" value="before" required>
-              <label for="before">Before</label><br>
-              <input type="radio" id="days-after" name="when" value="after" required>
-              <label id="days-after-label" for="after">After</label>
-            </div>
+  <div class="home-container">
+    <div class="row-home">
+      <div class="column-home column-left-home">
+        <h4>Notification Center</h4>
+        <div id="notification-center-wrapper">
+          <div id="notification-center">
           </div>
-          <button type="submit" onclick="addNewEmail()" id="add-email-submit">Submit</button>
-          <button type="button" id="cancel-email-add" onclick="cancelAddEmail()">Cancel</button>
-        </form>
+          <div style="text-align: center;">
+            <button id="show-more-notifications" onclick="updateNotifications()">Show More &nbsp;&nbsp;
+              <i class="fas fa-chevron-down"></i>
+            </button>
+          </div>
+        </div>
       </div>
+      <div class="column-home column-right-home" style="position:relative">
+        <h4>Email Settings</h4>
+        <span title="Edit Settings"><i class="far fa-edit" id="edit-emails" onclick="editEmails()"></i></span>
+        <span title="Done Editing"><i class="far fa-check-circle" id="done-editing-emails" onclick="finishEmailEdit()"
+            style="visibility:hidden;"></i></span>
+        <div id="email-settings-wrapper">
+          <div id="email-settings">
+          </div>
+          <div style="text-align: center;">
+            <button id="add-new-email-button" onclick="showAddEmail()"
+              style="visibility: hidden; margin-bottom: 133px;">Add New</button>
+          </div>
+        </div>
+        <div>
+          <form id="add-email-form">
+            <p>Days</p>
+            <div style="display: inline-block; width: 100%; margin-bottom: 16px;">
+              <div style="float: left; width: 50%">
+                <input type="number" min="0" id="days-to-email" placeholder="2" required>
+              </div>
+              <div id="email-radio-buttons">
+                <input type="radio" id="days-before" name="when" value="before" required>
+                <label for="before">Before</label><br>
+                <input type="radio" id="days-after" name="when" value="after" required>
+                <label id="days-after-label" for="after">After</label>
+              </div>
+            </div>
+            <button type="submit" onclick="addNewEmail()" id="add-email-submit">Submit</button>
+            <button type="button" id="cancel-email-add" onclick="cancelAddEmail()">Cancel</button>
+          </form>
+        </div>
 
+      </div>
     </div>
   </div>
-
 </body>
 
 </html>

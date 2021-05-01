@@ -1,0 +1,50 @@
+.tabs {
+  width: 100%;
+  display: flex;
+  background: white;
+  height: calc(100vh - 117px);
+}
+.tabs > ul {
+  list-style-type: none;
+  padding: 0;
+  width: 220px;
+  height: 100%;
+  border-right: solid 1px #e0e0e5;
+  text-align: center;
+}
+.tabs > ul li {
+  display: block;
+  text-align: left;
+  width: 219px;
+}
+.tabs > ul li a {
+  font-size: 16px;
+  display: block;
+  width: 100%;
+  text-decoration: none;
+  background: white;
+  padding: 1rem 2.3rem;
+  color: #333;
+  transition: all 0.2s ease-in-out;
+}
+.tabs > ul li a.active {
+  background: rgba(25, 91, 150, 0.9);
+  color: white;
+}
+.tabs > ul li a:hover:not(.active) {
+  color: rgba(25, 91, 150, 0.9);
+}
+.tabs section {
+  padding: 0rem 2.5rem;
+  display: none;
+}
+.tabs section.active {
+  display: block;
+}
+
+#tab-1, #tab-2, #tab-3{
+  width: 100%; 
+  background-color:#C8D2E3;
+  overflow: scroll; 
+  height: 100%;
+}

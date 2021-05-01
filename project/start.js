@@ -6,6 +6,10 @@ var app = express();
 var firebase = require("firebase/app");
 require("firebase/database");
 require("firebase/auth");
+require('firebase');
+
+const PDFDocument = require('pdfkit');
+const fs = require('fs');
 
 const mailjet = require('node-mailjet')
   .connect(process.env.MAILJET_API_KEY, process.env.MAILJET_SECRET_KEY);
@@ -19,15 +23,18 @@ app.set('views', __dirname + '/html');
 app.set('view engine', 'ejs');
 
 app.get('/', function (request, response) {
-  response.render('pages/home');
+  response.render('pages/signin');
 });
 
 app.get('/students', function (request, response) {
   response.render('pages/students');
 });
 
-app.get('/classes', function (request, response) {
-  response.render('pages/classes');
+app.get('/dashboard', function (request, response) {
+  response.render('pages/dashboard');
+});
+app.get('/registration', function (request, response) {
+  response.render('pages/registration');
 });
 
 app.listen(app.get('port'), function () {
@@ -35,8 +42,10 @@ app.listen(app.get('port'), function () {
 });
 
 const cron = require('node-cron');
+const { getMaxListeners } = require('pdfkit');
+const { Base64Encode } = require('base64-stream');
 
-const task = cron.schedule('05 17 * * *', () => {
+const task = cron.schedule('40 17 * * *', () => {
   console.log('Running...');
 
   var firebaseConfig = {
@@ -69,10 +78,14 @@ const task = cron.schedule('05 17 * * *', () => {
       for (var studentKey in students) {
         var student = students[studentKey];
 
-        var returnData = calculateAmountDue2(student);
+        var returnData = calculateAmountDue3(student);
         var amountDue = returnData[0];
         var dueDate = returnData[1];
         var remainingBalance = returnData[2];
+        var interest = interest[3];
+
+        var prettyDate = makeDateObject(dueDate);
+        prettyDate = toNormalDate(prettyDate.getMonth(), prettyDate.getDate(), prettyDate.getFullYear());
 
         var daysLeft = differenceInDays(dueDate, getCurrentDate());
 
@@ -80,37 +93,25 @@ const task = cron.schedule('05 17 * * *', () => {
 
 
           amountDue = amountDue.toFixed(2);
+          interest = interest.toFixed(2);
 
           var subject = "Peak College Tuition " + daysLeft + " Day Notice";
-          var startMessage = "<p>Dear " + student.firstName + ",<br><br>" + "Your Peak College tuition payment of $" + amountDue + " is <strong>"
-          var endMessage = " Please send an e-transfer to <a href='mailto:yunny@peakcollege.ca'>yunny@peakcollege.ca</a> to pay. Your remaining balance is $" + remainingBalance + ".<br><br>If you have any questions about your payment, please respond to this email.<br><br>Best regards,<br><br>Peak College Student Services</p>";
-          var message = startMessage + "due in " + daysLeft + " days.</strong>" + endMessage;
+          var greeting = "<p>Dear " + student.firstName + ",<br><br>";
+          var middleMessage = "This is a friendly reminder that your tuition payment is due on " + prettyDate + ".<br>Your tuition balance is $" + remainingBalance + " and $" + interest + " interest. Please make your monthly payment.<br>You will be charged a late fee of 3% interest if not paid on time.<br>";
+          var endMessage = "Please send an e-transfer to <a href='mailto:yunny@peakcollge.ca'>yunny@peakcollge.ca<a>.<br>Please contact the school office if you have any questions.<br>Sincerely,<br>Peak Admin";
+          var message = "";
 
           for (emailKeys in emails) {
             if (emails[emailKeys].days == daysLeft) {
-              if (daysLeft == 1) {
-                message = startMessage + "due tomorrow.</strong> If your payment is late a charge of 3% interest will be added to your bill." + endMessage;
-
-              } else if (daysLeft == 0) {
-                subject = "Peak College Tuition Due Today";
-                message = startMessage + "due today.</strong> If your payment is late a charge of 3% interest will be added to your bill." + endMessage;
-
-              } else if (daysLeft == -1) {
-                subject = "Peak College Tuition 1 Day Overdue";
-                message = startMessage + "1 day overdue.</strong> This bill includes 3% interest on your unpaid balance." + endMessage;
-
-              } else if (daysLeft < -1) {
-                subject = "Peak College Tuition " + Math.abs(daysLeft) + " Days Overdue";
-                message = startMessage + Math.abs(daysLeft) + " overdue.</strong> This bill includes 3% interest on your unpaid balance." + endMessage;
-
-              } else if (daysLeft <= -14) {
-                subject = "Peak College Tuition " + Math.abs(daysLeft) + " Days Overdue";
-                message = startMessage + Math.abs(daysLeft) + " overdue.</strong> This bill includes 3% interest on your unpaid balance." + endMessage;
+              if (daysLeft < 0) {
+                subject = "Peak College Tuition Overdue";
+                middleMessage = "Our records show that you have missed your monthly payment of $500 yesterday.<br>We would appreciate your payment as soon as possible.<br>";
               }
+              message = greeting + middleMessage + endMessage;
               console.log("Prepping email to " + student.firstName + "...");
               console.log("Amount due: $" + amountDue);
               console.log("Sending email...");
-              //sendEmail(subject, message, student.email, student.firstName);
+              sendEmail(subject, message, student.email, student.firstName);
             }
           }
         }
@@ -118,6 +119,152 @@ const task = cron.schedule('05 17 * * *', () => {
     });
   });
 });
+
+function toNormalDate(month, day, year) {
+  switch (month) {
+    case 0:
+      month = "Jan."
+      break;
+    case 1:
+      month = "Feb."
+      break;
+    case 2:
+      month = "Mar."
+      break;
+    case 3:
+      month = "Apr."
+      break;
+    case 4:
+      month = "May"
+      break;
+    case 5:
+      month = "Jun."
+      break;
+    case 6:
+      month = "Jul."
+      break;
+    case 7:
+      month = "Aug."
+      break;
+    case 8:
+      month = "Sep."
+      break;
+    case 9:
+      month = "Oct."
+      break;
+    case 10:
+      month = "Nov."
+      break;
+    case 11:
+      month = "Dec."
+      break;
+
+    default:
+      break;
+  }
+
+  if (day < 10) {
+    day = "0" + day;
+  }
+
+  return month + " " + day;
+}
+
+function sendEmail(subject, message, studentEmail, studentName) {
+  const requestMail = mailjet.post("send", { 'version': 'v3.1' }).request({
+    "Messages": [
+      {
+        "From": {
+          "Email": "ara@peakcollege.ca",
+          "Name": "Peak Healthcare College"
+        },
+        "To": [
+          {
+            "Email": studentEmail,
+            "Name": studentName
+          }
+        ],
+        "Subject": subject,
+        "TextPart": "Peak College Automated Email",
+        "HTMLPart": message,
+        "CustomID": "PeakCollegeApp01"
+      }
+    ]
+  });
+
+  requestMail.then((result) => {
+    console.log(result.body)
+    console.log("Email sent!");
+  }).catch((err) => {
+    console.log(err.statusCode)
+  });
+}
+
+function calculateAmountDue3(student) {
+  //console.log(student.firstName);
+  var currentDate = new Date();
+  var currentMonth = currentDate.getMonth();
+  var currentYear = currentDate.getFullYear();
+
+  var regDate = makeDateObject(student.startDate);
+  var monthCounter = regDate.getMonth() + 1;
+  var yearCounter = regDate.getFullYear();
+
+  if (monthCounter > 11) {
+    monthCounter = 0;
+    yearCounter++;
+  }
+
+  var remainingBalance = student.tuition - student.downpayment;
+  var payments = student.payments;
+  var interest = 0;
+  var dueThisMonth = 500;
+
+  while (yearCounter < currentYear || (yearCounter == currentYear && monthCounter <= currentMonth)) {
+    dueThisMonth = Math.min(500, remainingBalance + interest);
+    //console.log(toNormalDate(monthCounter, yearCounter));
+
+    for (var paymentKey in student.payments) {
+      var payment = payments[paymentKey];
+      var paymentDate = makeDateObject(payment.payDate);
+      var paymentMonth = paymentDate.getMonth();
+      var paymentYear = paymentDate.getFullYear();
+      if (paymentYear == yearCounter && paymentMonth == monthCounter) {
+        if (payment.amount > dueThisMonth) {
+          dueThisMonth = 0;
+        } else {
+          dueThisMonth -= payment.amount;
+        }
+        if (payment.amount >= interest) {
+          payment.amount -= interest;
+          interest = 0;
+          remainingBalance -= payment.amount;
+        } else {
+          interest -= payment.amount;
+        }
+      }
+    }
+    if (!(yearCounter == currentYear && monthCounter == currentMonth) && dueThisMonth != 0) {
+      //console.log("Month missed, adding interest on $" + dueThisMonth);
+      interest += dueThisMonth * 0.03;
+    } else if (!(yearCounter == currentYear && monthCounter == currentMonth) || dueThisMonth == 0) {
+      //console.log("Month Paid");
+    }
+
+    if (monthCounter == 11) {
+      yearCounter++;
+      monthCounter = -1;
+    }
+    monthCounter++;
+  }
+
+  var amountDue = Math.min(dueThisMonth, remainingBalance + interest);
+  var dueDate = getThisMonthPayDate(student.startDate);
+
+  //console.log(dueDate);
+
+  return [amountDue, dueDate, remainingBalance, interest];
+}
 
 function differenceInDays(laterDate, earlierDate) {
   var Difference_In_Time = makeDateObject(laterDate).getTime() - makeDateObject(earlierDate).getTime();
@@ -149,180 +296,14 @@ function makeDateObject(dateString) {
   return new Date(parseInt(temp[0]), parseInt(temp[1]) - 1, parseInt(temp[2]));
 }
 
-function sendEmail(subject, message, studentEmail, studentName) {
-    const requestMail = mailjet.post("send", { 'version': 'v3.1' }).request({
-      "Messages": [
-        {
-          "From": {
-            "Email": "ara@peakcollege.ca",
-            "Name": "Peak Healthcare College"
-          },
-          "To": [
-            {
-              "Email": studentEmail,
-              "Name": studentName
-            }
-          ],
-          "Subject": subject,
-          "TextPart": "Peak College Automated Email",
-          "HTMLPart": message,
-          "CustomID": "PeakCollegeApp01"
-        }
-      ]
-    });
-    
-    requestMail.then((result) => {
-      console.log(result.body)
-      console.log("Email sent!");
-    }).catch((err) => {
-      console.log(err.statusCode)
-    });
-}
+function getThisMonthPayDate(startDate) {
+  var currentDate = new Date();
+  var enrolArray = startDate.split("-");
 
-function calculateAmountDue2(student) {
-  var months = {};
-  var nextPayment = student.startDate;
-  var paymentCounter = student.tuition - student.downpayment;
-
-  // Intitialize Months
-  var i;
-  for (i = 0; i < student.totalMonths; i++) {
-    var month = {};
-    nextPayment = getNextPayDate(nextPayment, student.startDate);
-    month.dueDate = nextPayment;
-    month.paidThisMonth = 0;
-    if (paymentCounter > Math.max(student.tuition / student.totalMonths, 500)) {
-      month.dueThisMonth = Math.max(student.tuition / student.totalMonths, 500);
-    } else {
-      month.dueThisMonth = paymentCounter;
-    }
-    paymentCounter = paymentCounter - month.dueThisMonth;
-    if (differenceInDays(month.dueDate, getCurrentDate()) < 0) {
-      month.interest = month.dueThisMonth * 0.03;
-    } else {
-      month.interest = 0;
-    }
-    months[i] = month;
-  }
-
-  var payments = student.payments;
-  var excessPayment = 0;
-
-  if (payments != null) {
-    //cycle through payments
-    for (var paymentKey in payments) {
-      payment = payments[paymentKey];
-      payment.amountLeft = payment.amount;
-      //cycle through months
-      for (var monthKey in months) {
-        var month = months[monthKey];
-        if (month.paidThisMonth < month.dueThisMonth) {
-          //if payment is before due date
-          if (differenceInDays(month.dueDate, payment.payDate) >= 0) {
-            if (monthKey > 0 && differenceInDays(months[monthKey - 1].dueDate, payment.payDate) >= 0) {
-              for (var j = i - 1; j > monthKey - 1; j--) {
-                var lastMonth = months[j];
-                var dueInLastMonth = lastMonth.dueThisMonth;
-                if (dueInLastMonth > payment.amountLeft) {
-                  lastMonth.dueThisMonth = lastMonth.dueThisMonth - payment.amountLeft;
-                  payment.amountLeft = 0
-                  break;
-                } else if (dueInLastMonth == 0) {
-                  continue;
-                } else {
-                  lastMonth.dueThisMonth = 0;
-                  payment.amountLeft = payment.amountLeft - dueInLastMonth;
-                }
-              }
-              break;
-            }
-            //if payment is more than the remaining balance this month
-            if (payment.amountLeft > month.dueThisMonth - month.paidThisMonth) {
-              payment.amountLeft = payment.amountLeft - (month.dueThisMonth - month.paidThisMonth);
-              month.paidThisMonth = month.dueThisMonth;
-              month.interest = 0;
-
-              //if payment is less than the remaining balance this month
-            } else {
-              month.paidThisMonth = month.paidThisMonth + payment.amountLeft;
-              month.interest = month.interest - 0.03 * payment.amountLeft;
-              payment.amountLeft = 0;
-              break;
-            }
-            //if payment is after due date
-          } else {
-            // if payment is more than the interst due this month
-            if (payment.amountLeft > month.interest) {
-              if (payment.amountLeft > month.dueThisMonth - month.paidThisMonth + month.interest) {
-                payment.amountLeft = payment.amountLeft - month.interest - (month.dueThisMonth - month.paidThisMonth);
-                month.paidThisMonth = month.dueThisMonth;
-                month.interest = 0;
-
-              } else {
-                month.paidThisMonth = month.paidThisMonth + payment.amountLeft - month.interest;
-                month.interest = 0;
-                payment.amountLeft = 0;
-                break;
-              }
-              // if payment is less than the interst due this month
-            } else {
-              month.interest = month.interest - payment.amountLeft;
-              payment.amountLeft = 0;
-              break;
-            }
-          }
-        }
-      }
-      excessPayment = excessPayment + payment.amountLeft;
-    }
-  }
-
-  var amountDue = 0;
-  var amountPaid = excessPayment;
-  var tuitionAdjusted = 0;
-  var dueDate = "";
-
-  for (var monthKey in months) {
-    tuitionAdjusted = tuitionAdjusted + months[monthKey].dueThisMonth;
-  }
-
-  for (var monthKey in months) {
-    var month = months[monthKey];
-    amountPaid = amountPaid + month.paidThisMonth;
-    if (month.dueThisMonth - month.paidThisMonth > 0) {
-      if (differenceInDays(month.dueDate, getCurrentDate()) >= 0) {
-        amountDue = amountDue + month.dueThisMonth - month.paidThisMonth;
-        dueDate = month.dueDate;
-        break;
-      } else if (differenceInDays(month.dueDate, getCurrentDate()) >= -14) {
-        amountDue = amountDue + month.dueThisMonth - month.paidThisMonth + month.interest;
-        dueDate = month.dueDate;
-        break;
-      } else {
-        amountDue = amountDue + month.dueThisMonth - month.paidThisMonth + month.interest;
-      }
-    }
-  }
-
-  var remainingBalance = tuitionAdjusted - amountPaid;
-
-
-  if (remainingBalance < 0) {
-    amountDue = remainingBalance;
-  }
-
-  return [amountDue, dueDate, remainingBalance];
-}
-
-function getNextPayDate(lastPayDate, enrolDate) {
-  var lastPayArray = lastPayDate.split("-");
-  var enrolArray = enrolDate.split("-");
-
-  var year = parseInt(lastPayArray[0]);
-  var month = parseInt(lastPayArray[1]);
+  var year = currentDate.getFullYear();
+  var month = currentDate.getMonth() + 1;
+  var currentDay = currentDate.getDate();
   var day = parseInt(enrolArray[2]);
-
-  var month = month + 1;
 
   if (month > 12) {
     month = 1;
@@ -359,3 +340,68 @@ function isLeapYear(year) {
 }
 // This file is what handles incoming requests and
 // serves files to the browser, or executes server-side code
+
+
+// Student Registration
+app.get('/submitForm', function (req, res) { // AJAX
+
+  var doc = new PDFDocument();
+
+  doc
+    .fontSize(25)
+    .text('Student Registration Form', 100, 100);
+
+  // Add an image, constrain it to a given size, and center it vertically and horizontally
+  doc.image('/Users/Chaim/Desktop/PeakCollegeApp/project/images/PEAK-Logo-Black-Green.png', {
+    fit: [250, 300],
+    align: 'center',
+    valign: 'center'
+  });
+
+  var finalString = ''; // contains the base64 string
+  var stream = doc.pipe(new Base64Encode());
+
+  doc.end(); // will trigger the stream to end
+
+  stream.on('data', function (chunk) {
+    finalString += chunk;
+  });
+
+  stream.on('end', function () {
+    // the stream is at its end, so push the resulting base64 string to the response
+    var contents = finalString;
+    sendPdfEmail("Hello", "Hello Bud", "output.pdf", contents);
+    return res.redirect('/');
+  });
+
+});
+
+function sendPdfEmail(subject, message, attachmentname, baseContent) {
+  const requestMail = mailjet.post("send", { 'version': 'v3.1' }).request({
+    "Messages": [
+      {
+        "From": {
+          "Email": "chaimw@hotmail.ca",
+          "Name": "Peak Healthcare College"
+        },
+        "To": [
+          {
+            "Email": "chaimw15@gmail.com",
+            "Name": "Chaim"
+          }
+        ],
+        "Subject": subject,
+        "TextPart": "Peak College Automated Email",
+        "HTMLPart": message,
+        "Attachments": [
+          {
+            "ContentType": "application/pdf",
+            "Filename": attachmentname,
+            "Base64Content": baseContent
+          }
+        ],
+        "CustomID": "PeakCollegeApp02"
+      }
+    ]
+  });
+}

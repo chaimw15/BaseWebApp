@@ -1,0 +1,42 @@
+<html lang="en">
+
+<head>
+    <% include ../helpers/head %>
+</head>
+
+<body>
+    <!-- the classes 'page-header' and 'btn btn-dark' create bootstrap components.  -->
+    <!-- Check out more components here: http://getbootstrap.com/components/ -->
+    <main>
+        <img class="wave" src="https://www.htmlhints.com/demo/form/animatedLoginForm/img/wave.png" />
+        <div class="container">
+            <div class="img"></div>
+            <div class="login-content">
+                <form onsubmit="handleAdminSignIn(); return false;">
+                    <img src="https://www.htmlhints.com/demo/form/animatedLoginForm/img/avatar.svg" />
+                    <h2 class="title">Admin Access</h2>
+                    <div class="input-div pass">
+                        <div class="i">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <div class="div">
+                            <h5>Password</h5>
+                            <input id="admin-password" type="password" class="input" />
+                        </div>
+                    </div>
+                    <input type="submit" class="btn" value="Login" />
+                </form><br>
+            </div>
+            <div></div>
+            <div id="student-reg-home">
+                <form action="/registration">
+                    <h2 style="color:#333; font-size:1.5rem">STUDENT REGISTRATION</h2>
+                    <input type="submit" class="btn" value="access now" />
+                </form>
+                <br><br>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

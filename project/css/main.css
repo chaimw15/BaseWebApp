@@ -9,12 +9,20 @@ var(--darkBlue)
 
 */
 
+.footer__help-buttons {
+  display: none;
+}
+
 :root {
   --darkBlue: rgba(25, 91, 150, 0.9);
   --darkBlueHover: rgba(25, 91, 150, 1);
   --highlight: #5DB8EF;
   --highlightHover: #54a6da;
   --lightBorder: #e0e0e5;
+
+  --cd_panel_header_animation: 0.15s;
+  --cd_panel_animation: 0.35s;
+  --cd_panel_animation_after: 0.15s
 }
 
 body {
@@ -22,8 +30,7 @@ body {
   text-align: center;
   color:#1E1E1E;
   font-size: 22px;
-  background:  #C8D2E3;
-  padding-bottom: 50px;
+  background:  white;
 }
 
 * , button:focus{
@@ -55,6 +62,7 @@ h3 {
 /*#region Header Styling */
 .page-header {
   background-color: white;
+  border-bottom: solid 1px #e0e0e5;
 }
 
 .grid {
@@ -133,7 +141,7 @@ h3 {
 
 .nav-link:hover:after {
   width: 100%;
-  background: var(--highlight);
+  background: var(--darkBlue);
   transform: translateY(3px);
 }
 
@@ -155,6 +163,12 @@ h3 {
 }
 
 #login-button {
+  -webkit-appearance: button;
+    -moz-appearance: button;
+    appearance: button;
+
+    text-decoration: none;
+    color: initial;
   border-radius: 3px;
   border: none;
   background-color: var(--darkBlue);
@@ -171,6 +185,13 @@ h3 {
 
 /*#endregion*/
 
+.home-container {
+  height: 100%;
+  width: 100%;
+  padding-top: 50px;
+  background-color:#C8D2E3;
+}
+
 .margin-med {
   margin: 0 0 16 0;
 }
@@ -185,7 +206,7 @@ h3 {
 }
 
 #student-list {
-  padding: 16 0 0 0;
+  margin: 16 0 0 0;
 }
 
 #student-list a {
@@ -209,17 +230,28 @@ h3 {
 }
 
 .column-left {
+  background-color:#C8D2E3;
+  height: calc(100vh - 117px);
   width: 40%;
   text-align: left;
 }
 
+.column-left-container {
+  height: calc(100vh - 167px);
+  margin: 50 15 50 0;
+  padding: 0 0 0 65;
+  overflow: scroll;
+}
+
 .column-right {
+  background-color:#C8D2E3;
+  height: calc(100vh - 117px);
   width: 60%;
 }
 
-.row {
-  margin: 50 65 50 65;
-  padding: 0 35 0 35;
+.column-right-container {
+  margin: 50 0 50 0;
+  padding: 0 65 0 0;
 }
 
 .row:after {
@@ -239,8 +271,13 @@ h3 {
   padding-left: 65px;
 }
 
+.row {
+  width: 100%;
+  margin: 0px;
+}
+
 .row-home {
-  margin: 50 65 50 65;
+  margin: 0 65 50 65;
   padding: 0 35 0 35;
 }
 
@@ -649,8 +686,8 @@ input[type=number] {
   height: 100%;
   width: 100%;
   visibility: hidden;
-  -webkit-transition: visibility 0s 0.6s;
-  transition: visibility 0s 0.6s;
+  -webkit-transition: visibility 0s var(--cd_panel_animation);
+  transition: visibility 0s var(--cd_panel_animation);
 }
 
 .cd-panel::after {
@@ -663,8 +700,8 @@ input[type=number] {
   height: 100%;
   background: transparent;
   cursor: pointer;
-  -webkit-transition: background 0.3s 0.3s;
-  transition: background 0.3s 0.3s;
+  -webkit-transition: background var(--cd_panel_animation_after) var(--cd_panel_animation_after);
+  transition: background var(--cd_panel_animation_after) var(--cd_panel_animation_after);
 }
 
 .cd-panel.cd-panel--is-visible {
@@ -675,8 +712,8 @@ input[type=number] {
 
 .cd-panel.cd-panel--is-visible::after {
   background: rgba(0, 0, 0, 0.6);
-  -webkit-transition: background 0.3s 0s;
-  transition: background 0.3s 0s;
+  -webkit-transition: background var(--cd_panel_animation_after) 0s;
+  transition: background var(--cd_panel_animation_after) 0s;
 }
 
 .cd-panel__header {
@@ -690,10 +727,10 @@ input[type=number] {
   z-index: 2;
   -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08);
           box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08);
-  -webkit-transition: -webkit-transform 0.3s 0s;
-  transition: -webkit-transform 0.3s 0s;
-  transition: transform 0.3s 0s;
-  transition: transform 0.3s 0s, -webkit-transform 0.3s 0s;
+  -webkit-transition: -webkit-transform var(--cd_panel_header_animation) 0s;
+  transition: -webkit-transform var(--cd_panel_header_animation) 0s;
+  transition: transform var(--cd_panel_header_animation) 0s;
+  transition: transform var(--cd_panel_header_animation) 0s, -webkit-transform var(--cd_panel_header_animation) 0s;
   -webkit-transform: translateY(-50px);
       -ms-transform: translateY(-50px);
           transform: translateY(-50px);
@@ -741,10 +778,10 @@ input[type=number] {
 }
 
 .cd-panel--is-visible .cd-panel__header {
-  -webkit-transition: -webkit-transform 0.3s 0.3s;
-  transition: -webkit-transform 0.3s 0.3s;
-  transition: transform 0.3s 0.3s;
-  transition: transform 0.3s 0.3s, -webkit-transform 0.3s 0.3s;
+  -webkit-transition: -webkit-transform var(--cd_panel_header_animation) var(--cd_panel_header_animation);
+  transition: -webkit-transform var(--cd_panel_header_animation) var(--cd_panel_header_animation);
+  transition: transform var(--cd_panel_header_animation) var(--cd_panel_header_animation);
+  transition: transform var(--cd_panel_header_animation) var(--cd_panel_header_animation), -webkit-transform var(--cd_panel_header_animation) var(--cd_panel_header_animation);
   -webkit-transform: translateY(0px);
       -ms-transform: translateY(0px);
           transform: translateY(0px);
@@ -827,13 +864,13 @@ input[type=number] {
 }
 
 .cd-panel--is-visible .cd-panel__close::before {
-  -webkit-animation: cd-close-1 0.6s 0.3s;
-          animation: cd-close-1 0.6s 0.3s;
+  -webkit-animation: cd-close-1 var(--cd_panel_animation) var(--cd_panel_header_animation);
+          animation: cd-close-1 var(--cd_panel_animation)  var(--cd_panel_header_animation);
 }
 
 .cd-panel--is-visible .cd-panel__close::after {
-  -webkit-animation: cd-close-2 0.6s 0.3s;
-          animation: cd-close-2 0.6s 0.3s;
+  -webkit-animation: cd-close-2 var(--cd_panel_animation)  var(--cd_panel_header_animation);
+          animation: cd-close-2 var(--cd_panel_animation)  var(--cd_panel_header_animation);
 }
 
 @-webkit-keyframes cd-close-1 {
@@ -887,10 +924,10 @@ input[type=number] {
   top: 0;
   background: #dbe2e9;
   z-index: 1;
-  -webkit-transition: -webkit-transform 0.3s 0.3s;
-  transition: -webkit-transform 0.3s 0.3s;
-  transition: transform 0.3s 0.3s;
-  transition: transform 0.3s 0.3s, -webkit-transform 0.3s 0.3s;
+  -webkit-transition: -webkit-transform var(--cd_panel_header_animation) var(--cd_panel_header_animation);
+  transition: -webkit-transform var(--cd_panel_header_animation) var(--cd_panel_header_animation);
+  transition: transform var(--cd_panel_header_animation) var(--cd_panel_header_animation);
+  transition: transform var(--cd_panel_header_animation) var(--cd_panel_header_animation), -webkit-transform var(--cd_panel_header_animation) var(--cd_panel_header_animation);
 }
 
 .cd-panel--from-right .cd-panel__container {
@@ -1049,7 +1086,7 @@ input[type=number] {
   margin: 0px;
 }
 
-#student-amountDue, #student-tuition, #tuition-remaining {
+#student-amountDue, #student-tuition, #tuition-remaining, #student-interest {
   border-radius: 0 0.25rem 0.25rem 0;
   width: 182.5px;
 }

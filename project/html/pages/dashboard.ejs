@@ -1,0 +1,271 @@
+<html lang="en">
+
+<head>
+    <% include ../helpers/head %>
+</head>
+
+<body>
+    <!-- the classes 'page-header' and 'btn btn-dark' create bootstrap components.  -->
+    <!-- Check out more components here: http://getbootstrap.com/components/ -->
+    <div class="page-header">
+        <% include ../helpers/navbar %>
+    </div>
+    <main>
+        <div class="tabs">
+            <ul id="tab-links">
+                <li><a href="#tab-1" class="active" title="Home"><i class="fas fa-home"></i>&nbsp;&nbsp;&nbsp;Home</a>
+                </li>
+                <li><a href="#tab-2" title="Student-List &amp; Illustration"><i
+                            class="far fa-user"></i>&nbsp;&nbsp;&nbsp;Students</a></li>
+                <li><a href="#tab-3" title="Add New"><i class="fas fa-sliders-h"></i>&nbsp;&nbsp;&nbsp;Add New</a>
+                </li>
+                <li><a href="#tab-4" title="Settings"><i class="fas fa-sliders-h"></i>&nbsp;&nbsp;&nbsp;Settings</a>
+                </li>
+            </ul>
+
+            <section id="tab-1" style="padding: 50 0;" class="active">
+                <div style="width:100%;">
+                    <div style="width:80%; margin:0 10%;">
+                        <h4>Notification Center</h4>
+                        <div id="notification-center-wrapper" style="text-align: left;">
+                            <div id="notification-center">
+                            </div>
+                            <div style="text-align: center;">
+                                <button id="show-more-notifications" onclick="updateNotifications()">Show More
+                                    &nbsp;&nbsp;
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-2">
+                <div style="width: 100%;">
+                    <div style="margin: 50 0 50 0;">
+                        <div id="filter-wrapper">
+                            <div id="filters">
+                                <form style="margin: 0px;">
+                                    <label for="filter-class">Filter By Class</label><br>
+                                    <select id="filter-class" name="filter-class">
+                                        <option value="PSW">All</option>
+                                        <option value="PSW">Personal Support Worker</option>
+                                        <option value="PSWBP">PSW Bridging Program</option>
+                                        <option value="FSW">Food Service Worker</option>
+                                        <option value="DSW">Developmental Services Worker</option>
+                                    </select>
+                                </form>
+                            </div>
+                            <div class="search-wrapper">
+                                <div class="search-container">
+                                    <form id="search-student" onSubmit="return false" class="search-form form">
+                                        <label style="width:100%">
+                                            <span class="screen-reader-text">Search</span>
+                                            <input type="search" class="search-field" placeholder="Search" value=""
+                                                name="s" title="" />
+                                        </label>
+                                        <input type="submit" class="search-submit search-button" value="&#xf002" />
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="student-list"></div>
+                    </div>
+                </div>
+
+                <div class="cd-panel cd-panel--from-left js-cd-panel-main">
+                    <header class="cd-panel__header">
+                        <span title="Delete Student"><i class="far fa-trash-alt" onclick="deleteStudent()"></i></span>
+                        <h3 id="student-name"></h3>
+                        <a onclick="closeStudentTab()" class="cd-panel__close js-cd-close">Close</a>
+                    </header>
+                    <div class="cd-panel__container">
+                        <div class="cd-panel__content">
+                            <h4>Basic Info</h4>
+                            <div id="student-info">
+                                <label for="student-email">Email</label>
+                                <div class="margin-med">
+                                    <div style="display:inline;">
+                                        <input type="text" id="student-email" disabled="true">
+                                    </div>
+                                    <div style="display:inline; vertical-align: middle;">
+                                        <span title="Email Student"><a onclick="manualEmail()"><i
+                                                    class="far fa-envelope"></i></a></span>
+                                    </div>
+                                </div>
+                                <label for="student-startDate">Registration Date</label>
+                                <div class="margin-med">
+                                    <input type="date" id="student-startDate" onchange="enrolChange()" disabled="true">
+                                </div>
+                                <div class="margin-med">
+                                    <label for="student-tuition">Tuition</label><br>
+                                    <span id="dollar-sign">$</span><input id="student-tuition" type="number"
+                                        disabled="true" required><br>
+                                </div>
+                                <div style="width:100%; margin-bottom:16px;">
+                                    <div style="display: inline-block; width: 218px;">
+                                        <label for="tuition-remaining">Remaining Balance</label><br>
+                                        <span id="dollar-sign">$</span><input id="tuition-remaining" type="number"
+                                            disabled="true"><br>
+                                    </div>
+                                    <div style="display: inline-block; width: 100px; margin-left:15px;">
+                                        <label for="student-monthsLeft">Months</label><br>
+                                        <input id="student-monthsLeft" type="number" disabled="true" required><br>
+                                    </div>
+                                </div>
+                                <div class="margin-med" style="margin-bottom:0px;">
+                                    <label for="student-interest">Interest Due</label><br>
+                                    <span id="dollar-sign">$</span><input id="student-interest" type="number"
+                                        disabled="true" required><br>
+                                </div>
+                                <span title="Edit Student"><i class="far fa-edit" id="edit-student"
+                                        onclick="editStudent()"></i></span>
+                                <span title="Save Edit"><i class="far fa-check-circle" id="save-edit"
+                                        onclick="saveEdit()" style="visibility: hidden"></i></span>
+                                <span title="Cancel Edit"><i class="far fa-window-close" id="cancel-edit"
+                                        onclick="cancelEdit()" style="visibility: hidden"></i></span>
+                            </div>
+
+                            <h4>Upcoming Payments</h4>
+                            <div id="payment-info">
+                                <label for="student-amountDue">Amount Due</label>
+                                <div class="margin-med">
+                                    <span id="dollar-sign">$</span><input id="student-amountDue" type="number"
+                                        disabled="true">
+                                </div>
+                                <label for="student-nextPayment">Due Date</label>
+                                <div class="margin-med">
+                                    <div style="display:inline;">
+                                        <input type="date" id="student-nextPayment" onchange="nextPaymentChange()"
+                                            disabled="true">
+                                    </div>
+                                    <div id="days-until-due" style="display:inline;">
+                                    </div>
+                                </div>
+                                <div class="log-payment" onclick="openLogPayment()">
+                                    <div class="from">
+                                        <div class="from-contents">
+                                            <div class="log-payment-label">LOG PAYMENT</div>
+                                        </div>
+                                    </div>
+                                    <div class="to">
+                                        <div class="to-contents">
+                                            <div class="top">
+                                                <div class="avatar-large me"></div>
+                                                <div class="name-large">LOG PAYMENT</div>
+                                                <div class="x-touch"
+                                                    onclick="document.querySelector('.log-payment').classList.remove('expand');event.stopPropagation();">
+                                                    <div class="x">
+                                                        <div class="line1"></div>
+                                                        <div class="line2"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="bottom">
+                                                <form id="add-payment-form" onsubmit="studentTabPayment();return false">
+                                                    <label for="payment-input">Amount</label>
+                                                    <div class="margin-med">
+                                                        <span id="dollar-sign">$</span><input id="payment-input"
+                                                            type="number" step="0.01" placeholder="500" required>
+                                                    </div>
+                                                    <label for="payment-date">Payment Date</label><br>
+                                                    <input id="payment-date" type="date" placeholder="yyyy-mm-dd"
+                                                        required><br>
+                                                    <button id="add-payment-submit">Submit</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h4>Payment History</h4>
+                            <div id="payment-history">
+                            </div>
+                        </div> <!-- cd-panel__content -->
+                    </div> <!-- cd-panel__container -->
+                </div> <!-- cd-panel -->
+                <span class="close-pane" onclick="closeStudentTab()"></span>
+            </section>
+            <section id="tab-3">
+                <div class="" style="position:relative; margin: 50px 25%; width: 50%;">
+                    <h4 id="add-new-student">Add Student</h4>
+                    <form id="add-student-form" onSubmit="handleAddStudentSubmit()" action="#">
+                        <label for="first-name">First Name</label><br>
+                        <input id="first-name" placeholder="John" required><br>
+                        <label for="last-name">Last Name</label><br>
+                        <input id="last-name" placeholder="Doe" required><br>
+                        <label for="email">Email</label><br>
+                        <input id="email" placeholder="john.doe@gmail.com" required><br>
+                        <label for="enrol-date">Registration Date</label><br>
+                        <input id="enrol-date" type="date" placeholder="yyyy-mm-dd" required><br>
+                        <div style="display: inline-block; width: 70%;">
+                            <div style="float: left; width: 65%">
+                                <label for="tuition-input">Tuition Fee</label><br>
+                                <span id="dollar-sign">$</span><input id="tuition-input" type="number" min="0"
+                                    placeholder="2750" required>
+                            </div>
+                            <div style="float: left; width: 35%">
+                                <label for="tuition-months">Months</label><br>
+                                <input type="number" id="tuition-months" min="0" placeholder="4" required>
+                            </div>
+                        </div><br>
+                        <label for="downpayment">Downpayment</label><br>
+                        <span id="dollar-sign">$</span><input id="downpayment" type="number" min="0" placeholder="500"
+                            required><br>
+                        <label for="student-class">Class</label><br>
+                        <select id="student-class" name="student-class">
+                            <option value="PSW">Personal Support Worker</option>
+                            <option value="PSWBP">PSW Bridging Program</option>
+                            <option value="FSW">Food Service Worker</option>
+                            <option value="DSW">Developmental Services Worker</option>
+                        </select><br>
+                        <button id="add-student-submit">Submit</button>
+                    </form>
+                </div>
+            </section>
+
+            <section id="tab-4">
+                <div class="" style="position:relative; margin: 50px 25%; width: 50%;">
+                    <h4>Email Settings</h4>
+                    <span title="Edit Settings"><i class="far fa-edit" id="edit-emails"
+                            onclick="editEmails()"></i></span>
+                    <span title="Done Editing"><i class="far fa-check-circle" id="done-editing-emails"
+                            onclick="finishEmailEdit()" style="visibility:hidden;"></i></span>
+                    <div id="email-settings-wrapper">
+                        <div id="email-settings">
+                        </div>
+                        <div style="text-align: center;">
+                            <button id="add-new-email-button" onclick="showAddEmail()"
+                                style="visibility: hidden; margin-bottom: 133px;">Add New</button>
+                        </div>
+                    </div>
+                    <div>
+                        <form id="add-email-form">
+                            <p>Days</p>
+                            <div style="display: inline-block; width: 100%; margin-bottom: 16px;">
+                                <div style="float: left; width: 50%">
+                                    <input type="number" min="0" id="days-to-email" placeholder="2" required>
+                                </div>
+                                <div id="email-radio-buttons">
+                                    <input type="radio" id="days-before" name="when" value="before" required>
+                                    <label for="before">Before</label><br>
+                                    <input type="radio" id="days-after" name="when" value="after" required>
+                                    <label id="days-after-label" for="after">After</label>
+                                </div>
+                            </div>
+                            <button type="submit" onclick="addNewEmail()" id="add-email-submit">Submit</button>
+                            <button type="button" id="cancel-email-add" onclick="cancelAddEmail()">Cancel</button>
+                        </form>
+                    </div>
+
+                </div>
+
+            </section>
+        </div>
+    </main>
+</body>
+
+</html>

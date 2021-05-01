@@ -13,67 +13,71 @@
     </div>
     <div class="row">
       <div class="column column-left">
-        <h4 id="add-new-student">Add Student</h4>
-        <form id="add-student-form" onSubmit="handleAddStudentSubmit()" action="#">
-          <label for="first-name">First Name</label><br>
-          <input id="first-name" placeholder="John" required><br>
-          <label for="last-name">Last Name</label><br>
-          <input id="last-name" placeholder="Doe" required><br>
-          <label for="email">Email</label><br>
-          <input id="email" placeholder="john.doe@gmail.com" required><br>
-          <label for="enrol-date">Registration Date</label><br>
-          <input id="enrol-date" type="date" placeholder="yyyy-mm-dd" required><br>
-          <div style="display: inline-block; width: 70%;">
-            <div style="float: left; width: 65%">
-              <label for="tuition-input">Tuition Fee</label><br>
-              <span id="dollar-sign">$</span><input id="tuition-input" type="number" min="0" placeholder="2750"
-                required>
-            </div>
-            <div style="float: left; width: 35%">
-              <label for="tuition-months">Months</label><br>
-              <input type="number" id="tuition-months" min="0" placeholder="4" required>
-            </div>
-          </div><br>
-          <label for="downpayment">Downpayment</label><br>
-          <span id="dollar-sign">$</span><input id="downpayment" type="number" min="0" placeholder="500" required><br>
-          <label for="student-class">Class</label><br>
-          <select id="student-class" name="student-class">
-            <option value="PSW">Personal Support Worker</option>
-            <option value="PSWBP">PSW Bridging Program</option>
-            <option value="FSW">Food Service Worker</option>
-            <option value="DSW">Developmental Services Worker</option>
-          </select><br>
-          <button id="add-student-submit">Submit</button>
-        </form>
+        <div class="column-left-container">
+          <h4 id="add-new-student">Add Student</h4>
+          <form id="add-student-form" onSubmit="handleAddStudentSubmit()" action="#">
+            <label for="first-name">First Name</label><br>
+            <input id="first-name" placeholder="John" required><br>
+            <label for="last-name">Last Name</label><br>
+            <input id="last-name" placeholder="Doe" required><br>
+            <label for="email">Email</label><br>
+            <input id="email" placeholder="john.doe@gmail.com" required><br>
+            <label for="enrol-date">Registration Date</label><br>
+            <input id="enrol-date" type="date" placeholder="yyyy-mm-dd" required><br>
+            <div style="display: inline-block; width: 70%;">
+              <div style="float: left; width: 65%">
+                <label for="tuition-input">Tuition Fee</label><br>
+                <span id="dollar-sign">$</span><input id="tuition-input" type="number" min="0" placeholder="2750"
+                  required>
+              </div>
+              <div style="float: left; width: 35%">
+                <label for="tuition-months">Months</label><br>
+                <input type="number" id="tuition-months" min="0" placeholder="4" required>
+              </div>
+            </div><br>
+            <label for="downpayment">Downpayment</label><br>
+            <span id="dollar-sign">$</span><input id="downpayment" type="number" min="0" placeholder="500" required><br>
+            <label for="student-class">Class</label><br>
+            <select id="student-class" name="student-class">
+              <option value="PSW">Personal Support Worker</option>
+              <option value="PSWBP">PSW Bridging Program</option>
+              <option value="FSW">Food Service Worker</option>
+              <option value="DSW">Developmental Services Worker</option>
+            </select><br>
+            <button id="add-student-submit">Submit</button>
+          </form>
+        </div>
       </div>
       <div class="column column-right">
-        <div id="filter-wrapper">
-          <div id="filters">
-            <form style="margin: 0px;">
-              <label for="filter-class">Filter By Class</label><br>
-              <select id="filter-class" name="filter-class">
-                <option value="PSW">All</option>
-                <option value="PSW">Personal Support Worker</option>
-                <option value="PSWBP">PSW Bridging Program</option>
-                <option value="FSW">Food Service Worker</option>
-                <option value="DSW">Developmental Services Worker</option>
-              </select>
-            </form>
-          </div>
-          <div class="search-wrapper">
-            <div class="search-container">
-              <form id="search-student" onSubmit="return false" class="search-form form">
-                <label style="width:100%">
-                  <span class="screen-reader-text">Search</span>
-                  <input type="search" class="search-field" placeholder="Search" value="" name="s" title="" />
-                </label>
-                <input type="submit" class="search-submit search-button" value="&#xf002" />
+        <div class="column-right-container">
+          <div id="filter-wrapper">
+            <div id="filters">
+              <form style="margin: 0px;">
+                <label for="filter-class">Filter By Class</label><br>
+                <select id="filter-class" name="filter-class">
+                  <option value="PSW">All</option>
+                  <option value="PSW">Personal Support Worker</option>
+                  <option value="PSWBP">PSW Bridging Program</option>
+                  <option value="FSW">Food Service Worker</option>
+                  <option value="DSW">Developmental Services Worker</option>
+                </select>
               </form>
             </div>
+            <div class="search-wrapper">
+              <div class="search-container">
+                <form id="search-student" onSubmit="return false" class="search-form form">
+                  <label style="width:100%">
+                    <span class="screen-reader-text">Search</span>
+                    <input type="search" class="search-field" placeholder="Search" value="" name="s" title="" />
+                  </label>
+                  <input type="submit" class="search-submit search-button" value="&#xf002" />
+                </form>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div id="student-list"></div>
+          <div id="student-list"></div>
+        </div>
       </div>
     </div>
   </main>
@@ -86,7 +90,7 @@
     </header>
     <div class="cd-panel__container">
       <div class="cd-panel__content">
-        <h4>Student Info</h4>
+        <h4>Basic Info</h4>
         <div id="student-info">
           <label for="student-email">Email</label>
           <div class="margin-med">
@@ -105,7 +109,7 @@
             <label for="student-tuition">Tuition</label><br>
             <span id="dollar-sign">$</span><input id="student-tuition" type="number" disabled="true" required><br>
           </div>
-          <div class="" style="width:100%;">
+          <div style="width:100%; margin-bottom:16px;">
             <div style="display: inline-block; width: 218px;">
               <label for="tuition-remaining">Remaining Balance</label><br>
               <span id="dollar-sign">$</span><input id="tuition-remaining" type="number" disabled="true"><br>
@@ -114,6 +118,10 @@
               <label for="student-monthsLeft">Months</label><br>
               <input id="student-monthsLeft" type="number" disabled="true" required><br>
             </div>
+          </div>
+          <div class="margin-med" style="margin-bottom:0px;">
+            <label for="student-interest">Interest Due</label><br>
+            <span id="dollar-sign">$</span><input id="student-interest" type="number" disabled="true" required><br>
           </div>
           <span title="Edit Student"><i class="far fa-edit" id="edit-student" onclick="editStudent()"></i></span>
           <span title="Save Edit"><i class="far fa-check-circle" id="save-edit" onclick="saveEdit()"
@@ -159,8 +167,7 @@
                   <form id="add-payment-form" onsubmit="studentTabPayment();return false">
                     <label for="payment-input">Amount</label>
                     <div class="margin-med">
-                    <span id="dollar-sign">$</span><input id="payment-input" type="number" placeholder="500"
-                      required>
+                      <span id="dollar-sign">$</span><input id="payment-input" type="number" step="0.01" placeholder="500" required>
                     </div>
                     <label for="payment-date">Payment Date</label><br>
                     <input id="payment-date" type="date" placeholder="yyyy-mm-dd" required><br>
