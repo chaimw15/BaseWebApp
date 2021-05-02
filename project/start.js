@@ -45,7 +45,7 @@ const cron = require('node-cron');
 const { getMaxListeners } = require('pdfkit');
 const { Base64Encode } = require('base64-stream');
 
-const task = cron.schedule('15 00 * * *', () => {
+const task = cron.schedule('20 00 * * *', () => {
   console.log('Running...');
 
   var firebaseConfig = {
@@ -201,7 +201,6 @@ function sendEmail(subject, message, studentEmail, studentName) {
 }
 
 function calculateAmountDue3(student) {
-  console.log(student.firstName);
   var currentDate = new Date();
   var currentMonth = currentDate.getMonth();
   var currentYear = currentDate.getFullYear();
@@ -244,10 +243,8 @@ function calculateAmountDue3(student) {
       }
     }
     if (!(yearCounter == currentYear && monthCounter == currentMonth) && dueThisMonth != 0) {
-      console.log("Month missed, adding interest on $" + dueThisMonth);
       interest += dueThisMonth * 0.03;
     } else if (!(yearCounter == currentYear && monthCounter == currentMonth) || dueThisMonth == 0) {
-      console.log("Month Paid");
     }
 
     if (monthCounter == 11) {
