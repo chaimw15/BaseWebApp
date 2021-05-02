@@ -45,7 +45,7 @@ const cron = require('node-cron');
 const { getMaxListeners } = require('pdfkit');
 const { Base64Encode } = require('base64-stream');
 
-const task = cron.schedule('20 00 * * *', () => {
+const task = cron.schedule('23 00 * * *', () => {
   console.log('Running...');
 
   var firebaseConfig = {
