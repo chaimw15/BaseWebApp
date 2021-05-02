@@ -113,7 +113,7 @@ const task = cron.schedule('15 11 * * *', () => {
               console.log("Prepping email to " + student.firstName + "...");
               console.log(message);
               console.log("Sending email...");
-              //sendEmail(subject, message, student.email, student.firstName);
+              sendEmail(subject, message, student.email, student.firstName);
             }
           }
         }
