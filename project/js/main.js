@@ -475,6 +475,45 @@ function getThisMonthPayDate(startDate) {
   return year + "-" + month + "-" + day;
 }
 
+function getPreviousMonthPayDate(startDate) {
+  var currentDate = new Date();
+  var enrolArray = startDate.split("-");
+
+  var year = currentDate.getFullYear();
+  var month = currentDate.getMonth();
+  var currentDay = currentDate.getDate();
+  var day = parseInt(enrolArray[2]);
+
+  if (month == 0) {
+    month = 12;
+    year = year - 1;
+  }
+
+  if (day == 31) {
+    if (month == 4 || month == 6 || month == 9 || month == 11) {
+      day = 30;
+    }
+  }
+
+  if (day > 28 && month == 2) {
+    if (isLeapYear(year)) {
+      day = 29;
+    } else {
+      day = 28;
+    }
+  }
+
+  if (month < 10) {
+    month = "0" + month;
+  }
+
+  if (day < 10) {
+    day = "0" + day;
+  }
+
+  return year + "-" + month + "-" + day;
+}
+
 function getNextPayDate(lastPayDate, startDate) {
   var lastPayArray = lastPayDate.split("-");
   var enrolArray = startDate.split("-");
@@ -1306,7 +1345,6 @@ function calculateAmountDue2(student) {
   return [amountDue, dueDate, remainingBalance];
 }
 
-
 function calculateAmountDue3(student) {
   //console.log(student.firstName);
   var currentDate = new Date();
@@ -1367,6 +1405,10 @@ function calculateAmountDue3(student) {
 
   var amountDue = Math.min(dueThisMonth, remainingBalance + interest);
   var dueDate = getThisMonthPayDate(student.startDate);
+
+  if (differenceInDays(currentYear + "-" + (currentMonth + 1) + "-" + currentDate.getDate(), getPreviousMonthPayDate(student.startDate)) == 1) {
+    dueDate = getPreviousMonthPayDate(student.startDate);
+  }
 
   //console.log(dueDate);
 
