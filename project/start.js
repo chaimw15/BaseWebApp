@@ -45,7 +45,7 @@ const cron = require('node-cron');
 const { getMaxListeners } = require('pdfkit');
 const { Base64Encode } = require('base64-stream');
 
-const task = cron.schedule('23 00 * * *', () => {
+const task = cron.schedule('15 11 * * *', () => {
   console.log('Running...');
 
   var firebaseConfig = {
@@ -91,8 +91,6 @@ const task = cron.schedule('23 00 * * *', () => {
 
         if (amountDue > 0) {
 
-
-          amountDue = amountDue.toFixed(2);
           interest = interest.toFixed(2);
 
           var subject = "Peak College Tuition " + daysLeft + " Day Notice";
@@ -105,13 +103,17 @@ const task = cron.schedule('23 00 * * *', () => {
             if (emails[emailKeys].days == daysLeft) {
               if (daysLeft < 0) {
                 subject = "Peak College Tuition Overdue";
-                middleMessage = "Our records show that you haven't made your full monthly payment of $500 yesterday.<br>We would appreciate your payment as soon as possible.<br>";
+                if (remainingBalance > 500 && amountDue < 500) {
+                  middleMessage = "Our records show that you have only paid $" + (500 - amountDue) + " of your full monthly payment of $500 due yesterday.<br>We would appreciate the rest of your payment as soon as possible.<br>";
+                } else {
+                  middleMessage = "Our records show that you didn't pay your monthly payment yesterday.<br>Your tuition balance is $" + remainingBalance + " with $" + interest + " interest.<br>We would appreciate your payment as soon as possible.<br>";
+                }
               }
               message = greeting + middleMessage + endMessage;
               console.log("Prepping email to " + student.firstName + "...");
-              console.log("Amount due: $" + amountDue);
+              console.log(message);
               console.log("Sending email...");
-              sendEmail(subject, message, student.email, student.firstName);
+              //sendEmail(subject, message, student.email, student.firstName);
             }
           }
         }
@@ -201,6 +203,7 @@ function sendEmail(subject, message, studentEmail, studentName) {
 }
 
 function calculateAmountDue3(student) {
+  //console.log(student.firstName);
   var currentDate = new Date();
   var currentMonth = currentDate.getMonth();
   var currentYear = currentDate.getFullYear();
@@ -221,6 +224,7 @@ function calculateAmountDue3(student) {
 
   while (yearCounter < currentYear || (yearCounter == currentYear && monthCounter <= currentMonth)) {
     dueThisMonth = Math.min(500, remainingBalance + interest);
+    //console.log(toNormalDate(monthCounter, yearCounter));
 
     for (var paymentKey in student.payments) {
       var payment = payments[paymentKey];
@@ -243,8 +247,17 @@ function calculateAmountDue3(student) {
       }
     }
     if (!(yearCounter == currentYear && monthCounter == currentMonth) && dueThisMonth != 0) {
-      interest += dueThisMonth * 0.03;
+      try {
+        var skipMonth = student.skipMonth;
+        var skipYear = student.skipYear;
+        if (!(yearCounter <= skipYear || yearCounter == skipYear && monthCounter <= skipMonth)) {
+          interest += dueThisMonth * 0.03;
+        }
+      } catch (e) {
+        interest += dueThisMonth * 0.03;
+      }
     } else if (!(yearCounter == currentYear && monthCounter == currentMonth) || dueThisMonth == 0) {
+      //console.log("Month Paid");
     }
 
     if (monthCounter == 11) {
@@ -257,9 +270,15 @@ function calculateAmountDue3(student) {
   var amountDue = Math.min(dueThisMonth, remainingBalance + interest);
   var dueDate = getThisMonthPayDate(student.startDate);
 
-  if (differenceInDays(currentYear + "-" + (currentMonth + 1) + "-" + currentDate.getDate(), getPreviousMonthPayDate(student.startDate)) == 1) {
+  if (differenceInDays(getCurrentDate(), getPreviousMonthPayDate(student.startDate)) == 1) {
     dueDate = getPreviousMonthPayDate(student.startDate);
   }
+
+  if (differenceInDays(getNextMonthPayDate(student.startDate), getCurrentDate()) <= 3) {
+    dueDate = getNextMonthPayDate(student.startDate);
+  }
+
+  //console.log(dueDate);
 
   return [amountDue, dueDate, remainingBalance, interest];
 }
@@ -303,20 +322,6 @@ function getThisMonthPayDate(startDate) {
   var currentDay = currentDate.getDate();
   var day = parseInt(enrolArray[2]);
 
-  if (day = 1) {
-    month -= 1;
-  }
-
-  if (month > 12) {
-    month = 1;
-    year = year + 1;
-  }
-
-  if (month < 1) {
-    month = month + 12;
-    year = year - 1;
-  }
-
   if (day == 31) {
     if (month == 4 || month == 6 || month == 9 || month == 11) {
       day = 30;
@@ -354,6 +359,45 @@ function getPreviousMonthPayDate(startDate) {
   if (month == 0) {
     month = 12;
     year = year - 1;
+  }
+
+  if (day == 31) {
+    if (month == 4 || month == 6 || month == 9 || month == 11) {
+      day = 30;
+    }
+  }
+
+  if (day > 28 && month == 2) {
+    if (isLeapYear(year)) {
+      day = 29;
+    } else {
+      day = 28;
+    }
+  }
+
+  if (month < 10) {
+    month = "0" + month;
+  }
+
+  if (day < 10) {
+    day = "0" + day;
+  }
+
+  return year + "-" + month + "-" + day;
+}
+
+function getNextMonthPayDate(startDate) {
+  var currentDate = new Date();
+  var enrolArray = startDate.split("-");
+
+  var year = currentDate.getFullYear();
+  var month = currentDate.getMonth() + 2;
+  var currentDay = currentDate.getDate();
+  var day = parseInt(enrolArray[2]);
+
+  if (month > 12) {
+    month = 1;
+    year = year + 1;
   }
 
   if (day == 31) {
