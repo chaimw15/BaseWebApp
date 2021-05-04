@@ -96,7 +96,7 @@ const task = cron.schedule('15 11 * * *', () => {
           var subject = "Peak College Tuition " + daysLeft + " Day Notice";
           var greeting = "<p>Dear " + student.firstName + ",<br><br>";
           var middleMessage = "This is a friendly reminder that your tuition payment is due on " + prettyDate + ".<br>Your tuition balance is $" + remainingBalance + " with $" + interest + " interest. Please make your monthly payment.<br>You will be charged a late fee of 3% interest if not paid on time.<br>";
-          var endMessage = "To pay, send an e-transfer to <a href='mailto:yunny@peakcollge.ca'>yunny@peakcollge.ca<a>.<br>Please contact the school office if you have any questions.<br><br>Sincerely,<br>Peak Admin";
+          var endMessage = "To pay, send an e-transfer to <a href='mailto:yunny@peakcollege.ca'>yunny@peakcollege.ca<a><br>Please contact the school office if you have any questions.<br><br>Sincerely,<br>Peak Admin";
           var message = "";
 
           for (emailKeys in emails) {
