@@ -47,7 +47,6 @@ app.get('/thankyou', function (req, res) {
 
   var subject = "Peak College Payment Received";
   var message = "Dear " + student.firstName + ",<br><br>This is to confirm that your payment of $" + amountPaid + " was received successfully.<br>Your balance is now $" + balance + " with $" + interest + " interest.<br><br>Thank you,<br><br>Peak Admin";
-  console.log(message);
   sendEmail(subject, message, student.email, student.firstName);
   res.write("sent");
   res.end();

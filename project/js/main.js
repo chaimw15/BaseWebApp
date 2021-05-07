@@ -1542,7 +1542,7 @@ function handleStudentRegistration() {
 function sendThankYou(student, paid, balance, interest) {
   $.ajax({
     type: 'GET',
-    url: 'http://localhost:5000/thankyou',
+    url: '/thankyou',
     data: { student: student, paid: paid, balance: balance, interest: interest },
     success: function (response) {
     },
