@@ -26,15 +26,31 @@ app.get('/', function (request, response) {
   response.render('pages/signin');
 });
 
-app.get('/students', function (request, response) {
-  response.render('pages/students');
-});
-
 app.get('/dashboard', function (request, response) {
   response.render('pages/dashboard');
 });
 app.get('/registration', function (request, response) {
   response.render('pages/registration');
+});
+
+app.get('/thankyou', function (req, res) {
+  var data = req.query;
+  var student = data.student;
+  var amountPaid = data.paid;
+  var balance = data.balance;
+  interest = data.interest;
+  res.writeHead(200, { "Context-Type": "text\plain" });
+
+  amountPaid = parseFloat(amountPaid).toFixed(2);
+  balance = parseFloat(balance).toFixed(2);
+  interest = parseFloat(interest).toFixed(2);
+
+  var subject = "Peak College Payment Received";
+  var message = "Dear " + student.firstName + ",<br><br>This is to confirm that your payment of $" + amountPaid + " was received successfully.<br>Your balance is now $" + balance + " with $" + interest + " interest.<br><br>Thank you,<br><br>Peak Admin";
+  console.log(message);
+  sendEmail(subject, message, student.email, student.firstName);
+  res.write("sent");
+  res.end();
 });
 
 app.listen(app.get('port'), function () {

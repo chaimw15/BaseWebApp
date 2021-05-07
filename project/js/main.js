@@ -600,6 +600,8 @@ function studentTabPayment() {
       }
       $("#payment-input").val(0);
       getPaymentHistory();
+      getNotifications();
+      sendThankYou(student, amountPaid, remainingBalance, interest);
     });
   });
 }
@@ -663,9 +665,13 @@ function makePayment(amountPaid, payDate, _callback) {
 }
 
 function notificationCenterPayment(studentKey) {
+  console.log("paying");
   currentStudentKey = studentKey;
-  var amountPaid = parseFloat($("#payment-input").val());
-  var payDate = $("#payment-date").val();
+  var amountPaid = parseFloat($("#payment-input-" + studentKey).val());
+  var payDate = $("#payment-date-" + studentKey).val();
+
+  console.log(amountPaid);
+  console.log(payDate);
 
   makePayment(amountPaid, payDate, function () {
     firebase.database().ref("/students/" + currentStudentKey).once('value').then((snapshot) => {
@@ -675,24 +681,28 @@ function notificationCenterPayment(studentKey) {
       var amountDue = returnData[0];
       var dueDate = returnData[1];
       var remainingBalance = returnData[2];
+      var interest = returnData[3];
 
       var days = differenceInDays(dueDate, getCurrentDate());
 
       if (days == -1) {
-        $("#" + studentKey).html(": $" + amount + " due <span style='color: red'>" + Math.abs(days) + " day ago</span>.");
+        $("#" + studentKey).html(": $" + amountDue + " due <span style='color: red'>" + Math.abs(days) + " day ago</span>.");
       } else if (days == 1) {
-        $("#" + studentKey).html(": $" + amount + " due in <span style='color: green'>" + days + " day</span>.");
+        $("#" + studentKey).html(": $" + amountDue + " due in <span style='color: green'>" + days + " day</span>.");
       } else if (days > 0) {
-        $("#" + studentKey).html(": $" + amount + " due in <span style='color: green'>" + days + " days</span>.");
+        $("#" + studentKey).html(": $" + amountDue + " due in <span style='color: green'>" + days + " days</span>.");
       } else if (days == 0) {
-        $("#" + studentKey).html(": $" + amount + " due <span style='color: green'>today</span>.");
+        $("#" + studentKey).html(": $" + amountDue + " due <span style='color: green'>today</span>.");
       } else {
-        $("#" + studentKey).html(": $" + amount + " due <span style='color: red'>" + Math.abs(days) + " days ago</span>.");
+        $("#" + studentKey).html(": $" + amountDue + " due <span style='color: red'>" + Math.abs(days) + " days ago</span>.");
       }
+
+      sendThankYou(student, amountPaid, remainingBalance, interest);
     });
   });
+  closeLogPayments("payment-" + studentKey);
 }
-
+/**
 function makePaymentHome(studentKey) {
   firebase.database().ref("/students/" + studentKey).once('value').then((snapshot) => {
     var student = snapshot.val();
@@ -744,6 +754,7 @@ function makePaymentHome(studentKey) {
     }
   });
 }
+*/
 
 $("#search-student").submit(function (e) {
   e.preventDefault();
@@ -954,15 +965,15 @@ function getNotifications() {
         setTimeout(function () {
 
           if (sorted[index].days == -1) {
-            $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + "<span id='" + sorted[index].studentKey + "'>: $" + sorted[index].amountDue + " due <span style='color: red'>" + Math.abs(sorted[index].days) + " day ago</span>.</span></p></div><div class='button-wrapper'><button id='make-payment' onClick='makePaymentHome(`" + sorted[index].studentKey + "`)'>Log Payment</button><div></div>").hide().fadeIn(250));
+            $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + "<span id='" + sorted[index].studentKey + "'>: $" + sorted[index].amountDue + " due <span style='color: red'>" + Math.abs(sorted[index].days) + " day ago</span>.</span></p></div><div class='button-wrapper'>" + paymentButton(sorted[index].studentKey) + "<div></div>").hide().fadeIn(250));
           } else if (sorted[index].days == 1) {
-            $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + "<span id='" + sorted[index].studentKey + "'>: $" + sorted[index].amountDue + " due in <span style='color: green'>" + sorted[index].days + " day</span>.</span></p></div><div class='button-wrapper'><button id='make-payment' onClick='makePaymentHome(`" + sorted[index].studentKey + "`)'>Log Payment</button></div></div>").hide().fadeIn(250));
+            $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + "<span id='" + sorted[index].studentKey + "'>: $" + sorted[index].amountDue + " due in <span style='color: green'>" + sorted[index].days + " day</span>.</span></p></div><div class='button-wrapper'>" + paymentButton(sorted[index].studentKey) + "</div></div>").hide().fadeIn(250));
           } else if (sorted[index].days > 0) {
-            $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + "<span id='" + sorted[index].studentKey + "'>: $" + sorted[index].amountDue + " due in <span style='color: green'>" + sorted[index].days + " days</span>.</span></p></div><div class='button-wrapper'><button id='make-payment' onClick='makePaymentHome(`" + sorted[index].studentKey + "`)'>Log Payment</button></div></div>").hide().fadeIn(250));
+            $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + "<span id='" + sorted[index].studentKey + "'>: $" + sorted[index].amountDue + " due in <span style='color: green'>" + sorted[index].days + " days</span>.</span></p></div><div class='button-wrapper'>" + paymentButton(sorted[index].studentKey) + "</div></div>").hide().fadeIn(250));
           } else if (sorted[index].days == 0) {
-            $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + "<span id='" + sorted[index].studentKey + "'>: $" + sorted[index].amountDue + " due <span style='color: green'>today</span>.</span></p></div><div class='button-wrapper'><button id='make-payment' onClick='makePaymentHome(`" + sorted[index].studentKey + "`)'>Log Payment</button><div></div>").hide().fadeIn(250));
+            $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + "<span id='" + sorted[index].studentKey + "'>: $" + sorted[index].amountDue + " due <span style='color: green'>today</span>.</span></p></div><div class='button-wrapper'>" + paymentButton(sorted[index].studentKey) + "<div></div>").hide().fadeIn(250));
           } else {
-            $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + "<span id='" + sorted[index].studentKey + "'>: $" + sorted[index].amountDue + " due <span style='color: red'>" + Math.abs(sorted[index].days) + " days ago</span>.</span></p></div><div class='button-wrapper'><button id='make-payment' onClick='makePaymentHome(`" + sorted[index].studentKey + "`)'>Log Payment</button><div></div>").hide().fadeIn(250));
+            $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + "<span id='" + sorted[index].studentKey + "'>: $" + sorted[index].amountDue + " due <span style='color: red'>" + Math.abs(sorted[index].days) + " days ago</span>.</span></p></div><div class='button-wrapper'>" + paymentButton(sorted[index].studentKey) + "<div></div>").hide().fadeIn(250));
           }
 
           if (sorted[index + 1] == null) {
@@ -991,15 +1002,15 @@ function updateNotifications() {
   (function myLoop(index) {
     setTimeout(function () {
       if (sorted[index].days == -1) {
-        $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + "<span id='" + sorted[index].studentKey + "'>: $" + sorted[index].amountDue + " due <span style='color: red'>" + Math.abs(sorted[index].days) + " day ago</span>.</span></p></div><div class='button-wrapper'><button id='make-payment' onClick='makePaymentHome(`" + sorted[index].studentKey + "`)'>Log Payment</button><div></div>").hide().fadeIn(250));
+        $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + "<span id='" + sorted[index].studentKey + "'>: $" + sorted[index].amountDue + " due <span style='color: red'>" + Math.abs(sorted[index].days) + " day ago</span>.</span></p></div><div class='button-wrapper'>" + paymentButton(sorted[index].studentKey) + "<div></div>").hide().fadeIn(250));
       } else if (sorted[index].days == 1) {
-        $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + "<span id='" + sorted[index].studentKey + "'>: $" + sorted[index].amountDue + " due in <span style='color: green'>" + sorted[index].days + " day</span>.</span></p></div><div class='button-wrapper'><button id='make-payment' onClick='makePaymentHome(`" + sorted[index].studentKey + "`)'>Log Payment</button></div></div>").hide().fadeIn(250));
+        $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + "<span id='" + sorted[index].studentKey + "'>: $" + sorted[index].amountDue + " due in <span style='color: green'>" + sorted[index].days + " day</span>.</span></p></div><div class='button-wrapper'>" + paymentButton(sorted[index].studentKey) + "</div></div>").hide().fadeIn(250));
       } else if (sorted[index].days > 0) {
-        $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + "<span id='" + sorted[index].studentKey + "'>: $" + sorted[index].amountDue + " due in <span style='color: green'>" + sorted[index].days + " days</span>.</span></p></div><div class='button-wrapper'><button id='make-payment' onClick='makePaymentHome(`" + sorted[index].studentKey + "`)'>Log Payment</button></div></div>").hide().fadeIn(250));
+        $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + "<span id='" + sorted[index].studentKey + "'>: $" + sorted[index].amountDue + " due in <span style='color: green'>" + sorted[index].days + " days</span>.</span></p></div><div class='button-wrapper'>" + paymentButton(sorted[index].studentKey) + "</div></div>").hide().fadeIn(250));
       } else if (sorted[index].days == 0) {
-        $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + "<span id='" + sorted[index].studentKey + "'>: $" + sorted[index].amountDue + " due <span style='color: green'>today</span>.</span></p></div><div class='button-wrapper'><button id='make-payment' onClick='makePaymentHome(`" + sorted[index].studentKey + "`)'>Log Payment</button><div></div>").hide().fadeIn(250));
+        $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + "<span id='" + sorted[index].studentKey + "'>: $" + sorted[index].amountDue + " due <span style='color: green'>today</span>.</span></p></div><div class='button-wrapper'>" + paymentButton(sorted[index].studentKey) + "<div></div>").hide().fadeIn(250));
       } else {
-        $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + "<span id='" + sorted[index].studentKey + "'>: $" + sorted[index].amountDue + " due <span style='color: red'>" + Math.abs(sorted[index].days) + " days ago</span>.</span></p></div><div class='button-wrapper'><button id='make-payment' onClick='makePaymentHome(`" + sorted[index].studentKey + "`)'>Log Payment</button><div></div>").hide().fadeIn(250));
+        $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + "<span id='" + sorted[index].studentKey + "'>: $" + sorted[index].amountDue + " due <span style='color: red'>" + Math.abs(sorted[index].days) + " days ago</span>.</span></p></div><div class='button-wrapper'>" + paymentButton(sorted[index].studentKey) + "<div></div>").hide().fadeIn(250));
       }
 
       if (sorted[index + 1] == null) {
@@ -1210,6 +1221,17 @@ function openLogPayment() {
   }
 }
 
+function openHomeLogPayment(id) {
+  if ($("#" + id).attr("class").localeCompare("log-payment") == 0) {
+    $("#" + id).addClass("expand");
+    $("#payment-date").val(getCurrentDate());
+    $("#payment-input").val(0);
+
+    var studentPayment = document.getElementById('payment-input');
+    studentPayment.addEventListener('keyup', twoDecimals);
+  }
+}
+/*
 function calculateAmountDue2(student) {
   var months = {};
   var nextPayment = student.startDate;
@@ -1344,7 +1366,7 @@ function calculateAmountDue2(student) {
 
   return [amountDue, dueDate, remainingBalance];
 }
-
+*/
 function calculateAmountDue3(student) {
   //console.log(student.firstName);
   var currentDate = new Date();
@@ -1489,7 +1511,9 @@ $(function () {
 //Signin Page
 function handleAdminSignIn() {
   var password = $("#admin-password").val();
-  if (password.localeCompare("fish") == 0) {
+  password = password.trim();
+  password = password.toLowerCase();
+  if (password.localeCompare("judy") == 0) {
     window.location.href = "dashboard";
   } else {
     $("#admin-password").val("");
@@ -1499,7 +1523,6 @@ function handleAdminSignIn() {
 
 function addClass() {
   let parent = $(this.parentNode.parentNode);
-  console.log("hi");
   parent.addClass("focus");
 }
 
@@ -1513,6 +1536,29 @@ function removeClass() {
 //Student Registration
 function handleStudentRegistration() {
   window.location.href = "submitForm";
+}
+
+// thank you email
+function sendThankYou(student, paid, balance, interest) {
+  $.ajax({
+    type: 'GET',
+    url: 'http://localhost:5000/thankyou',
+    data: { student: student, paid: paid, balance: balance, interest: interest },
+    success: function (response) {
+    },
+    error: function (xhr, status, err) {
+    }
+  });
+}
+
+function paymentButton(studentKey) {
+  return `<div class="log-payment" id="payment-` + studentKey + `" onclick="openHomeLogPayment('payment-` + studentKey + `')"><div class="from"><div class="from-contents"><div class="log-payment-label">LOG PAYMENT</div></div></div><div class="to"><div class="to-contents"><div class="top"><div class="avatar-large me"></div><div class="name-large">LOG PAYMENT</div><div class="x-touch" onclick="closeLogPayments('payment-` + studentKey + `')"><div class="x"><div class="line1"></div><div class="line2"></div></div></div></div><div class="bottom"><form id="add-payment-form" onsubmit="notificationCenterPayment('` + studentKey + `');return false"><label for="payment-input-` + studentKey + `">Amount</label><div class="margin-med"><span id="dollar-sign">$</span><input class="payment-input" id="payment-input-` + studentKey + `" type="number" step="0.01" placeholder="500" required></div><label for="payment-date-` + studentKey + `">Payment Date</label><br><input class="payment-date" id="payment-date-` + studentKey + `" type="date" placeholder="yyyy-mm-dd" required><br><button id="add-payment-submit">Submit</button></form></div></div></div></div>`
+
+}
+
+function closeLogPayments(id) {
+  $("#" + id).removeClass("expand");
+  event.stopPropagation();
 }
 
 

@@ -1164,6 +1164,24 @@ input[type=number] {
     box-shadow 300ms cubic-bezier(0.4, 0.0, 0.2, 1),
     border-radius 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
 }
+
+.log-payment label {
+  line-height: 1.4;
+  margin: 0 0 3px 0;
+  color: #424f5c;
+}
+
+#add-payment-form button {
+  border: solid var(--darkBlue) 1px;
+  border-radius: 3px;
+  background-color: rgba(230, 230, 230, 0.7);
+  padding: 8 25 8 25;
+  transition: 0.1s;
+  font-family: 'Inter',sans-serif;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
 .log-payment:not(.expand) {
   cursor: pointer;
 }
@@ -1257,9 +1275,18 @@ input[type=number] {
   font-size: 14px;
 }
 
-#payment-date {
+#payment-date, .payment-date  {
   font-size: 14px;
   margin-bottom: 25px;
+  line-height: 2;
+  user-select: none;
+  font-family: Inter, sans-serif;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgb(224, 224, 229);
+  border-image: initial;
+  padding: 0.375rem 1.25rem;
+  border-radius: 0.25rem;
 }
 
 #add-payment-form .margin-med {
@@ -1274,7 +1301,7 @@ input[type=number] {
   padding: 6px 12px;
 }
 
-#payment-input {
+#payment-input, .payment-input {
   background-color: white;
   border: 1px solid #e0e0e5;
   font-size: 14px;
@@ -1321,6 +1348,7 @@ input[type=number] {
   height: 309px;
   width: 300px;
   border: none;
+  z-index: 100;
 }
 .expand .from {
   opacity: 0;

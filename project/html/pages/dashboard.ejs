@@ -144,7 +144,7 @@
                                     <div id="days-until-due" style="display:inline;">
                                     </div>
                                 </div>
-                                <div class="log-payment" onclick="openLogPayment()">
+                                <div class="log-payment" id="log-payment" onclick="openHomeLogPayment('log-payment')">
                                     <div class="from">
                                         <div class="from-contents">
                                             <div class="log-payment-label">LOG PAYMENT</div>
@@ -156,7 +156,7 @@
                                                 <div class="avatar-large me"></div>
                                                 <div class="name-large">LOG PAYMENT</div>
                                                 <div class="x-touch"
-                                                    onclick="document.querySelector('.log-payment').classList.remove('expand');event.stopPropagation();">
+                                                    onclick="closeLogPayments('log-payment');">
                                                     <div class="x">
                                                         <div class="line1"></div>
                                                         <div class="line2"></div>
