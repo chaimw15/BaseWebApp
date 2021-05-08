@@ -33,6 +33,19 @@ app.get('/registration', function (request, response) {
   response.render('pages/registration');
 });
 
+app.get('/studentData', function (request, response) {
+  var clientid = request.headers['X-ADOBESIGN-CLIENTID'];
+  //Validate it
+  if (clientid === "CBJCHBCAABAAkQAo6uSve0C_Ia5gi43HPqTMh_m0gpR0") {
+    var responseBody = {
+      "xAdobeSignClientId": clientid // Return Client Id in the body
+    };
+    response.headers['Content-Type'] = 'application/json';
+    response.body = responseBody;
+    response.status = 200;
+  }
+});
+
 app.get('/thankyou', function (req, res) {
   var data = req.query;
   var student = data.student;
