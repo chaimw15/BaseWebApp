@@ -6,10 +6,36 @@ $(document).ready(function () {
   $("#show-more-notifications").hide();
   $(".input").on("focus", addClass);
   $(".input").on("blur", removeClass);
+  var currentId = window.location.hash;
+  if(currentId.localeCompare("") == 0|| currentId.localeCompare("#tab-1") == 0) {
+    $(".tabbers").removeClass("active");
+    $(".tab-button").removeClass("active");
+    $("#tab-1").addClass("active");
+    $("#tab-1-button").addClass("active");
+  } else if (currentId.localeCompare("#tab-2") == 0) {
+    $(".tabbers").removeClass("active");
+    $(".tab-button").removeClass("active");
+    $("#tab-2").addClass("active");
+    $("#tab-2-button").addClass("active");
+  } else if (currentId.localeCompare("#tab-3") == 0) {
+    $(".tabbers").removeClass("active");
+    $(".tab-button").removeClass("active");
+    $("#tab-3").addClass("active");
+    $("#tab-3-button").addClass("active");
+  }
 });
 
 var currentStudentKey = null;
 var sorted = [];
+var notificationUpdateNum = 10;
+
+function goTo(id, id2) {
+  window.location.hash = id;
+  $(".tabbers").removeClass("active");
+  $(".tab-button").removeClass("active");
+  $(id).addClass("active");
+  $(id2).addClass("active");
+}
 
 function handleSignIn() {
   var provider = new firebase.auth.GoogleAuthProvider();
@@ -45,7 +71,6 @@ function handleAddStudentSubmit() {
   var tuition = $("#tuition-input").val();
   var downpayment = $("#downpayment").val();
   var studentClass = $('#student-class').find(":selected").text();
-  var totalMonths = $("#tuition-months").val();
 
   email = email.trim();
   firstName = firstName.trim();
@@ -68,14 +93,15 @@ function handleAddStudentSubmit() {
   var isValid = validateEmail(email);
   if (isValid) {
     $("#email").css("border-color", "#e0e0e5");
-    addStudent(firstName, middleName, lastName, email, startDate, tuition, totalMonths, studentClass, downpayment);
+    addStudent(firstName, middleName, lastName, email, startDate, tuition, studentClass, downpayment);
   } else {
-    $("#add-student-form").submit(function (e) {
-      e.preventDefault();
-    });
     $("#email").css("border-color", "red");
   }
 }
+
+$("#add-student-form").submit(function (e) {
+  e.preventDefault();
+});
 
 function formatName(name) {
   name = name.trim();
@@ -101,7 +127,7 @@ function formatName(name) {
   return name;
 }
 
-function addStudent(firstName, middleName, lastName, email, startDate, tuition, totalMonths, studentClass, downpayment) {
+function addStudent(firstName, middleName, lastName, email, startDate, tuition, studentClass, downpayment) {
   tuition = parseFloat(tuition).toFixed(2);
   downpayment = parseFloat(downpayment).toFixed(2);
 
@@ -112,7 +138,6 @@ function addStudent(firstName, middleName, lastName, email, startDate, tuition, 
     email: email,
     startDate: startDate,
     tuition: parseFloat(tuition),
-    totalMonths: parseInt(totalMonths),
     studentClass: studentClass,
     remainingBalance: parseFloat(tuition),
     downpayment: parseFloat(downpayment)
@@ -138,6 +163,7 @@ const capitalize = (s) => {
 }
 
 function getStudents() {
+  $(".search-field").val("");
   var selectedStudent = $(".selected").attr('id');
 
   $('#student-list .studentButton').remove();
@@ -218,7 +244,6 @@ function openStudentTab(thisStudent) {
         $("#tuition-remaining").val(remainingBalance.toFixed(2));
         $("#student-nextPayment").val(dueDate);
         $("#student-amountDue").val(amountDue.toFixed(2));
-        $("#student-monthsLeft").val(student.totalMonths);
         $("#student-interest").val(interest.toFixed(2));
         $(".cd-panel").addClass("cd-panel--is-visible");
         $(".close-pane").addClass("close-plane-visible");
@@ -319,7 +344,6 @@ function saveEdit() {
 
     var startDate = $("#student-startDate").val();
     var tuition = parseFloat($("#student-tuition").val());
-    var totalMonths = parseInt($("#student-monthsLeft").val());
 
     var name = $("#student-name").text();
 
@@ -342,8 +366,7 @@ function saveEdit() {
       middleName: middleName,
       email: email,
       startDate: startDate,
-      tuition: parseFloat(tuition.toFixed(2)),
-      totalMonths: parseInt(totalMonths)
+      tuition: parseFloat(tuition.toFixed(2))
     };
 
     firebase.database().ref("/students/" + currentStudentKey).update(studentData);
@@ -378,7 +401,6 @@ function cancelEdit() {
     $("#student-email").val(student.email);
     $("#student-startDate").val(student.startDate);
     $("#student-tuition").val(student.tuition);
-    $("#student-monthsLeft").val(student.totalMonths);
 
     $("#edit-student").css("visibility", "visible");
     $("#cancel-edit").css("visibility", "hidden");
@@ -963,8 +985,8 @@ function getNotifications() {
 
       (function myLoop(index) {
         setTimeout(function () {
-
-          if (sorted[index].days == -1) {
+          if (Number.isNaN(sorted[index].days)) {
+          } else if (sorted[index].days == -1) {
             $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + "<span id='" + sorted[index].studentKey + "'>: $" + sorted[index].amountDue + " due <span style='color: red'>" + Math.abs(sorted[index].days) + " day ago</span>.</span></p></div><div class='button-wrapper'>" + paymentButton(sorted[index].studentKey) + "<div></div>").hide().fadeIn(250));
           } else if (sorted[index].days == 1) {
             $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + "<span id='" + sorted[index].studentKey + "'>: $" + sorted[index].amountDue + " due in <span style='color: green'>" + sorted[index].days + " day</span>.</span></p></div><div class='button-wrapper'>" + paymentButton(sorted[index].studentKey) + "</div></div>").hide().fadeIn(250));
@@ -972,7 +994,7 @@ function getNotifications() {
             $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + "<span id='" + sorted[index].studentKey + "'>: $" + sorted[index].amountDue + " due in <span style='color: green'>" + sorted[index].days + " days</span>.</span></p></div><div class='button-wrapper'>" + paymentButton(sorted[index].studentKey) + "</div></div>").hide().fadeIn(250));
           } else if (sorted[index].days == 0) {
             $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + "<span id='" + sorted[index].studentKey + "'>: $" + sorted[index].amountDue + " due <span style='color: green'>today</span>.</span></p></div><div class='button-wrapper'>" + paymentButton(sorted[index].studentKey) + "<div></div>").hide().fadeIn(250));
-          } else {
+          } else if (sorted[index].days < 0) {
             $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + "<span id='" + sorted[index].studentKey + "'>: $" + sorted[index].amountDue + " due <span style='color: red'>" + Math.abs(sorted[index].days) + " days ago</span>.</span></p></div><div class='button-wrapper'>" + paymentButton(sorted[index].studentKey) + "<div></div>").hide().fadeIn(250));
           }
 
@@ -981,12 +1003,12 @@ function getNotifications() {
             return;
           }
 
-          if (index + 1 == 5) {
+          if (index + 1 == notificationUpdateNum) {
             $("#show-more-notifications").fadeIn(100);
           }
 
           index++;
-          if (index < 5) myLoop(index);
+          if (index < notificationUpdateNum) myLoop(index);
         }, 20)
       })(0);
     } else {
@@ -1009,7 +1031,7 @@ function updateNotifications() {
         $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + "<span id='" + sorted[index].studentKey + "'>: $" + sorted[index].amountDue + " due in <span style='color: green'>" + sorted[index].days + " days</span>.</span></p></div><div class='button-wrapper'>" + paymentButton(sorted[index].studentKey) + "</div></div>").hide().fadeIn(250));
       } else if (sorted[index].days == 0) {
         $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + "<span id='" + sorted[index].studentKey + "'>: $" + sorted[index].amountDue + " due <span style='color: green'>today</span>.</span></p></div><div class='button-wrapper'>" + paymentButton(sorted[index].studentKey) + "<div></div>").hide().fadeIn(250));
-      } else {
+      } else if (sorted[index].days < 0) {
         $("#notification-center").append($("<div class='notification-wrapper'><div class='notification-text-wrapper'><p>" + sorted[index].student.firstName + " " + sorted[index].student.lastName + "<span id='" + sorted[index].studentKey + "'>: $" + sorted[index].amountDue + " due <span style='color: red'>" + Math.abs(sorted[index].days) + " days ago</span>.</span></p></div><div class='button-wrapper'>" + paymentButton(sorted[index].studentKey) + "<div></div>").hide().fadeIn(250));
       }
 
@@ -1017,12 +1039,12 @@ function updateNotifications() {
         $("#show-more-notifications").remove();
         return;
       }
-      if ((index + 1) % 5 == 0) {
+      if ((index + 1) % notificationUpdateNum == 0) {
         $("#show-more-notifications").fadeIn(100);
       }
 
       index++;
-      if (index < numItems + 5) myLoop(index);
+      if (index < numItems + notificationUpdateNum) myLoop(index);
     }, 20)
   })(numItems);
 }
@@ -1488,25 +1510,7 @@ function getNextMonthPayDate(startDate) {
 }
 
 // Tabs code
-$(function () {
-  // Reference the tab links.
-  const tabLinks = $('#tab-links li a');
 
-  // Handle link clicks.
-  tabLinks.click(function (event) {
-    var $this = $(this);
-
-    // Prevent default click behaviour.
-    event.preventDefault();
-
-    // Remove the active class from the active link and section.
-    $('#tab-links a.active, section.active').removeClass('active');
-
-    // Add the active class to the current link and corresponding section.
-    $this.addClass('active');
-    $($this.attr('href')).addClass('active');
-  });
-});
 
 //Signin Page
 function handleAdminSignIn() {
@@ -1535,7 +1539,40 @@ function removeClass() {
 
 //Student Registration
 function handleStudentRegistration() {
-  window.location.href = "submitForm";
+  var firstName = $("#element_1_1").val();
+  var lastName = $("#element_1_2").val();
+  var email = $("#element_2").val();
+  var startDate = getCurrentDate();
+  var tuition = 3350;
+  var downpayment = 650;
+  var studentClass = $('#element_8 option:selected').text();
+
+  email = email.trim();
+  firstName = firstName.trim();
+  lastName = lastName.trim();
+
+  var split_names = firstName.split(" ");
+  var middleName = "";
+
+  if (split_names.length > 2) {
+    for (var i = 1; i < split_names.length; i++) {
+      middleName = middleName + " " + split_names[i];
+    }
+    middleName = formatName(middleName);
+  }
+
+  firstName = formatName(firstName);
+  lastName = formatName(lastName);
+  email = email.toLowerCase();
+
+  var isValid = validateEmail(email);
+  if (isValid) {
+    addStudent(firstName, middleName, lastName, email, startDate, tuition, studentClass, downpayment);
+  } else {
+    $("#add-student-form").submit(function (e) {
+      e.preventDefault();
+    });
+  }
 }
 
 // thank you email
@@ -1552,7 +1589,7 @@ function sendThankYou(student, paid, balance, interest) {
 }
 
 function paymentButton(studentKey) {
-  return `<div class="log-payment" id="payment-` + studentKey + `" onclick="openHomeLogPayment('payment-` + studentKey + `')"><div class="from"><div class="from-contents"><div class="log-payment-label">LOG PAYMENT</div></div></div><div class="to"><div class="to-contents"><div class="top"><div class="avatar-large me"></div><div class="name-large">LOG PAYMENT</div><div class="x-touch" onclick="closeLogPayments('payment-` + studentKey + `')"><div class="x"><div class="line1"></div><div class="line2"></div></div></div></div><div class="bottom"><form id="add-payment-form" onsubmit="notificationCenterPayment('` + studentKey + `');return false"><label for="payment-input-` + studentKey + `">Amount</label><div class="margin-med"><span id="dollar-sign">$</span><input class="payment-input" id="payment-input-` + studentKey + `" type="number" step="0.01" placeholder="500" required></div><label for="payment-date-` + studentKey + `">Payment Date</label><br><input class="payment-date" id="payment-date-` + studentKey + `" type="date" placeholder="yyyy-mm-dd" required><br><button id="add-payment-submit">Submit</button></form></div></div></div></div>`
+  return `<div class="log-payment" id="payment-` + studentKey + `" onclick="openHomeLogPayment('payment-` + studentKey + `')"><div class="from"><div class="from-contents"><div class="log-payment-label">LOG PAYMENT</div></div></div><div class="to"><div class="to-contents"><div class="top"><div class="avatar-large me"></div><div class="name-large">LOG PAYMENT</div><div class="x-touch" onclick="closeLogPayments('payment-` + studentKey + `')"><div class="x"><div class="line1"></div><div class="line2"></div></div></div></div><div class="bottom"><form class="add-payment-form" onsubmit="notificationCenterPayment('` + studentKey + `');return false"><label for="payment-input-` + studentKey + `">Amount</label><div class="margin-med"><span class="dollar-sign">$</span><input class="payment-input" id="payment-input-` + studentKey + `" type="number" step="0.01" placeholder="500" required></div><label for="payment-date-` + studentKey + `">Payment Date</label><br><input class="payment-date" id="payment-date-` + studentKey + `" type="date" placeholder="yyyy-mm-dd" required><br><button class="add-payment-submit">Submit</button></form></div></div></div></div>`
 
 }
 
@@ -1560,6 +1597,7 @@ function closeLogPayments(id) {
   $("#" + id).removeClass("expand");
   event.stopPropagation();
 }
+
 
 
 

@@ -170,10 +170,11 @@ h3 {
     text-decoration: none;
     color: initial;
   border-radius: 3px;
+  width: 105px;
   border: none;
   background-color: var(--darkBlue);
   color: white;
-  padding: 12 36 12 36;
+  padding: 12 26 12 26;
   margin:  26 0 26 0;
   right: 0;
   transition: background-color .2s ease;
@@ -293,6 +294,7 @@ h3 {
   background-color: white;
   border-radius: 5px;
   padding: 16px;
+  margin-top: 16px;
 }
 
 #notification-center .payments {
@@ -583,28 +585,8 @@ input[type=number] {
   color:  rgba(51, 51, 51, 0.61);
 }
 
-#first-name, #last-name, #email, #enrol-date, #student-class {
-  margin-bottom: 25px;
-  width: 70%;
-  border-radius: 0.25rem;
-  border: 1px solid var(--lightBorder);
-  font-size: 1rem;
-  line-height: 2;
-  padding: 0.375rem 1.25rem;
-}
-
 #student-class::-webkit-inner-spin-button {
   padding-right: 50px;
-}
-
-#downpayment {
-  margin-bottom: 25px;
-  width: calc(70% - 36px);
-  border-radius: 0 0.25rem 0.25rem 0;
-  border: 1px solid var(--lightBorder);
-  font-size: 1rem;
-  line-height: 2;
-  padding: 0.375rem 1.25rem;
 }
 
 #tuition-input {
@@ -1137,7 +1119,7 @@ input[type=number] {
 }
 /*#endregion*/
 
-#dollar-sign {
+#dollar-sign, .dollar-sign {
   background-color: rgb(238, 238, 238);
   color: rgba(25, 91, 150, 0.6);
   border-radius: 0.25rem 0 0 0.25rem;
@@ -1158,6 +1140,7 @@ input[type=number] {
   position: relative;
   text-align: center;
   width: 104.4px;
+  z-index: 5;
   -webkit-tap-highlight-color: transparent;
   transition: width 300ms cubic-bezier(0.4, 0.0, 0.2, 1),
     height 300ms cubic-bezier(0.4, 0.0, 0.2, 1),
@@ -1171,7 +1154,7 @@ input[type=number] {
   color: #424f5c;
 }
 
-#add-payment-form button {
+.add-payment-form button {
   border: solid var(--darkBlue) 1px;
   border-radius: 3px;
   background-color: rgba(230, 230, 230, 0.7);
@@ -1289,14 +1272,14 @@ input[type=number] {
   border-radius: 0.25rem;
 }
 
-#add-payment-form .margin-med {
+.add-payment-form .margin-med {
   display: flex;
   align-items: flex-start;
   flex-wrap: nowrap;
   flex-direction: row;
 }
 
-#add-payment-form #dollar-sign {
+.add-payment-form #dollar-sign, .add-payment-form .dollar-sign  {
   font-size: 14px;
   padding: 6px 12px;
 }
@@ -1342,13 +1325,14 @@ input[type=number] {
 .link a:hover {
   color:  #777579;
 }
+
 .log-payment.expand {
   border-radius: 6px;
   box-shadow: 0 10px 20px rgba(0,0,0,0.10), 0 6px 6px rgba(0,0,0,0.16);
   height: 309px;
   width: 300px;
   border: none;
-  z-index: 100;
+  z-index: 10;
 }
 .expand .from {
   opacity: 0;

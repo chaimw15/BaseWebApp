@@ -1,0 +1,104 @@
+<html lang="en">
+
+<head>
+    <% include ../helpers/head %>
+</head>
+
+<body style="background-color: coral;">
+    <!-- the classes 'page-header' and 'btn btn-dark' create bootstrap components.  -->
+    <!-- Check out more components here: http://getbootstrap.com/components/ -->
+    <main>
+        <div id="registration-container">
+            <div id="registration-form-container">
+                <div id="form_container">
+                    <form id="form_24628" class="appnitro" onsubmit="handleStudentRegistration()" action="/student-signature">
+                        <div class="form_description">
+                            <h2>Peak College Student Registration</h2>
+                            <p>Complete the form below as step 1 of 2 for registration.</p>
+                        </div>
+                        <ul>
+                            <li id="li_1">
+                                <label class="description" for="element_1">Name </label>
+                                <span>
+                                    <input id="element_1_1" name="element_1_1" class="element text" maxlength="255"
+                                        size="8" value="" required>
+                                    <label>First</label>
+                                </span>
+                                <span>
+                                    <input id="element_1_2" name="element_1_2" class="element text" maxlength="255"
+                                        size="14" value="" required>
+                                    <label>Last</label>
+                                </span>
+                            </li>
+                            <li id="li_2">
+                                <label class="description" for="element_2">Email </label>
+                                <div>
+                                    <input id="element_2" name="element_2" class="element text large" type="text"
+                                        maxlength="255" value="" style="width: 80%" required>
+                                </div>
+                            </li>
+                            <li id="li_5">
+                                <label class="description" for="element_5">Phone Number </label>
+                                <span>
+                                    <input id="element_5_1" name="element_5_1" class="element text" size="3"
+                                        maxlength="3" value="" type="text"> -
+                                </span>
+                                <span>
+                                    <input id="element_5_2" name="element_5_2" class="element text" size="3"
+                                        maxlength="3" value="" type="text"> -
+                                </span>
+                                <span>
+                                    <input id="element_5_3" name="element_5_3" class="element text" size="4"
+                                        maxlength="4" value="" type="text">
+                                </span>
+
+                            </li>
+                            <li id="li_8">
+                                <label class="description" for="element_8">Class </label>
+                                <div>
+                                    <select class="element select large" id="element_8" name="element_8" required>
+                                        <option value="" selected="selected"></option>
+                                        <option value="1">Personal Support Worker</option>
+                                        <option value="2">PSW Bridging Program</option>
+                                        <option value="3">Food Service Worker</option>
+                                        <option value="4">Developmental Services Worker</option>
+
+                                    </select>
+                                </div>
+                            </li>
+                            <div style="text-align: center">
+                                <li class="section_break">
+                                    <h2>Instructions</h2>
+                                    <p></p>
+                                </li>
+                                <li class="section_break" style="border-top: none; padding-top: 0px; margin: 0px;">
+                                    <p><i>Press continue below to move on to step 2. Once all forms are signed and
+                                            submitted,
+                                            please make sure to check your email for confirmation.
+                                            <br><br>
+                                            Thank you!</i></p>
+                                    <p></p>
+                                </li>
+                                <div id="registration-footer">
+                                    <div class="item" style="text-align: left;">
+                                        <a id="back-button" href="/">Back</a>
+                                    </div>
+                                    <div class="item" style="text-align: center;">
+                                        <h3>Step 1 of 2</h3>
+                                    </div>
+                                    <div class="item" style="text-align: right;">
+                                        <input id="submit-registration" class="button_text" type="submit" name="submit"
+                                            value="Continue">
+                                        </li>
+                                    </div>
+                                </div>
+                            </div>
+                        </ul>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>
