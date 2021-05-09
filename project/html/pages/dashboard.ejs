@@ -13,11 +13,14 @@
     <main>
         <div class="tabs">
             <ul id="tab-links">
-                <li><button onclick="goTo('#tab-1', '#tab-1-button')" id="tab-1-button" class="tab-button" title="Home"><i class="fas fa-home"></i>&nbsp;&nbsp;&nbsp;Home</button>
+                <li><button onclick="goTo('#tab-1', '#tab-1-button')" id="tab-1-button" class="tab-button"
+                        title="Home"><i class="fas fa-home"></i>&nbsp;&nbsp;&nbsp;Home</button>
                 </li>
-                <li><button onclick="goTo('#tab-2', '#tab-2-button')"id="tab-2-button" class="tab-button" title="Student-List &amp; Illustration"><i
+                <li><button onclick="goTo('#tab-2', '#tab-2-button')" id="tab-2-button" class="tab-button"
+                        title="Student-List &amp; Illustration"><i
                             class="far fa-user"></i>&nbsp;&nbsp;&nbsp;Students</button></li>
-                <li><button onclick="goTo('#tab-3', '#tab-3-button')" id="tab-3-button" class="tab-button" title="Settings"><i class="fas fa-sliders-h"></i>&nbsp;&nbsp;&nbsp;Settings</button>
+                <li><button onclick="goTo('#tab-3', '#tab-3-button')" id="tab-3-button" class="tab-button"
+                        title="Settings"><i class="fas fa-sliders-h"></i>&nbsp;&nbsp;&nbsp;Settings</button>
                 </li>
             </ul>
 
@@ -108,15 +111,11 @@
                                         <span id="dollar-sign">$</span><input id="tuition-remaining" type="number"
                                             disabled="true"><br>
                                     </div>
-                                    <div style="display: inline-block; width: 100px; margin-left:15px;">
-                                        <label for="student-monthsLeft">Months</label><br>
-                                        <input id="student-monthsLeft" type="number" disabled="true" required><br>
+                                    <div style="display: inline-block; margin-left:15px;">
+                                        <label for="student-interest">Interest Due</label><br>
+                                        <span id="dollar-sign">$</span><input id="student-interest" type="number"
+                                            disabled="true" required><br>
                                     </div>
-                                </div>
-                                <div class="margin-med" style="margin-bottom:0px;">
-                                    <label for="student-interest">Interest Due</label><br>
-                                    <span id="dollar-sign">$</span><input id="student-interest" type="number"
-                                        disabled="true" required><br>
                                 </div>
                                 <span title="Edit Student"><i class="far fa-edit" id="edit-student"
                                         onclick="editStudent()"></i></span>
@@ -161,7 +160,8 @@
                                                 </div>
                                             </div>
                                             <div class="bottom">
-                                                <form class="add-payment-form" onsubmit="studentTabPayment();return false">
+                                                <form class="add-payment-form"
+                                                    onsubmit="studentTabPayment();return false">
                                                     <label for="payment-input">Amount</label>
                                                     <div class="margin-med">
                                                         <span id="dollar-sign">$</span><input id="payment-input"
