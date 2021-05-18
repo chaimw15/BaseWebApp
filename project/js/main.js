@@ -7,7 +7,7 @@ $(document).ready(function () {
   $(".input").on("focus", addClass);
   $(".input").on("blur", removeClass);
   var currentId = window.location.hash;
-  if(currentId.localeCompare("") == 0|| currentId.localeCompare("#tab-1") == 0) {
+  if (currentId.localeCompare("") == 0 || currentId.localeCompare("#tab-1") == 0) {
     $(".tabbers").removeClass("active");
     $(".tab-button").removeClass("active");
     $("#tab-1").addClass("active");
@@ -166,7 +166,7 @@ function getStudents() {
   $(".search-field").val("");
   var selectedStudent = $(".selected").attr('id');
 
-  $('#student-list .studentButton').remove();
+  $('#student-list .student-link').remove();
 
   return firebase.database().ref("students").once('value').then((snapshot) => {
     var students = snapshot.val();
@@ -189,7 +189,10 @@ function getStudents() {
 
     for (var tempKey in tempArray) {
       var student = tempArray[tempKey];
-      $("#student-list").append(`<div><a class='studentButton' id='` + student.studentKey + `' onClick="openStudentTab('` + student.studentKey + `')">` + student.student.firstName + " " + student.student.lastName + "</a></div>");
+      var returnData = calculateAmountDue3(student.student);
+      $("#student-list").append(studentButton(student.student, returnData[2], student.studentKey, returnData[1]));
+
+      //$("#student-list").append(`<div><a class='studentButton' id='` + student.studentKey + `' onClick="openStudentTab('` + student.studentKey + `')">` + student.student.firstName + " " + student.student.lastName + "</a></div>");
     }
     $("#" + selectedStudent).addClass("selected");
   });
@@ -687,13 +690,9 @@ function makePayment(amountPaid, payDate, _callback) {
 }
 
 function notificationCenterPayment(studentKey) {
-  console.log("paying");
   currentStudentKey = studentKey;
   var amountPaid = parseFloat($("#payment-input-" + studentKey).val());
   var payDate = $("#payment-date-" + studentKey).val();
-
-  console.log(amountPaid);
-  console.log(payDate);
 
   makePayment(amountPaid, payDate, function () {
     firebase.database().ref("/students/" + currentStudentKey).once('value').then((snapshot) => {
@@ -796,11 +795,12 @@ $(document).ready(function () {
     var input, filter, a, i;
     input = $(this).val();
     filter = input.toUpperCase();
-    $list = $(".studentButton");
+    $list = $(".student-link");
 
     // Loop through all list items, and hide those who don't match the search query
     for (i = 0; i < $list.length; i++) {
-      a = $list.eq(i).html();
+      a = $list.eq(i).find(".studentButton").html();
+      a += $list.eq(i).find(".student-number").html();
       if (a.toUpperCase().indexOf(filter) > -1) {
         $list.eq(i).show();
       } else {
@@ -909,7 +909,7 @@ function makeDateObject(dateString) {
   return new Date(parseInt(temp[0]), parseInt(temp[1]) - 1, parseInt(temp[2]));
 }
 
-function toNormalDate(month, year) {
+function toNormalDate(day, month, year) {
   switch (month) {
     case 0:
       month = "Jan."
@@ -952,7 +952,7 @@ function toNormalDate(month, year) {
       break;
   }
 
-  return month + " " + year;
+  return month + " " + day + ", " + year;
 }
 
 function getNotifications() {
@@ -1590,7 +1590,6 @@ function sendThankYou(student, paid, balance, interest) {
 
 function paymentButton(studentKey) {
   return `<div class="log-payment" id="payment-` + studentKey + `" onclick="openHomeLogPayment('payment-` + studentKey + `')"><div class="from"><div class="from-contents"><div class="log-payment-label">LOG PAYMENT</div></div></div><div class="to"><div class="to-contents"><div class="top"><div class="avatar-large me"></div><div class="name-large">LOG PAYMENT</div><div class="x-touch" onclick="closeLogPayments('payment-` + studentKey + `')"><div class="x"><div class="line1"></div><div class="line2"></div></div></div></div><div class="bottom"><form class="add-payment-form" onsubmit="notificationCenterPayment('` + studentKey + `');return false"><label for="payment-input-` + studentKey + `">Amount</label><div class="margin-med"><span class="dollar-sign">$</span><input class="payment-input" id="payment-input-` + studentKey + `" type="number" step="0.01" placeholder="500" required></div><label for="payment-date-` + studentKey + `">Payment Date</label><br><input class="payment-date" id="payment-date-` + studentKey + `" type="date" placeholder="yyyy-mm-dd" required><br><button class="add-payment-submit">Submit</button></form></div></div></div></div>`
-
 }
 
 function closeLogPayments(id) {
@@ -1598,6 +1597,28 @@ function closeLogPayments(id) {
   event.stopPropagation();
 }
 
+function studentButton(student, remainingBalance, studentKey, dueDate) {
+  var paid = (1 - remainingBalance / student.tuition) * 100;
+  var bar_color = "rgb(0, 198, 137)";
+  var date = makeDateObject(dueDate);
+  dueDate = toNormalDate(date.getDate(), date.getMonth(), date.getFullYear());
+  if (dueDate.indexOf("NaN") != -1) {
+    dueDate = "N/A";
+  }
+  if (paid >= 100) {
+    bar_color = "rgb(61, 165, 244)";
+  }
+  if (paid < 66) {
+    bar_color = "rgb(253, 160, 6)";
+  }
+  if (paid < 33) {
+    bar_color = "rgb(241, 83, 110)";
+  }
+  var student_button_element = `<a class="student-link" id='` + studentKey + `' onClick="openStudentTab('` + studentKey + `')"><div class="student-list-item"><div class="student-item-block student-list-item1"><p class="student-number">` + student.studentNumber + `</p></div><div class="student-item-block" style="flex-basis: 22%;"><p class="studentButton" style="font-size: 18px">` + student.firstName + " " + student.lastName + `</p></div><div class="progressbar" style="flex-basis: 22%; height: 9px; top: 0px; font-size: 14px; text-align: center; border-radius: 20px; background-color: rgb(233, 236, 239); width: 207.359px; left: 0px;"><div class="inner-progressbar"style="height: 100%; border-radius: 20px; padding: 0px 4px; width: ` + paid + `%; line-height: 9px; background-color: ` + bar_color + `; transition: width 0.3s ease 0s;"></div></div><div class="student-item-block" style="flex-basis: 16%;"><p>` + dueDate + `</p></div></div></a>`;
+
+  return student_button_element;
+
+}
 
 
 

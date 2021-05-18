@@ -30,11 +30,11 @@
   text-align: left;
 }
 .tabs > ul li button.active {
-  background: rgba(25, 91, 150, 0.9);
+  background: var(--darkBlue);
   color: white;
 }
 .tabs > ul li button:hover:not(.active) {
-  color: rgba(25, 91, 150, 0.9);
+  color: var(--darkBlue);
 }
 .tabs section {
   padding: 0 50;
@@ -46,9 +46,12 @@
 
 #tab-1, #tab-2, #tab-3{
   flex-basis: 90%;
-  background-color:#C8D2E3;
-  overflow: scroll; 
+  background-color:var(--backgroundColor);
   height: 100%;
+}
+
+#tab-1, #tab-3 {
+  overflow: scroll; 
 }
 
 #settings-container {
@@ -117,4 +120,48 @@
   font-size: 1rem;
   line-height: 2;
   padding: 0.375rem 1.25rem;
+}
+
+.student-list-item {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  border: solid 1px var(--lightBorder);
+  border-radius: 5px;
+  justify-content: space-around;
+  padding: 25px 0;
+  align-items: center;
+  text-align: left;
+}
+
+.student-list-item p {
+  margin: 0px;
+  font-size: 15px;
+}
+
+#student-list .student-link {
+  padding: 0px;
+  border: none;
+}
+
+.student-list-title p{
+  font-size: 16px;
+  color: rgb(178, 179, 189);
+  margin: 0;
+}
+
+.student-list-item1 {
+  flex-basis: 8%;
+}
+
+.student-list-item2 {
+  flex-basis: 22%;
+}
+
+.student-list-item3 {
+  flex-basis: 22%;
+}
+
+.student-list-item4 {
+  flex-basis: 16%;
 }

@@ -14,11 +14,12 @@ var(--darkBlue)
 }
 
 :root {
-  --darkBlue: rgba(25, 91, 150, 0.9);
-  --darkBlueHover: rgba(25, 91, 150, 1);
-  --highlight: #5DB8EF;
-  --highlightHover: #54a6da;
+  --darkBlue: #89c550;
+  --darkBlueHover: #7DB549;
+  --highlight: #89c550;
+  --highlightHover: #7DB549;
   --lightBorder: #e0e0e5;
+  --backgroundColor:#fff;
 
   --cd_panel_header_animation: 0.15s;
   --cd_panel_animation: 0.35s;
@@ -190,7 +191,7 @@ h3 {
   height: 100%;
   width: 100%;
   padding-top: 50px;
-  background-color:#C8D2E3;
+  background-color: var(--backgroundColor);
 }
 
 .margin-med {
@@ -206,10 +207,6 @@ h3 {
   color: white;
 }
 
-#student-list {
-  margin: 16 0 0 0;
-}
-
 #student-list a {
   text-decoration: none;
   display: block;
@@ -220,6 +217,7 @@ h3 {
   border-radius: 5px;
   margin-bottom: 16px;
   cursor: pointer;
+  border: solid 1px var(--lightBorder);
 }
 
 #student-list a:hover {
@@ -231,7 +229,7 @@ h3 {
 }
 
 .column-left {
-  background-color:#C8D2E3;
+  background-color:var(--backgroundColor);
   height: calc(100vh - 117px);
   width: 40%;
   text-align: left;
@@ -245,7 +243,7 @@ h3 {
 }
 
 .column-right {
-  background-color:#C8D2E3;
+  background-color:var(--backgroundColor);
   height: calc(100vh - 117px);
   width: 60%;
 }

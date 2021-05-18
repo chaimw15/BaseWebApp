@@ -25,6 +25,7 @@
             </ul>
 
             <section id="tab-1" class="tabbers" style="padding: 25 0;">
+
                 <div style="width:100%;">
                     <div style="width:80%; margin:0 10%; text-align: left;">
                         <h4>Notification Center</h4>
@@ -71,8 +72,24 @@
                                 </div>
                             </div>
                         </div>
-
-                        <div id="student-list"></div>
+                        <div
+                            style="margin: 16 0 16 0; display: flex; flex-direction: row; flex-wrap: nowrap; justify-content: space-around; align-items: center; text-align: left;">
+                            <div class="student-list-item1 student-list-title">
+                                <p>ID</p>
+                            </div>
+                            <div class="student-list-item2 student-list-title">
+                                <p>Name</p>
+                            </div>
+                            <div class="student-list-item3 student-list-title">
+                                <p>Tuition Progress</p>
+                            </div>
+                            <div class="student-list-item4 student-list-title">
+                                <p>Status</p>
+                            </div>
+                        </div>
+                        <div style="margin:0 -50; padding: 0 50; overflow: scroll; height: calc(100vh - 263px);">
+                            <div id="student-list"></div>
+                        </div>
                     </div>
                 </div>
 
