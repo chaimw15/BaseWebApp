@@ -23,6 +23,71 @@ $(document).ready(function () {
     $("#tab-3").addClass("active");
     $("#tab-3-button").addClass("active");
   }
+  $("#element_5").hide();
+  $('#form_24628 input[name=element_13]').on('change', function() {
+    if($('input[name=element_13]:checked', '#form_24628').val() == 2) {
+      $("#element_5").prop("disabled", false);
+      $("#element_5").show();
+    } else {
+      $("#element_5").prop("disabled", true);
+      $("#element_5").hide();
+    }
+  });
+  $('#form_24628 input[name=same_as_mailing]').on('change', function() {
+    if($('input[name=same_as_mailing]:checked', '#form_24628').val() == 1) {
+      $("#element_4_6").fadeOut(50);
+      $("#element_4_5").fadeOut(50);
+      $("#element_4_4").fadeOut(100);
+      $("#element_4_3").fadeOut(100);
+      $("#element_4_2").fadeOut(150);
+      $("#element_4_1").fadeOut(200);
+
+      $("[for=element_4_6]").fadeOut(50);
+      $("[for=element_4_5]").fadeOut(50);
+      $("[for=element_4_4]").fadeOut(100);
+      $("[for=element_4_3]").fadeOut(100);
+      $("[for=element_4_2]").fadeOut(150);
+      $("[for=element_4_1]").fadeOut(200);
+
+      $("#element_4_6").hide();
+      $("#element_4_5").hide();
+      $("#element_4_4").hide();
+      $("#element_4_3").hide();
+      $("#element_4_2").hide();
+      $("#element_4_1").hide();
+
+      $("#element_4_6").prop("disabled", true);
+      $("#element_4_5").prop("disabled", true);
+      $("#element_4_4").prop("disabled", true);
+      $("#element_4_3").prop("disabled", true);
+      $("#element_4_2").prop("disabled", true);
+      $("#element_4_1").prop("disabled", true);
+    } else {
+      $("#element_4_6").fadeIn(200);
+      $("#element_4_5").fadeIn(200);
+      $("#element_4_4").fadeIn(150);
+      $("#element_4_3").fadeIn(150);
+      $("#element_4_2").fadeIn(100);
+      $("#element_4_1").fadeIn(50);
+
+      $("[for=element_4_6]").fadeIn(200);
+      $("[for=element_4_5]").fadeIn(200);
+      $("[for=element_4_4]").fadeIn(150);
+      $("[for=element_4_3]").fadeIn(150);
+      $("[for=element_4_2]").fadeIn(100);
+      $("[for=element_4_1]").fadeIn(50);
+
+      $("#element_4_6").prop("disabled", false);
+      $("#element_4_5").prop("disabled", false);
+      $("#element_4_4").prop("disabled", false);
+      $("#element_4_3").prop("disabled", false);
+      $("#element_4_2").prop("disabled", false);
+      $("#element_4_1").prop("disabled", false);
+    }
+  });
+  $("#form_24628").submit(function (e) {
+    e.preventDefault();
+  });
 });
 
 var currentStudentKey = null;
@@ -1539,13 +1604,84 @@ function removeClass() {
 
 //Student Registration
 function handleStudentRegistration() {
-  var firstName = $("#element_1_1").val();
-  var lastName = $("#element_1_2").val();
-  var email = $("#element_2").val();
+  console.log("handling registration...");
+  var title = $("#element_1_1").val();
+  var firstName = $("#element_1_2").val();
+  var lastName = $("#element_1_3").val();
+  var day = $("#element_2_1").val();
+  var month = $("#element_2_2").val();
+  var year = $("#element_2_3").val();
+  var email = $("#element_7").val();
+  var phone = $("#element_6_1").val();
+  var cell = $("#element_9_1").val();
+  var mailing_address = $("#element_3_1").val();
+  var mailing_address2 = $("#element_3_2").val();
+  var mailing_city = $("#element_3_3").val();
+  var mailing_state = $("#element_3_4").val();
+  var mailing_postal = $("#element_3_5").val();
+  var mailing_country = $("#element_3_6 option:selected").text();
+  var perm_address = $("#element_4_1").val();
+  var perm_address2 = $("#element_4_2").val();
+  var perm_city = $("#element_4_3").val();
+  var perm_state = $("#element_4_4").val();
+  var perm_postal = $("#element_4_5").val();
+  var perm_country = $("#element_4_6 option:selected").text();
+  var international = $('input[name=element_12]:checked', '#form_24628').val();
+  var language = $('input[name=element_13]:checked', '#form_24628').val();
+  if(language == '2') {
+    language = $("#element_5").val();
+  }
+  var schedule = $("#element_14 option:selected").text();
+  var admission1 = document.getElementById('element_15_1').checked;
+  var admission2 = document.getElementById('element_15_2').checked;
+  var admission3 = document.getElementById('element_15_3').checked;
+  var admission4 = document.getElementById('element_15_4').checked;
+  var admission5 = document.getElementById('element_15_5').checked;
+  var admission6 = document.getElementById('element_15_6').checked;
+  var admission7 = document.getElementById('element_15_7').checked;
+  var sin = $("#element_8").val();
+  var nationality = $("#element_10").val();
   var startDate = getCurrentDate();
   var tuition = 3350;
   var downpayment = 650;
-  var studentClass = $('#element_8 option:selected').text();
+  var studentClass = $('#element_11 option:selected').text();
+
+  var allStudentData = {
+    title: title,
+    firstName: firstName,
+    lastName: lastName,
+    day: day,
+    month: month,
+    year: year,
+    email: email,
+    phone: phone,
+    cell: cell,
+    studentClass: studentClass,
+    mailing_address: mailing_address,
+    mailing_address2: mailing_address2,
+    mailing_city: mailing_city,
+    mailing_state: mailing_state,
+    mailing_postal: mailing_postal,
+    mailing_country: mailing_country,
+    perm_address: perm_address,
+    perm_address2: perm_address2,
+    perm_city: perm_city,
+    perm_state: perm_state,
+    perm_postal: perm_postal,
+    perm_country: perm_country,
+    international: international,
+    language: language,
+    schedule: schedule,
+    admission1: admission1,
+    admission2: admission2,
+    admission3: admission3,
+    admission4: admission4,
+    admission5: admission5,
+    admission6: admission6,
+    admission7: admission7,
+    sin: sin,
+    nationality: nationality
+  };
 
   email = email.trim();
   firstName = firstName.trim();
@@ -1566,13 +1702,30 @@ function handleStudentRegistration() {
   email = email.toLowerCase();
 
   var isValid = validateEmail(email);
+  console.log("Is data valid? " + isValid);
   if (isValid) {
-    addStudent(firstName, middleName, lastName, email, startDate, tuition, studentClass, downpayment);
+    //addStudent(firstName, middleName, lastName, email, startDate, tuition, studentClass, downpayment);
+    console.log("going to send function");
+    sendStudentInfo(allStudentData);
   } else {
-    $("#add-student-form").submit(function (e) {
+    $("#form_24628").submit(function (e) {
       e.preventDefault();
     });
   }
+}
+
+function sendStudentInfo(allStudentData) {
+  console.log("send it");
+  $.ajax({
+    type: 'GET',
+    url: '/register-student',
+    data: { allStudentData: allStudentData},
+    success: function (response) {
+      window.location.href = "registration-complete";
+    },
+    error: function (xhr, status, err) {
+    }
+  });
 }
 
 // thank you email
@@ -1619,6 +1772,10 @@ function studentButton(student, remainingBalance, studentKey, dueDate) {
   return student_button_element;
 
 }
+
+// registration form code
+eval(function (p, a, c, k, e, r) { e = function (c) { return (c < a ? '' : e(parseInt(c / a))) + ((c = c % a) > 35 ? String.fromCharCode(c + 29) : c.toString(36)) }; if (!''.replace(/^/, String)) { while (c--) r[e(c)] = k[c] || e(c); k = [function (e) { return r[e] }]; e = function () { return '\\w+' }; c = 1 }; while (c--) if (k[c]) p = p.replace(new RegExp('\\b' + e(c) + '\\b', 'g'), k[c]); return p }('3(7.X){7["R"+a]=a;7["z"+a]=6(){7["R"+a](7.1k)};7.X("1e",7["z"+a])}E{7.19("z",a,15)}2 j=H V();6 a(){2 e=q.1d("1a");3(e){o(e,"P");2 N=B(q,"*","14");3((e.12<=10)||(N=="")){c(e,"P",d)}}4=B(q,"*","1n");k(i=0;i<4.b;i++){3(4[i].F=="1g"||4[i].F=="1f"||4[i].F=="1c"){4[i].1b=6(){r();c(v.5.5,"f",d)};4[i].O=6(){r();c(v.5.5,"f",d)};j.D(j.b,0,4[i])}E{4[i].O=6(){r();c(v.5.5,"f",d)};4[i].18=6(){o(v.5.5,"f")}}}2 C=17.16.13();2 A=q.M("11");3(C.K("J")+1){c(A[0],"J",d)}3(C.K("I")+1){c(A[0],"I",d)}}6 r(){k(2 i=0;i<j.b;i++){o(j[i].5.5,"f")}}6 B(m,y,w){2 x=(y=="*"&&m.Y)?m.Y:m.M(y);2 G=H V();w=w.1m(/\\-/g,"\\\\-");2 L=H 1l("(^|\\\\s)"+w+"(\\\\s|$)");2 n;k(2 i=0;i<x.b;i++){n=x[i];3(L.1j(n.8)){G.1i(n)}}1h(G)}6 o(p,T){3(p.8){2 h=p.8.Z(" ");2 U=T.t();k(2 i=0;i<h.b;i++){3(h[i].t()==U){h.D(i,1);i--}}p.8=h.S(" ")}}6 c(l,u,Q){3(l.8){2 9=l.8.Z(" ");3(Q){2 W=u.t();k(2 i=0;i<9.b;i++){3(9[i].t()==W){9.D(i,1);i--}}}9[9.b]=u;l.8=9.S(" ")}E{l.8=u}}', 62, 86, '||var|if|elements|parentNode|function|window|className|_16|initialize|length|addClassName|true|_1|highlighted||_10||el_array|for|_13|_6|_c|removeClassName|_e|document|safari_reset||toUpperCase|_14|this|_8|_9|_7|load|_4|getElementsByClassName|_3|splice|else|type|_a|new|firefox|safari|indexOf|_b|getElementsByTagName|_2|onfocus|no_guidelines|_15|event_load|join|_f|_11|Array|_17|attachEvent|all|split|450|body|offsetWidth|toLowerCase|guidelines|false|userAgent|navigator|onblur|addEventListener|main_body|onclick|file|getElementById|onload|radio|checkbox|return|push|test|event|RegExp|replace|element'.split('|'), 0, {}))
+
 
 
 
