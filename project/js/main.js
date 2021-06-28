@@ -1277,7 +1277,7 @@ $(document).on('change', '#filter-class', function () {
 
     var filter, a, i, studentClass;
     filter = $(this).find(":selected").text();
-    $list = $(".studentButton");
+    $list = $(".student-link");
 
     if (filter.localeCompare("All") == 0) {
       for (i = 0; i < $list.length; i++) {
