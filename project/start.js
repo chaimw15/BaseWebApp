@@ -32,8 +32,8 @@ app.get('/dashboard', function (request, response) {
 app.get('/register', function (request, response) {
   response.render('pages/register');
 });
-app.get('/student-signature', function (request, response) {
-  response.render('pages/student-signature');
+app.get('/registration-complete', function (request, response) {
+  response.render('pages/registration-complete');
 });
 
 app.get('/thankyou', function (req, res) {
@@ -56,7 +56,7 @@ app.get('/thankyou', function (req, res) {
 });
 
 app.listen(app.get('port'), function () {
-  console.log('Node app is running on port', app.get('port'));
+  console.log('Peak College app is running on port', app.get('port'));
 });
 
 const cron = require('node-cron');
@@ -64,7 +64,7 @@ const { getMaxListeners } = require('pdfkit');
 const { Base64Encode } = require('base64-stream');
 
 const task = cron.schedule('15 11 * * *', () => {
-  console.log('Running...');
+  // console.log('Running...');
 
   var firebaseConfig = {
     apiKey: process.env.FIREBASE_API_KEY,
@@ -213,7 +213,7 @@ function sendEmail(subject, message, studentEmail, studentName) {
   });
 
   requestMail.then((result) => {
-    console.log(result.body)
+    // console.log(result.body)
     console.log("Email sent!");
   }).catch((err) => {
     console.log(err.statusCode)
@@ -451,19 +451,255 @@ function isLeapYear(year) {
 
 
 // Student Registration
-app.get('/submitForm', function (req, res) { // AJAX
+app.get('/register-student', function (req, res) { // AJAX
+  console.log("registering...");
+  var data = req.query;
+  var allStudentData = data.allStudentData;
+  // console.log(allStudentData);
+
+  var pdf_path = __dirname + '/' + 'student' + '_registration_data.pdf';
 
   var doc = new PDFDocument();
+  doc.pipe(fs.createWriteStream(pdf_path)); // write to PDF
+  doc.image(__dirname + '/images/PEAK-Logo-Black-Green.png', 240, 25, {
+    fit: [100, 115.28],
+    align: 'center'
+  });
+  console.log("writing doc...");
+  doc.font('Helvetica-Bold').fontSize(20).text('Student Registration Form', {
+    align: 'center'
+  });
 
-  doc
-    .fontSize(25)
-    .text('Student Registration Form', 100, 100);
 
-  // Add an image, constrain it to a given size, and center it vertically and horizontally
-  doc.image('/Users/Chaim/Desktop/PeakCollegeApp/project/images/PEAK-Logo-Black-Green.png', {
-    fit: [250, 300],
-    align: 'center',
-    valign: 'center'
+  var nameString = allStudentData.title + " " + allStudentData.firstName + " " + allStudentData.lastName;
+  doc.moveDown().font('Helvetica-Bold').fontSize(12).text("Name", {
+    align: 'left'
+  }).font('Helvetica').text(`${nameString}`, {
+    align: 'left'
+  });
+
+  var dobString = allStudentData.day + "/" + allStudentData.month + "/" + allStudentData.year;
+  doc.moveDown().font('Helvetica-Bold').text("Date of Birth", {
+    align: 'left'
+  }).font('Helvetica').text(`${dobString}`, {
+    align: 'left'
+  });
+
+  doc.moveDown().font('Helvetica-Bold').text("Email", {
+    align: 'left'
+  }).font('Helvetica').text(`${allStudentData.email}`, {
+    align: 'left'
+  });
+
+  doc.moveDown().font('Helvetica-Bold').text("Phone Number", {
+    align: 'left'
+  }).font('Helvetica').text(`${allStudentData.phone}`, {
+    align: 'left'
+  });
+
+  doc.moveDown().font('Helvetica-Bold').text("Cell Number", {
+    align: 'left'
+  });
+  if (allStudentData.cell != '') {
+    doc.font('Helvetica').text(`${allStudentData.cell}`, {
+      align: 'left'
+    });
+  } else {
+    doc.font('Helvetica').text(`N/A`, {
+      align: 'left'
+    });
+  }
+
+  doc.moveDown().font('Helvetica-Bold').text("Program", {
+    align: 'left'
+  }).font('Helvetica').text(`${allStudentData.studentClass}`, {
+    align: 'left'
+  });
+
+  doc.moveDown().font('Helvetica-Bold').text("Mailing Address", {
+    align: 'left'
+  }).font('Helvetica').text(`${allStudentData.mailing_address}`, {
+    align: 'left'
+  });
+
+  if (allStudentData.mailing_address2 != '') {
+    doc.moveDown();
+    doc.font('Helvetica').fontSize(11).fillColor('grey').text(`Address Line 2`, {
+      align: 'left'
+    }).fontSize(12).fillColor('black').text(`${allStudentData.mailing_address2}`, {
+      align: 'left'
+    });
+  }
+
+  doc.moveDown().font('Helvetica').fontSize(11).fillColor('grey').text(`City`, {
+    align: 'left'
+  }).fontSize(12).fillColor('black').text(`${allStudentData.mailing_city}`, {
+    align: 'left'
+  });
+
+  doc.moveDown().font('Helvetica').fontSize(11).fillColor('grey').text(`State/Province`, {
+    align: 'left'
+  }).fontSize(12).fillColor('black').text(`${allStudentData.mailing_state}`, {
+    align: 'left'
+  });
+
+  doc.moveDown().font('Helvetica').fontSize(11).fillColor('grey').text(`Postal Code`, {
+    align: 'left'
+  }).fontSize(12).fillColor('black').text(`${allStudentData.mailing_postal}`, {
+    align: 'left'
+  });
+
+  doc.moveDown().font('Helvetica').fontSize(11).fillColor('grey').text(`Country`, {
+    align: 'left'
+  }).fontSize(12).fillColor('black').text(`${allStudentData.mailing_country}`, {
+    align: 'left'
+  });
+
+  doc.addPage();
+
+  doc.moveDown().font('Helvetica-Bold').text("Permanent Address", {
+    align: 'left'
+  })
+  if (allStudentData.perm_address != '') {
+    doc.font('Helvetica').text(`${allStudentData.perm_address}`, {
+      align: 'left'
+    });
+
+    if (allStudentData.perm_address2 != '') {
+      doc.moveDown();
+      doc.font('Helvetica').fontSize(11).fillColor('grey').text(`Address Line 2`, {
+        align: 'left'
+      }).fontSize(12).fillColor('black').text(`${allStudentData.perm_address2}`, {
+        align: 'left'
+      });
+    }
+
+    doc.moveDown().font('Helvetica').fontSize(11).fillColor('grey').text(`City`, {
+      align: 'left'
+    }).fontSize(12).fillColor('black').text(`${allStudentData.perm_city}`, {
+      align: 'left'
+    });
+
+    doc.moveDown().font('Helvetica').fontSize(11).fillColor('grey').text(`State/Province`, {
+      align: 'left'
+    }).fontSize(12).fillColor('black').text(`${allStudentData.perm_state}`, {
+      align: 'left'
+    });
+
+    doc.moveDown().font('Helvetica').fontSize(11).fillColor('grey').text(`Postal Code`, {
+      align: 'left'
+    }).fontSize(12).fillColor('black').text(`${allStudentData.perm_postal}`, {
+      align: 'left'
+    });
+
+    doc.moveDown().font('Helvetica').fontSize(11).fillColor('grey').text(`Country`, {
+      align: 'left'
+    }).fontSize(12).fillColor('black').text(`${allStudentData.perm_country}`, {
+      align: 'left'
+    });
+  } else {
+    doc.font('Helvetica').text(`Same as mailing address`, {
+      align: 'left'
+    });
+  }
+
+  doc.moveDown().font('Helvetica-Bold').text("International Student?", {
+    align: 'left'
+  }).font('Helvetica').text(`${allStudentData.international}`, {
+    align: 'left'
+  });
+
+  doc.moveDown().font('Helvetica-Bold').text("Language of Instruction", {
+    align: 'left'
+  }).font('Helvetica').text(`${allStudentData.language}`, {
+    align: 'left'
+  });
+
+  if (allStudentData.schedule != '') {
+    doc.moveDown().font('Helvetica-Bold').text("Program Schedule", {
+      align: 'left'
+    }).font('Helvetica').text(`${allStudentData.schedule}`, {
+      align: 'left'
+    });
+  }
+
+  doc.moveDown().font('Helvetica-Bold').text("Admission Requirements", {
+    align: 'left'
+  });
+  if (allStudentData.admission1 == 'true') {
+    doc.font('Helvetica').text(`Has an Ontario Secondary School Diploma or equivalent: Yes`, {
+      align: 'left'
+    });
+  } else {
+    doc.font('Helvetica').text(`Has an Ontario Secondary School Diploma or equivalent: No`, {
+      align: 'left'
+    });
+  }
+  if (allStudentData.admission2 == 'true') {
+    doc.font('Helvetica').text(`Criminal check record: Yes`, {
+      align: 'left'
+    });
+  } else {
+    doc.font('Helvetica').text(`Criminal check record: No`, {
+      align: 'left'
+    });
+  }
+  if (allStudentData.admission3 == 'true') {
+    doc.font('Helvetica').text(`Is at least 18 years of age, and passed a Superintendent approved qualifying test: Yes`, {
+      align: 'left'
+    });
+  } else {
+    doc.font('Helvetica').text(`Is at least 18 years of age, and passed a Superintendent approved qualifying test: No`, {
+      align: 'left'
+    });
+  }
+  if (allStudentData.admission4 == 'true') {
+    doc.font('Helvetica').text(`Standard First Aid Certificate and Basic Rescuer CPR Certificate: Yes`, {
+      align: 'left'
+    });
+  } else {
+    doc.font('Helvetica').text(`Standard First Aid Certificate and Basic Rescuer CPR Certificate: No`, {
+      align: 'left'
+    });
+  }
+  if (allStudentData.admission5 == 'true') {
+    doc.font('Helvetica').text(`Medical Clearance Certificate: Yes`, {
+      align: 'left'
+    });
+  } else {
+    doc.font('Helvetica').text(`Medical Clearance Certificate: No`, {
+      align: 'left'
+    });
+  }
+  if (allStudentData.admission6 == 'true') {
+    doc.font('Helvetica').text(`Proof of ID: Yes`, {
+      align: 'left'
+    });
+  } else {
+    doc.font('Helvetica').text(`Proof of ID: No`, {
+      align: 'left'
+    });
+  }
+  if (allStudentData.admission7 == 'true') {
+    doc.font('Helvetica').text(`English or Literacy Test: Yes`, {
+      align: 'left'
+    });
+  } else {
+    doc.font('Helvetica').text(`English or Literacy Test: No`, {
+      align: 'left'
+    });
+  }
+
+  doc.moveDown().font('Helvetica-Bold').fontSize(12).text("SIN Number", {
+    align: 'left'
+  }).font('Helvetica').text(`${allStudentData.sin}`, {
+    align: 'left'
+  });
+
+  doc.moveDown().font('Helvetica-Bold').fontSize(12).text("Nationality", {
+    align: 'left'
+  }).font('Helvetica').text(`${allStudentData.nationality}`, {
+    align: 'left'
   });
 
   var finalString = ''; // contains the base64 string
@@ -477,8 +713,12 @@ app.get('/submitForm', function (req, res) { // AJAX
 
   stream.on('end', function () {
     // the stream is at its end, so push the resulting base64 string to the response
+    console.log("finished writing...");
     var contents = finalString;
-    sendPdfEmail("Hello", "Hello Bud", "output.pdf", contents);
+    var message = "Hello,<br><br>Please see the attached document with " + allStudentData.firstName + " " + allStudentData.lastName + "'s data for registration.<br><br>Thank you,<br><br>Peak Online Services";
+    var pdfName = allStudentData.firstName + "_Registration_Form.pdf"
+    sendPdfEmail("Student Registration Submission", message, pdfName, contents);
+    console.log("email sent");
     return res.redirect('/');
   });
 
@@ -489,13 +729,13 @@ function sendPdfEmail(subject, message, attachmentname, baseContent) {
     "Messages": [
       {
         "From": {
-          "Email": "chaimw@hotmail.ca",
-          "Name": "Peak Healthcare College"
+          "Email": "chaim@peakcollege.ca",
+          "Name": "Peak Online Services"
         },
         "To": [
           {
-            "Email": "chaimw15@gmail.com",
-            "Name": "Chaim"
+            "Email": "yunny@peakcollege.ca",
+            "Name": "Yunny Lee"
           }
         ],
         "Subject": subject,
